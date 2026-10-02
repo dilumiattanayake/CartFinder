@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "CartFinder",
+    "slug": "cartfinder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "cartfinder",
+    "plugins": ["expo-location"],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "CartFinder uses your location to show nearby food carts."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    }
+  }
+}

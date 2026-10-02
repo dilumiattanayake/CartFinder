@@ -1,0 +1,29 @@
+{
+  "name": "cartfinder-backend",
+  "version": "1.0.0",
+  "description": "CartFinder REST API — Node.js / Express / MongoDB / Firebase Admin",
+  "main": "server.js",
+  "engines": { "node": ">=18.0.0" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint . --ext .js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.2.0",
+    "helmet": "^7.1.0",
+    "joi": "^17.13.1",
+    "mongoose": "^8.4.4",
+    "morgan": "^1.10.0",
+    "winston": "^3.13.0",
+    "qrcode": "^1.5.4",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.5.0",
+    "nodemon": "^3.1.4"
+  }
+}
