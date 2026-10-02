@@ -5,7 +5,7 @@ import { ROLES, ROLE_LABELS } from '../../constants/roles';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES } from '../../constants/typography';
 
-const SELECTABLE_ROLES = [ROLES.CUSTOMER, ROLES.VENDOR];
+const SELECTABLE_ROLES = [ROLES.CUSTOMER, ROLES.VENDOR, ROLES.PHI];
 
 const RoleSelectScreen = ({ navigation }) => {
   const [selected, setSelected] = useState(ROLES.CUSTOMER);

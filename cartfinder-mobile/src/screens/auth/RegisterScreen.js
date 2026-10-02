@@ -13,12 +13,40 @@ const RegisterScreen = ({ navigation, route }) => {
   const selectedRole = route.params?.role;
 
   const handleRegister = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert('Validation Error', 'Please enter both email and password');
+      return;
+    }
+
+    if (!selectedRole) {
+      Alert.alert('Selection Error', 'Please select a role');
+      navigation.navigate('RoleSelect');
+      return;
+    }
+
     setLoading(true);
     try {
-      await registerWithEmail(email.trim(), password);
-      if (selectedRole) await registerInBackend(selectedRole);
+      console.log('[RegisterScreen] Starting registration for role:', selectedRole);
+      
+      // Step 1: Create Firebase user
+      console.log('[RegisterScreen] Creating Firebase user...');
+      const firebaseResult = await registerWithEmail(email.trim(), password);
+      console.log('[RegisterScreen] Firebase user created:', firebaseResult.user.uid);
+      
+      // Step 2: Register in MongoDB backend
+      console.log('[RegisterScreen] Registering in backend...');
+      const backendResult = await registerInBackend(selectedRole);
+      console.log('[RegisterScreen] Backend registration response:', backendResult);
+      
+      Alert.alert('Registration Successful', 'Your account has been created! Please log in to continue.');
+      
+      // Navigate to Login screen
+      navigation.navigate('Login');
     } catch (err) {
-      Alert.alert('Registration Failed', err.message);
+      console.error('[RegisterScreen] Registration error:', err);
+      const errorMessage = err?.message || err?.response?.data?.message || JSON.stringify(err) || 'Registration failed';
+      console.error('[RegisterScreen] Error message:', errorMessage);
+      Alert.alert('Registration Failed', errorMessage);
     } finally {
       setLoading(false);
     }

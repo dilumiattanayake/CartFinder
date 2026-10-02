@@ -13,7 +13,7 @@ const schemas = {
     firebaseUid: Joi.string().required(),
     email:       Joi.string().email().required(),
     role:        Joi.string().valid('customer', 'vendor', 'phi').required(),
-    displayName: Joi.string().min(2).max(60),
+    displayName: Joi.string().min(2).max(60).allow(null, '').optional(),
   }),
 
   updateVendorLocation: Joi.object({

@@ -43,7 +43,21 @@ export const registerInBackend = async (role) => {
   if (!currentUser) throw new Error('No authenticated Firebase user');
 
   const { uid, email, displayName } = currentUser;
-  return apiClient.post(ENDPOINTS.REGISTER, { firebaseUid: uid, email, role, displayName });
+  console.log('[authService] Registering backend with:', { firebaseUid: uid, email, role, displayName });
+  
+  try {
+    const response = await apiClient.post(ENDPOINTS.REGISTER, { 
+      firebaseUid: uid, 
+      email, 
+      role, 
+      displayName: displayName || email.split('@')[0]  // Use email prefix as fallback
+    });
+    console.log('[authService] Backend registration successful:', response);
+    return response;
+  } catch (err) {
+    console.error('[authService] Backend registration failed:', err);
+    throw err;
+  }
 };
 
 /** Fetch the current user's MongoDB profile. */

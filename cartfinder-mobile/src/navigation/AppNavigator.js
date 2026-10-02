@@ -41,13 +41,19 @@ const RootNavigator = () => {
 
   if (isLoading) return <LoadingOverlay />;
 
+  // If Firebase user is authenticated but MongoDB registration is incomplete
+  if (isSignedIn && !role) {
+    return <AuthNavigator />;
+  }
+
   if (!isSignedIn) return <AuthNavigator />;
 
   switch (role) {
     case 'vendor':   return <VendorNavigator />;
     case 'phi':
     case 'admin':    return <PhiNavigator />;
-    default:         return <CustomerNavigator />;
+    case 'customer': return <CustomerNavigator />;
+    default:         return <AuthNavigator />;
   }
 };
 

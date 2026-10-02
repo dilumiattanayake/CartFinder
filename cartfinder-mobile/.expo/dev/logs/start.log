@@ -292,3 +292,322 @@
 {"_e":"metro:bundling:done","_t":1790877064694,"id":"4","total":1,"ms":73.712167}
 {"_e":"metro:client_log","_t":1790877076416,"level":"error","data":["A non-serializable value was detected in an action, in the path: `payload`. Value:","{\"_redirectEventId\": undefined, \"apiKey\": \"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E\", \"appName\": \"[DEFAULT]\", \"createdAt\": \"1790876894829\", \"displayName\": undefined, \"email\": \"dilu@gmail.com\", \"emailVerified\": false, \"isAnonymous\": false, \"lastLoginAt\": \"1790876894829\", \"phoneNumber\": undefined, \"photoURL\": undefined, \"providerData\": [[Object]], \"stsTokenManager\": {\"accessToken\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjgwMWQ0YTIwNzMwN2I0ZjM1NmFjZGI4NWNhNzE3ZWU3YmEwZGJmN2UiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2FydGZpbmRlci0zZDM4MSIsImF1ZCI6ImNhcnRmaW5kZXItM2QzODEiLCJhdXRoX3RpbWUiOjE3OTA4NzY4OTUsInVzZXJfaWQiOiJHQXBVVVZMM2JMUmVEcWZkb3haM3h2SW1KRGwyIiwic3ViIjoiR0FwVVVWTDNiTFJlRHFmZG94WjN4dkltSkRsMiIsImlhdCI6MTc5MDg3Njg5NSwiZXhwIjoxNzkwODgwNDk1LCJlbWFpbCI6ImRpbHVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImRpbHVAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.kXqqXu0Cx3wqL8-Isn1QjEdwb0xdYF9fi-tCEgdCTaH0eeuLVD65X3BTteKe1LgfKWszYkmwVv8-aqkKVkPjxeZDQ-_kCLxz7maKDfuM3ak03RHQ5SLzbuquOe5Z7uqtSWhSz8ZflGk0zVS6Y5--h3IhuqIPuLndFNOznrFUArH7T-nO5NkHSvNg2e7LjSGk3vvvAtpdfSg15wsczxCPo55pm4zOnwteYX1GVeeE9HA43W0dR99G4RTy0ecBjv9lKbMrHxbjwu3jSrAma4lGDyvN6eUgdsaRcbWwm-4jEYfuhwnac3-yMfD6hhtitgdiOP-J6ALSK4eU7sTLnkh1cw\", \"expirationTime\": 1790880494018, \"refreshToken\": \"AMf-vBxghAvwWdsEAqH5B0RmiQpDztu9k6pQPia5HxJFdhFUAj57JFK_bnkPQNojDCNTqcdZK87cFhPU_yzI6NgYvZBiwKk-bOw06G-J7cHVm7B1AsSxHuNHVCC2CBhJaXEFRrXImJAfpgAWmqAhbfWwwU3dHNyIYkRI0bXG5HzyjT0r-s_mYHFSWNwAHYjpB9PyyX5Va3f8yxAJarFZglrAhuI1Sat2ow\"}, \"tenantId\": undefined, \"uid\": \"GApUUVL3bLReDqfdoxZ3xvImJDl2\"}","\nTake a look at the logic that dispatched this action: ","{\"payload\": {\"_redirectEventId\": undefined, \"apiKey\": \"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E\", \"appName\": \"[DEFAULT]\", \"createdAt\": \"1790876894829\", \"displayName\": undefined, \"email\": \"dilu@gmail.com\", \"emailVerified\": false, \"isAnonymous\": false, \"lastLoginAt\": \"1790876894829\", \"phoneNumber\": undefined, \"photoURL\": undefined, \"providerData\": [Array], \"stsTokenManager\": [Object], \"tenantId\": undefined, \"uid\": \"GApUUVL3bLReDqfdoxZ3xvImJDl2\"}, \"type\": \"auth/setFirebaseUser\"}","\n(See https://redux.js.org/faq/actions#why-should-type-be-a-string-why-should-my-action-types-be-constants)","\n(To allow non-serializable values see: https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data)"]}
 {"_e":"metro:client_log","_t":1790877076551,"level":"warn","data":["SerializableStateInvariantMiddleware took 177ms, which is more than the warning threshold of 32ms. \nIf your state or actions are very large, you may want to disable the middleware as it might cause too much of a slowdown in development mode. See https://redux-toolkit.js.org/api/getDefaultMiddleware for instructions.\nIt is disabled in production builds, so you don't need to worry about that."]}
+{"_e":"root:init","_t":1790948261113,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790948261113,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790948261114,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790948261257,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790948261383,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790948261468,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790948261755,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790948305601,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790948305602,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790948305606,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790948305805,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1790948305907,"id":"1","progress":0.09,"total":20,"current":6}
+{"_e":"metro:bundling:progress","_t":1790948306007,"id":"1","progress":0.09,"total":131,"current":14}
+{"_e":"metro:bundling:progress","_t":1790948306107,"id":"1","progress":0.09,"total":162,"current":23}
+{"_e":"metro:bundling:progress","_t":1790948306207,"id":"1","progress":0.09,"total":204,"current":40}
+{"_e":"metro:bundling:progress","_t":1790948306309,"id":"1","progress":0.09,"total":232,"current":67}
+{"_e":"metro:bundling:progress","_t":1790948306409,"id":"1","progress":0.17713611989706268,"total":297,"current":125}
+{"_e":"metro:bundling:progress","_t":1790948306509,"id":"1","progress":0.22711181640625,"total":384,"current":183}
+{"_e":"metro:bundling:progress","_t":1790948306610,"id":"1","progress":0.323236965029668,"total":445,"current":253}
+{"_e":"metro:bundling:progress","_t":1790948306711,"id":"1","progress":0.323236965029668,"total":535,"current":304}
+{"_e":"metro:bundling:progress","_t":1790948306813,"id":"1","progress":0.323236965029668,"total":621,"current":352}
+{"_e":"metro:bundling:progress","_t":1790948306913,"id":"1","progress":0.39135662150354966,"total":641,"current":401}
+{"_e":"metro:bundling:progress","_t":1790948307016,"id":"1","progress":0.46985533023976617,"total":674,"current":462}
+{"_e":"metro:bundling:progress","_t":1790948307116,"id":"1","progress":0.5321822090835797,"total":732,"current":534}
+{"_e":"metro:bundling:progress","_t":1790948307218,"id":"1","progress":0.5694230117806466,"total":815,"current":615}
+{"_e":"metro:bundling:progress","_t":1790948307318,"id":"1","progress":0.6176067922668039,"total":864,"current":679}
+{"_e":"metro:bundling:progress","_t":1790948307419,"id":"1","progress":0.6453148560788743,"total":905,"current":727}
+{"_e":"metro:bundling:progress","_t":1790948307519,"id":"1","progress":0.7556495365030544,"total":918,"current":798}
+{"_e":"metro:bundling:progress","_t":1790948307619,"id":"1","progress":0.793302385211071,"total":933,"current":831}
+{"_e":"metro:bundling:progress","_t":1790948307720,"id":"1","progress":0.8122704964338677,"total":952,"current":858}
+{"_e":"metro:bundling:progress","_t":1790948307820,"id":"1","progress":0.8507484279155897,"total":966,"current":891}
+{"_e":"metro:bundling:progress","_t":1790948307920,"id":"1","progress":0.8507484279155897,"total":1022,"current":928}
+{"_e":"metro:bundling:progress","_t":1790948308020,"id":"1","progress":0.8715834500538294,"total":1054,"current":984}
+{"_e":"metro:bundling:progress","_t":1790948308120,"id":"1","progress":0.8796447601555835,"total":1111,"current":1042}
+{"_e":"metro:bundling:progress","_t":1790948308246,"id":"1","progress":0.9063039999999999,"total":1125,"current":1071}
+{"_e":"metro:bundling:progress","_t":1790948308346,"id":"1","progress":0.9758421344521605,"total":1152,"current":1138}
+{"_e":"metro:bundling:progress","_t":1790948308458,"id":"1","progress":0.9758421344521605,"total":1232,"current":1169}
+{"_e":"metro:bundling:progress","_t":1790948308558,"id":"1","progress":0.9758421344521605,"total":1268,"current":1202}
+{"_e":"metro:bundling:progress","_t":1790948308658,"id":"1","progress":0.9758421344521605,"total":1319,"current":1242}
+{"_e":"metro:bundling:progress","_t":1790948308759,"id":"1","progress":0.9758421344521605,"total":1346,"current":1279}
+{"_e":"metro:bundling:progress","_t":1790948308858,"id":"1","progress":0.9758421344521605,"total":1384,"current":1302}
+{"_e":"metro:bundling:progress","_t":1790948308959,"id":"1","progress":0.9758421344521605,"total":1387,"current":1330}
+{"_e":"metro:bundling:progress","_t":1790948309059,"id":"1","progress":0.9758421344521605,"total":1406,"current":1370}
+{"_e":"metro:bundling:progress","_t":1790948309159,"id":"1","progress":0.9758421344521605,"total":1503,"current":1467}
+{"_e":"metro:bundling:progress","_t":1790948309259,"id":"1","progress":0.999,"total":1521,"current":1521}
+{"_e":"metro:bundling:done","_t":1790948309358,"id":"1","total":1521,"ms":3756.95875}
+{"_e":"metro:client_log","_t":1790948324184,"level":"error","data":["A non-serializable value was detected in an action, in the path: `payload`. Value:","{\"_redirectEventId\": undefined, \"apiKey\": \"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E\", \"appName\": \"[DEFAULT]\", \"createdAt\": \"1790876894829\", \"displayName\": undefined, \"email\": \"dilu@gmail.com\", \"emailVerified\": false, \"isAnonymous\": false, \"lastLoginAt\": \"1790876894829\", \"phoneNumber\": undefined, \"photoURL\": undefined, \"providerData\": [[Object]], \"stsTokenManager\": {\"accessToken\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjgwMWQ0YTIwNzMwN2I0ZjM1NmFjZGI4NWNhNzE3ZWU3YmEwZGJmN2UiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY2FydGZpbmRlci0zZDM4MSIsImF1ZCI6ImNhcnRmaW5kZXItM2QzODEiLCJhdXRoX3RpbWUiOjE3OTA4NzY4OTUsInVzZXJfaWQiOiJHQXBVVVZMM2JMUmVEcWZkb3haM3h2SW1KRGwyIiwic3ViIjoiR0FwVVVWTDNiTFJlRHFmZG94WjN4dkltSkRsMiIsImlhdCI6MTc5MDk0ODMyMywiZXhwIjoxNzkwOTUxOTIzLCJlbWFpbCI6ImRpbHVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImRpbHVAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.lKlzao6sPPy8d3TJqp0VAS5rNR-iFc2qvb3PD3ONwjwWQZpaUMbUdDxxUB4oFKxxnf_kTB9h0MW2Jn0uQ2EiROUQBJ3IAqzRwuN2U7VPqoEMV1q8ZNQj1g7Dcj7TzcniL8SEEnt90jGMUjPn5y_gJkI8Of_ymv6o90O2deZOXEukBkzLQ16xzvfxgOGFjFPNPTP62BD5JaiPYAZW_4kltmQHPXDRYq4wRVAP1ConwK1bvz0Ta2FEWq2VqYtpalNjo9o6M4aCZvMr55UMZe6XdekAmAGMQUsjGxRBWqDVhEO7Zu-K91ywcYI6OxTKrS0nWMBL8IXmKGCGR_ta1t5SrQ\", \"expirationTime\": 1790951922080, \"refreshToken\": \"AMf-vBxghAvwWdsEAqH5B0RmiQpDztu9k6pQPia5HxJFdhFUAj57JFK_bnkPQNojDCNTqcdZK87cFhPU_yzI6NgYvZBiwKk-bOw06G-J7cHVm7B1AsSxHuNHVCC2CBhJaXEFRrXImJAfpgAWmqAhbfWwwU3dHNyIYkRI0bXG5HzyjT0r-s_mYHFSWNwAHYjpB9PyyX5Va3f8yxAJarFZglrAhuI1Sat2ow\"}, \"tenantId\": undefined, \"uid\": \"GApUUVL3bLReDqfdoxZ3xvImJDl2\"}","\nTake a look at the logic that dispatched this action: ","{\"payload\": {\"_redirectEventId\": undefined, \"apiKey\": \"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E\", \"appName\": \"[DEFAULT]\", \"createdAt\": \"1790876894829\", \"displayName\": undefined, \"email\": \"dilu@gmail.com\", \"emailVerified\": false, \"isAnonymous\": false, \"lastLoginAt\": \"1790876894829\", \"phoneNumber\": undefined, \"photoURL\": undefined, \"providerData\": [Array], \"stsTokenManager\": [Object], \"tenantId\": undefined, \"uid\": \"GApUUVL3bLReDqfdoxZ3xvImJDl2\"}, \"type\": \"auth/setFirebaseUser\"}","\n(See https://redux.js.org/faq/actions#why-should-type-be-a-string-why-should-my-action-types-be-constants)","\n(To allow non-serializable values see: https://redux-toolkit.js.org/usage/usage-guide#working-with-non-serializable-data)"]}
+{"_e":"metro:client_log","_t":1790948324328,"level":"warn","data":["SerializableStateInvariantMiddleware took 192ms, which is more than the warning threshold of 32ms. \nIf your state or actions are very large, you may want to disable the middleware as it might cause too much of a slowdown in development mode. See https://redux-toolkit.js.org/api/getDefaultMiddleware for instructions.\nIt is disabled in production builds, so you don't need to worry about that."]}
+{"_e":"metro:server_log","_t":1790948822141,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","RMX3760 - 14 - API 34","60"]}
+{"_e":"root:init","_t":1790949023201,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790949023201,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790949023203,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790949023371,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790949023525,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790949023627,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790949024024,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790949043139,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790949043140,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790949043143,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790949043242,"id":"1","progress":0.2449136629572476,"total":489,"current":242}
+{"_e":"metro:bundling:progress","_t":1790949043342,"id":"1","progress":0.6961708438889103,"total":966,"current":806}
+{"_e":"metro:bundling:progress","_t":1790949043442,"id":"1","progress":0.8933566097260696,"total":1368,"current":1293}
+{"_e":"metro:bundling:done","_t":1790949043514,"id":"1","total":1368,"ms":374.637667}
+{"_e":"metro:client_log","_t":1790949113860,"level":"error","data":["Registration error:","{\"errors\": [], \"message\": \"User record not found. Please complete registration.\", \"status\": 404}"]}
+{"_e":"metro:server_log","_t":1790949274369,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","RMX3760 - 14 - API 34","60"]}
+{"_e":"root:init","_t":1790949550260,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790949550260,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790949550261,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790949550426,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790949550562,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790949550663,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790949551090,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790949577067,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790949577067,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790949577069,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790949577259,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1790949577359,"id":"1","progress":0.027777777777777776,"total":60,"current":10}
+{"_e":"metro:bundling:progress","_t":1790949577459,"id":"1","progress":0.09714960364311014,"total":77,"current":24}
+{"_e":"metro:bundling:progress","_t":1790949577559,"id":"1","progress":0.09714960364311014,"total":133,"current":36}
+{"_e":"metro:bundling:progress","_t":1790949577660,"id":"1","progress":0.22215911395999838,"total":157,"current":74}
+{"_e":"metro:bundling:progress","_t":1790949577763,"id":"1","progress":0.22215911395999838,"total":286,"current":103}
+{"_e":"metro:bundling:progress","_t":1790949577865,"id":"1","progress":0.22215911395999838,"total":356,"current":138}
+{"_e":"metro:bundling:progress","_t":1790949577965,"id":"1","progress":0.22215911395999838,"total":392,"current":176}
+{"_e":"metro:bundling:progress","_t":1790949578065,"id":"1","progress":0.22529677844082482,"total":434,"current":206}
+{"_e":"metro:bundling:progress","_t":1790949578165,"id":"1","progress":0.31017750515455084,"total":483,"current":269}
+{"_e":"metro:bundling:progress","_t":1790949578265,"id":"1","progress":0.3767577689908666,"total":536,"current":329}
+{"_e":"metro:bundling:progress","_t":1790949578366,"id":"1","progress":0.45058522755887087,"total":581,"current":390}
+{"_e":"metro:bundling:progress","_t":1790949578466,"id":"1","progress":0.48529226107814677,"total":623,"current":434}
+{"_e":"metro:bundling:progress","_t":1790949578566,"id":"1","progress":0.5166660148329899,"total":697,"current":501}
+{"_e":"metro:bundling:progress","_t":1790949578666,"id":"1","progress":0.5595511191022382,"total":762,"current":570}
+{"_e":"metro:bundling:progress","_t":1790949578767,"id":"1","progress":0.6375376746132841,"total":779,"current":622}
+{"_e":"metro:bundling:progress","_t":1790949578868,"id":"1","progress":0.6940985625200641,"total":803,"current":669}
+{"_e":"metro:bundling:progress","_t":1790949578968,"id":"1","progress":0.7341237950292797,"total":859,"current":736}
+{"_e":"metro:bundling:progress","_t":1790949579068,"id":"1","progress":0.7780934764783279,"total":916,"current":808}
+{"_e":"metro:bundling:progress","_t":1790949579168,"id":"1","progress":0.7780934764783279,"total":981,"current":855}
+{"_e":"metro:bundling:progress","_t":1790949579273,"id":"1","progress":0.807288704830686,"total":995,"current":894}
+{"_e":"metro:bundling:progress","_t":1790949579373,"id":"1","progress":0.807288704830686,"total":1060,"current":950}
+{"_e":"metro:bundling:progress","_t":1790949579473,"id":"1","progress":0.8419761659807957,"total":1080,"current":991}
+{"_e":"metro:bundling:progress","_t":1790949579573,"id":"1","progress":0.8674548250672819,"total":1122,"current":1045}
+{"_e":"metro:bundling:progress","_t":1790949579674,"id":"1","progress":0.9290582002367598,"total":1135,"current":1094}
+{"_e":"metro:bundling:progress","_t":1790949579773,"id":"1","progress":0.9415577420281528,"total":1180,"current":1145}
+{"_e":"metro:bundling:progress","_t":1790949579875,"id":"1","progress":0.9415577420281528,"total":1240,"current":1165}
+{"_e":"metro:bundling:progress","_t":1790949579975,"id":"1","progress":0.9415577420281528,"total":1268,"current":1188}
+{"_e":"metro:bundling:progress","_t":1790949580075,"id":"1","progress":0.9415577420281528,"total":1293,"current":1210}
+{"_e":"metro:bundling:progress","_t":1790949580188,"id":"1","progress":0.9415577420281528,"total":1294,"current":1216}
+{"_e":"metro:bundling:progress","_t":1790949580278,"id":"1","progress":0.9415577420281528,"total":1315,"current":1231}
+{"_e":"metro:bundling:progress","_t":1790949580379,"id":"1","progress":0.9415577420281528,"total":1345,"current":1255}
+{"_e":"metro:bundling:progress","_t":1790949580479,"id":"1","progress":0.9415577420281528,"total":1353,"current":1266}
+{"_e":"metro:bundling:progress","_t":1790949580579,"id":"1","progress":0.9415577420281528,"total":1368,"current":1294}
+{"_e":"metro:bundling:progress","_t":1790949580680,"id":"1","progress":0.9415577420281528,"total":1376,"current":1298}
+{"_e":"metro:bundling:progress","_t":1790949580780,"id":"1","progress":0.9415577420281528,"total":1376,"current":1313}
+{"_e":"metro:bundling:progress","_t":1790949580880,"id":"1","progress":0.9415577420281528,"total":1382,"current":1337}
+{"_e":"metro:bundling:progress","_t":1790949580981,"id":"1","progress":0.9465639508862235,"total":1403,"current":1365}
+{"_e":"metro:bundling:progress","_t":1790949581084,"id":"1","progress":0.9471818297015003,"total":1457,"current":1418}
+{"_e":"metro:bundling:progress","_t":1790949581184,"id":"1","progress":0.9947437673130194,"total":1520,"current":1516}
+{"_e":"metro:bundling:progress","_t":1790949581285,"id":"1","progress":0.999,"total":1521,"current":1521}
+{"_e":"metro:bundling:done","_t":1790949581340,"id":"1","total":1521,"ms":4272.977375}
+{"_e":"metro:client_log","_t":1790949593112,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790949642814,"level":"log","data":["[RegisterScreen] Starting registration for role:","customer"]}
+{"_e":"metro:client_log","_t":1790949642817,"level":"log","data":["[RegisterScreen] Creating Firebase user..."]}
+{"_e":"metro:client_log","_t":1790949644475,"level":"log","data":["[RegisterScreen] Firebase user created:","IFyo5p9v1eevd8XBja80xaHzWJv2"]}
+{"_e":"metro:client_log","_t":1790949644478,"level":"log","data":["[RegisterScreen] Registering in backend..."]}
+{"_e":"metro:client_log","_t":1790949644478,"level":"log","data":["[authService] Registering backend with:","{\"email\": \"tilin@gmail.com\", \"firebaseUid\": \"IFyo5p9v1eevd8XBja80xaHzWJv2\", \"role\": \"customer\"}"]}
+{"_e":"metro:client_log","_t":1790949644482,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790949644485,"level":"log","data":["[apiClient] POST /auth/register","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790949644532,"level":"error","data":["[authService] Backend registration failed:","{\"errors\": [], \"message\": \"\\\"displayName\\\" must be a string\", \"status\": 422}"]}
+{"_e":"metro:client_log","_t":1790949644660,"level":"error","data":["[RegisterScreen] Registration error:","{\"errors\": [], \"message\": \"\\\"displayName\\\" must be a string\", \"status\": 422}"]}
+{"_e":"metro:client_log","_t":1790949644663,"level":"error","data":["[RegisterScreen] Error message:","\"displayName\" must be a string"]}
+{"_e":"metro:client_log","_t":1790949731120,"level":"log","data":["[RegisterScreen] Starting registration for role:","customer"]}
+{"_e":"metro:client_log","_t":1790949731124,"level":"log","data":["[RegisterScreen] Creating Firebase user..."]}
+{"_e":"metro:client_log","_t":1790949734184,"level":"log","data":["[RegisterScreen] Firebase user created:","i6Wt5acbQRY9U7DsOj9SC4z4K943"]}
+{"_e":"metro:client_log","_t":1790949734187,"level":"log","data":["[RegisterScreen] Registering in backend..."]}
+{"_e":"metro:client_log","_t":1790949734188,"level":"log","data":["[authService] Registering backend with:","{\"email\": \"udan@example.com\", \"firebaseUid\": \"i6Wt5acbQRY9U7DsOj9SC4z4K943\", \"role\": \"customer\"}"]}
+{"_e":"metro:client_log","_t":1790949734190,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790949734192,"level":"log","data":["[apiClient] POST /auth/register","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790949734221,"level":"error","data":["[authService] Backend registration failed:","{\"errors\": [], \"message\": \"\\\"displayName\\\" must be a string\", \"status\": 422}"]}
+{"_e":"metro:client_log","_t":1790949734224,"level":"error","data":["[RegisterScreen] Registration error:","{\"errors\": [], \"message\": \"\\\"displayName\\\" must be a string\", \"status\": 422}"]}
+{"_e":"metro:client_log","_t":1790949734224,"level":"error","data":["[RegisterScreen] Error message:","\"displayName\" must be a string"]}
+{"_e":"metro:server_log","_t":1790949879920,"level":"error","data":["[timeout] connection terminated with Device for app='%s' on device='%s' after not responding for %s seconds.","host.exp.exponent","RMX3760 - 14 - API 34","60"]}
+{"_e":"root:init","_t":1790950402288,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790950402288,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790950402289,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790950402454,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790950402604,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790950402704,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790950403072,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790950431427,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790950431428,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790950431431,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790950431635,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1790950431736,"id":"1","progress":0.019775390625,"total":64,"current":9}
+{"_e":"metro:bundling:progress","_t":1790950431837,"id":"1","progress":0.02938775510204082,"total":70,"current":12}
+{"_e":"metro:bundling:progress","_t":1790950431937,"id":"1","progress":0.05358367626886146,"total":108,"current":25}
+{"_e":"metro:bundling:progress","_t":1790950432038,"id":"1","progress":0.17039616008653327,"total":172,"current":71}
+{"_e":"metro:bundling:progress","_t":1790950432138,"id":"1","progress":0.17039616008653327,"total":318,"current":107}
+{"_e":"metro:bundling:progress","_t":1790950432239,"id":"1","progress":0.19886778670562455,"total":370,"current":165}
+{"_e":"metro:bundling:progress","_t":1790950432339,"id":"1","progress":0.23020610141822262,"total":396,"current":190}
+{"_e":"metro:bundling:progress","_t":1790950432439,"id":"1","progress":0.24774267521140025,"total":442,"current":220}
+{"_e":"metro:bundling:progress","_t":1790950432539,"id":"1","progress":0.36144433154886935,"total":499,"current":300}
+{"_e":"metro:bundling:progress","_t":1790950432639,"id":"1","progress":0.4524307077870334,"total":559,"current":376}
+{"_e":"metro:bundling:progress","_t":1790950432739,"id":"1","progress":0.49909655701591543,"total":603,"current":426}
+{"_e":"metro:bundling:progress","_t":1790950432839,"id":"1","progress":0.49909655701591543,"total":715,"current":501}
+{"_e":"metro:bundling:progress","_t":1790950432940,"id":"1","progress":0.5565318724535988,"total":752,"current":561}
+{"_e":"metro:bundling:progress","_t":1790950433040,"id":"1","progress":0.6163540206590898,"total":791,"current":621}
+{"_e":"metro:bundling:progress","_t":1790950433140,"id":"1","progress":0.7449967387387662,"total":811,"current":700}
+{"_e":"metro:bundling:progress","_t":1790950433240,"id":"1","progress":0.7636731206154337,"total":896,"current":783}
+{"_e":"metro:bundling:progress","_t":1790950433340,"id":"1","progress":0.7636731206154337,"total":979,"current":844}
+{"_e":"metro:bundling:progress","_t":1790950433441,"id":"1","progress":0.8132497459849559,"total":998,"current":900}
+{"_e":"metro:bundling:progress","_t":1790950433545,"id":"1","progress":0.8132497459849559,"total":1065,"current":954}
+{"_e":"metro:bundling:progress","_t":1790950433645,"id":"1","progress":0.8510232703803053,"total":1084,"current":1000}
+{"_e":"metro:bundling:progress","_t":1790950433745,"id":"1","progress":0.8737822053234369,"total":1119,"current":1046}
+{"_e":"metro:bundling:progress","_t":1790950433848,"id":"1","progress":0.9310557094490612,"total":1140,"current":1100}
+{"_e":"metro:bundling:progress","_t":1790950433946,"id":"1","progress":0.9310557094490612,"total":1206,"current":1155}
+{"_e":"metro:bundling:progress","_t":1790950434046,"id":"1","progress":0.9310557094490612,"total":1245,"current":1175}
+{"_e":"metro:bundling:progress","_t":1790950434146,"id":"1","progress":0.9310557094490612,"total":1268,"current":1194}
+{"_e":"metro:bundling:progress","_t":1790950434247,"id":"1","progress":0.9310557094490612,"total":1297,"current":1223}
+{"_e":"metro:bundling:progress","_t":1790950434348,"id":"1","progress":0.9310557094490612,"total":1329,"current":1256}
+{"_e":"metro:bundling:progress","_t":1790950434448,"id":"1","progress":0.9310557094490612,"total":1368,"current":1294}
+{"_e":"metro:bundling:progress","_t":1790950434548,"id":"1","progress":0.9310557094490612,"total":1376,"current":1307}
+{"_e":"metro:bundling:progress","_t":1790950434649,"id":"1","progress":0.9310557094490612,"total":1376,"current":1316}
+{"_e":"metro:bundling:progress","_t":1790950434749,"id":"1","progress":0.9533139066278133,"total":1397,"current":1364}
+{"_e":"metro:bundling:progress","_t":1790950434849,"id":"1","progress":0.9533139066278133,"total":1504,"current":1464}
+{"_e":"metro:bundling:progress","_t":1790950434949,"id":"1","progress":0.999,"total":1521,"current":1521}
+{"_e":"metro:bundling:done","_t":1790950435025,"id":"1","total":1521,"ms":3597.084833}
+{"_e":"metro:client_log","_t":1790950447283,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790950490892,"level":"log","data":["[RegisterScreen] Starting registration for role:","customer"]}
+{"_e":"metro:client_log","_t":1790950490896,"level":"log","data":["[RegisterScreen] Creating Firebase user..."]}
+{"_e":"metro:client_log","_t":1790950493366,"level":"log","data":["[RegisterScreen] Firebase user created:","KrBC4pu1PAQui4bDwhe5aMEwGb93"]}
+{"_e":"metro:client_log","_t":1790950493369,"level":"log","data":["[RegisterScreen] Registering in backend..."]}
+{"_e":"metro:client_log","_t":1790950493372,"level":"log","data":["[authService] Registering backend with:","{\"displayName\": null, \"email\": \"customer@test.com\", \"firebaseUid\": \"KrBC4pu1PAQui4bDwhe5aMEwGb93\", \"role\": \"customer\"}"]}
+{"_e":"metro:client_log","_t":1790950493379,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790950493382,"level":"log","data":["[apiClient] POST /auth/register","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790950494152,"level":"log","data":["[authService] Backend registration successful:","{\"data\": {\"__v\": 0, \"_id\": \"6abfbc5d2db2af6f3fc26c4e\", \"createdAt\": \"2026-10-02T14:14:53.754Z\", \"displayName\": \"customer\", \"email\": \"customer@test.com\", \"firebaseUid\": \"KrBC4pu1PAQui4bDwhe5aMEwGb93\", \"isActive\": true, \"role\": \"customer\", \"updatedAt\": \"2026-10-02T14:14:53.754Z\"}, \"message\": \"User registered successfully\", \"success\": true}"]}
+{"_e":"metro:client_log","_t":1790950494155,"level":"log","data":["[RegisterScreen] Backend registration response:","{\"data\": {\"__v\": 0, \"_id\": \"6abfbc5d2db2af6f3fc26c4e\", \"createdAt\": \"2026-10-02T14:14:53.754Z\", \"displayName\": \"customer\", \"email\": \"customer@test.com\", \"firebaseUid\": \"KrBC4pu1PAQui4bDwhe5aMEwGb93\", \"isActive\": true, \"role\": \"customer\", \"updatedAt\": \"2026-10-02T14:14:53.754Z\"}, \"message\": \"User registered successfully\", \"success\": true}"]}
+{"_e":"metro:client_log","_t":1790950538113,"level":"log","data":["[LoginScreen] Signing in with email:","customer@test.com"]}
+{"_e":"metro:client_log","_t":1790950539937,"level":"log","data":["[LoginScreen] Firebase login successful"]}
+{"_e":"metro:client_log","_t":1790950539941,"level":"log","data":["[LoginScreen] Loading user profile..."]}
+{"_e":"metro:client_log","_t":1790950539960,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790950540533,"level":"log","data":["[LoginScreen] User profile loaded, AppNavigator will auto-redirect"]}
+{"_e":"root:init","_t":1790953698891,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790953698892,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790953698893,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790953699068,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790953699221,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790953699324,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790953699727,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790953717039,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790953717040,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790953717043,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790953717243,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1790953717344,"id":"1","progress":0.02194787379972565,"total":54,"current":8}
+{"_e":"metro:bundling:progress","_t":1790953717456,"id":"1","progress":0.09877551020408162,"total":70,"current":22}
+{"_e":"metro:bundling:progress","_t":1790953717557,"id":"1","progress":0.09877551020408162,"total":137,"current":39}
+{"_e":"metro:bundling:progress","_t":1790953717658,"id":"1","progress":0.2247006240512734,"total":154,"current":73}
+{"_e":"metro:bundling:progress","_t":1790953717759,"id":"1","progress":0.2247006240512734,"total":285,"current":106}
+{"_e":"metro:bundling:progress","_t":1790953717860,"id":"1","progress":0.2247006240512734,"total":345,"current":140}
+{"_e":"metro:bundling:progress","_t":1790953717960,"id":"1","progress":0.2247006240512734,"total":395,"current":174}
+{"_e":"metro:bundling:progress","_t":1790953718062,"id":"1","progress":0.24099173553719008,"total":440,"current":216}
+{"_e":"metro:bundling:progress","_t":1790953718162,"id":"1","progress":0.3296054323333667,"total":479,"current":275}
+{"_e":"metro:bundling:progress","_t":1790953718262,"id":"1","progress":0.40646549937120824,"total":538,"current":343}
+{"_e":"metro:bundling:progress","_t":1790953718363,"id":"1","progress":0.44521504585061683,"total":577,"current":385}
+{"_e":"metro:bundling:progress","_t":1790953718463,"id":"1","progress":0.4664910918859592,"total":653,"current":446}
+{"_e":"metro:bundling:progress","_t":1790953718563,"id":"1","progress":0.4971042166393132,"total":712,"current":502}
+{"_e":"metro:bundling:progress","_t":1790953718668,"id":"1","progress":0.5700961327708228,"total":743,"current":561}
+{"_e":"metro:bundling:progress","_t":1790953718768,"id":"1","progress":0.6224133675871127,"total":777,"current":613}
+{"_e":"metro:bundling:progress","_t":1790953718868,"id":"1","progress":0.7119140625,"total":800,"current":675}
+{"_e":"metro:bundling:progress","_t":1790953718969,"id":"1","progress":0.7335696330675511,"total":871,"current":746}
+{"_e":"metro:bundling:progress","_t":1790953719069,"id":"1","progress":0.753714291622295,"total":933,"current":810}
+{"_e":"metro:bundling:progress","_t":1790953719169,"id":"1","progress":0.7689940828402366,"total":975,"current":855}
+{"_e":"metro:bundling:progress","_t":1790953719269,"id":"1","progress":0.8183345833131724,"total":996,"current":901}
+{"_e":"metro:bundling:progress","_t":1790953719370,"id":"1","progress":0.8225671674486968,"total":1064,"current":965}
+{"_e":"metro:bundling:progress","_t":1790953719470,"id":"1","progress":0.8493546250692823,"total":1097,"current":1011}
+{"_e":"metro:bundling:progress","_t":1790953719570,"id":"1","progress":0.893390131654893,"total":1113,"current":1052}
+{"_e":"metro:bundling:progress","_t":1790953719671,"id":"1","progress":0.9511418546866611,"total":1132,"current":1104}
+{"_e":"metro:bundling:progress","_t":1790953719771,"id":"1","progress":0.9511418546866611,"total":1202,"current":1150}
+{"_e":"metro:bundling:progress","_t":1790953719872,"id":"1","progress":0.9511418546866611,"total":1239,"current":1169}
+{"_e":"metro:bundling:progress","_t":1790953719973,"id":"1","progress":0.9511418546866611,"total":1244,"current":1183}
+{"_e":"metro:bundling:progress","_t":1790953720073,"id":"1","progress":0.9511418546866611,"total":1310,"current":1219}
+{"_e":"metro:bundling:progress","_t":1790953720174,"id":"1","progress":0.9511418546866611,"total":1331,"current":1250}
+{"_e":"metro:bundling:progress","_t":1790953720274,"id":"1","progress":0.9511418546866611,"total":1358,"current":1285}
+{"_e":"metro:bundling:progress","_t":1790953720375,"id":"1","progress":0.9511418546866611,"total":1367,"current":1299}
+{"_e":"metro:bundling:progress","_t":1790953720475,"id":"1","progress":0.9511418546866611,"total":1375,"current":1323}
+{"_e":"metro:bundling:progress","_t":1790953720579,"id":"1","progress":0.956080512475267,"total":1396,"current":1365}
+{"_e":"metro:bundling:progress","_t":1790953720680,"id":"1","progress":0.956080512475267,"total":1419,"current":1386}
+{"_e":"metro:bundling:progress","_t":1790953720780,"id":"1","progress":0.9564265482592722,"total":1498,"current":1465}
+{"_e":"metro:bundling:failed","_t":1790953720836,"id":"1","message":"Unable to resolve \"@expo/vector-icons\" from \"src/navigation/CustomerNavigator.js\"\n  3 | import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';\n  4 | import { createStackNavigator } from '@react-navigation/stack';\n> 5 | import { Ionicons } from '@expo/vector-icons';\n    |                           ^\n  6 | import { COLORS } from '../constants/colors';\n  7 |\n  8 | import MapDiscoveryScreen   from '../screens/customer/MapDiscoveryScreen';","importStack":"\u001b[1mImport stack:\u001b[22m\n\n\u001b[90m \u001b[39msrc/navigation/CustomerNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"@expo/vector-icons\"\u001b[39m\n\n\u001b[90m \u001b[39msrc/navigation/AppNavigator.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./CustomerNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39mindex.js\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./src/navigation/AppNavigator\"\u001b[39m\n\n\u001b[90m \u001b[39m\n\u001b[90m |\u001b[39m \u001b[36mimport\u001b[39m \u001b[32m\"./index\"\u001b[39m\n","filename":null,"targetModuleName":"@expo/vector-icons","originModulePath":"src/navigation/CustomerNavigator.js"}
+{"_e":"root:init","_t":1790953860119,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1790953860120,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1790953860121,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1790953860278,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790953860421,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790953860517,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790953860794,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1790953877997,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790953877997,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790953878001,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1790953878206,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1790953878309,"id":"1","progress":0.0253099173553719,"total":44,"current":7}
+{"_e":"metro:bundling:progress","_t":1790953878413,"id":"1","progress":0.030245746691871453,"total":69,"current":12}
+{"_e":"metro:bundling:progress","_t":1790953878515,"id":"1","progress":0.08797759264579143,"total":118,"current":35}
+{"_e":"metro:bundling:progress","_t":1790953878616,"id":"1","progress":0.08797759264579143,"total":247,"current":66}
+{"_e":"metro:bundling:progress","_t":1790953878717,"id":"1","progress":0.09227222800323737,"total":372,"current":113}
+{"_e":"metro:bundling:progress","_t":1790953878817,"id":"1","progress":0.12112337896544485,"total":431,"current":150}
+{"_e":"metro:bundling:progress","_t":1790953878918,"id":"1","progress":0.13682044166955717,"total":465,"current":172}
+{"_e":"metro:bundling:progress","_t":1790953879019,"id":"1","progress":0.18046526089660242,"total":532,"current":226}
+{"_e":"metro:bundling:progress","_t":1790953879119,"id":"1","progress":0.2968238916978882,"total":569,"current":310}
+{"_e":"metro:bundling:progress","_t":1790953879219,"id":"1","progress":0.3793122470047729,"total":617,"current":380}
+{"_e":"metro:bundling:progress","_t":1790953879321,"id":"1","progress":0.46592719390504767,"total":649,"current":443}
+{"_e":"metro:bundling:progress","_t":1790953879421,"id":"1","progress":0.49921672713695503,"total":702,"current":496}
+{"_e":"metro:bundling:progress","_t":1790953879521,"id":"1","progress":0.49921672713695503,"total":765,"current":538}
+{"_e":"metro:bundling:progress","_t":1790953879622,"id":"1","progress":0.5289256198347108,"total":825,"current":600}
+{"_e":"metro:bundling:progress","_t":1790953879722,"id":"1","progress":0.560781131638751,"total":872,"current":653}
+{"_e":"metro:bundling:progress","_t":1790953879823,"id":"1","progress":0.620752984389348,"total":891,"current":702}
+{"_e":"metro:bundling:progress","_t":1790953879930,"id":"1","progress":0.7017255946193534,"total":918,"current":769}
+{"_e":"metro:bundling:progress","_t":1790953880034,"id":"1","progress":0.7178334252803,"total":982,"current":832}
+{"_e":"metro:bundling:progress","_t":1790953880134,"id":"1","progress":0.7843917132383872,"total":1032,"current":914}
+{"_e":"metro:bundling:progress","_t":1790953880235,"id":"1","progress":0.7925140075716602,"total":1075,"current":957}
+{"_e":"metro:bundling:progress","_t":1790953880336,"id":"1","progress":0.8516798336482784,"total":1089,"current":1005}
+{"_e":"metro:bundling:progress","_t":1790953880460,"id":"1","progress":0.8622448979591837,"total":1092,"current":1014}
+{"_e":"metro:bundling:progress","_t":1790953880573,"id":"1","progress":0.863551734446645,"total":1117,"current":1038}
+{"_e":"metro:bundling:progress","_t":1790953880671,"id":"1","progress":0.863551734446645,"total":1160,"current":1074}
+{"_e":"metro:bundling:progress","_t":1790953880778,"id":"1","progress":0.8793062528392876,"total":1172,"current":1099}
+{"_e":"metro:bundling:progress","_t":1790953880878,"id":"1","progress":0.900836880330495,"total":1199,"current":1138}
+{"_e":"metro:bundling:progress","_t":1790953880980,"id":"1","progress":0.900836880330495,"total":1240,"current":1172}
+{"_e":"metro:bundling:progress","_t":1790953881081,"id":"1","progress":0.9080968858131487,"total":1275,"current":1215}
+{"_e":"metro:bundling:progress","_t":1790953881183,"id":"1","progress":0.9080968858131487,"total":1321,"current":1232}
+{"_e":"metro:bundling:progress","_t":1790953881284,"id":"1","progress":0.9080968858131487,"total":1324,"current":1254}
+{"_e":"metro:bundling:progress","_t":1790953881384,"id":"1","progress":0.9080968858131487,"total":1333,"current":1267}
+{"_e":"metro:bundling:progress","_t":1790953881485,"id":"1","progress":0.9080968858131487,"total":1366,"current":1283}
+{"_e":"metro:bundling:progress","_t":1790953881585,"id":"1","progress":0.9080968858131487,"total":1387,"current":1303}
+{"_e":"metro:bundling:progress","_t":1790953881685,"id":"1","progress":0.9080968858131487,"total":1416,"current":1339}
+{"_e":"metro:bundling:progress","_t":1790953881785,"id":"1","progress":0.9080968858131487,"total":1455,"current":1371}
+{"_e":"metro:bundling:progress","_t":1790953881885,"id":"1","progress":0.9088967542963378,"total":1458,"current":1390}
+{"_e":"metro:bundling:progress","_t":1790953882001,"id":"1","progress":0.9193889820318718,"total":1458,"current":1398}
+{"_e":"metro:bundling:progress","_t":1790953882106,"id":"1","progress":0.959681600789776,"total":1473,"current":1443}
+{"_e":"metro:bundling:progress","_t":1790953882206,"id":"1","progress":0.959681600789776,"total":1541,"current":1506}
+{"_e":"metro:bundling:progress","_t":1790953882306,"id":"1","progress":0.999,"total":1602,"current":1602}
+{"_e":"metro:bundling:done","_t":1790953882438,"id":"1","total":1602,"ms":4441.434}
+{"_e":"metro:client_log","_t":1790953896480,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790953899408,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1790953899521,"level":"warn","data":["\"bell\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1790953899537,"level":"warn","data":["\"logout\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1790953899876,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:bundling:started","_t":1790953948321,"id":"6","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790953948321,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1790953948388,"id":"6","total":1,"ms":67.077958}
+{"_e":"metro:bundling:started","_t":1790954002582,"id":"7","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1790954002582,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1790954002648,"id":"7","total":1,"ms":66.151125}
+{"_e":"metro:client_log","_t":1790954065243,"level":"log","data":["[LoginScreen] Signing in with email:","customer@test.com"]}
+{"_e":"metro:client_log","_t":1790954067131,"level":"log","data":["[LoginScreen] Firebase login successful"]}
+{"_e":"metro:client_log","_t":1790954067134,"level":"log","data":["[LoginScreen] Loading user profile..."]}
+{"_e":"metro:client_log","_t":1790954067172,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790954067345,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1790954068246,"level":"log","data":["[LoginScreen] User profile loaded, AppNavigator will auto-redirect"]}
+{"_e":"metro:client_log","_t":1790954079305,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1790954079428,"level":"warn","data":["\"bell\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1790954079442,"level":"warn","data":["\"logout\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1790954079759,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}

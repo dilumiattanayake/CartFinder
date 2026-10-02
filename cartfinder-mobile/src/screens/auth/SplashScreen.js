@@ -1,14 +1,23 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useAuth } from '../../hooks/useAuth';
 import AppButton from '../../components/common/AppButton';
 import { COLORS } from '../../constants/colors';
 import { FONT_SIZES } from '../../constants/typography';
 
 const SplashScreen = ({ navigation }) => {
+  const { isSignedIn, role } = useAuth();
+
   useEffect(() => {
-    const timer = setTimeout(() => navigation.replace('RoleSelect'), 1800);
+    const timer = setTimeout(() => {
+      // If already signed in with a role, the RootNavigator will handle navigation
+      // Otherwise, show RoleSelectScreen
+      if (!isSignedIn) {
+        navigation.replace('RoleSelect');
+      }
+    }, 1800);
     return () => clearTimeout(timer);
-  }, [navigation]);
+  }, [navigation, isSignedIn]);
 
   return (
     <View style={styles.container}>

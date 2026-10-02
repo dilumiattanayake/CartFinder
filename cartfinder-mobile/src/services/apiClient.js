@@ -28,6 +28,12 @@ apiClient.interceptors.request.use(
       // forceRefresh=false: Firebase handles automatic refresh when < 5 min to expiry
       const token = await currentUser.getIdToken(false);
       config.headers.Authorization = `Bearer ${token}`;
+      console.log(`[apiClient] ${config.method.toUpperCase()} ${config.url}`, {
+        hasToken: !!token,
+        tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
+      });
+    } else {
+      console.warn('[apiClient] No Firebase user for request:', config.url);
     }
     return config;
   },
