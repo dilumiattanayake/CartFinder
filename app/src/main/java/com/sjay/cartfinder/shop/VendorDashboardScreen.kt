@@ -31,6 +31,11 @@ fun VendorDashboardScreen(
         }
     }
 
+    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+        refreshing = shopState is ShopState.Loading,
+        onRefresh = { if (currentUserId.isNotEmpty()) viewModel.loadVendorShop(currentUserId) }
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,75 +46,91 @@ fun VendorDashboardScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
+                .padding(padding)
+                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState),
+            contentAlignment = Alignment.TopCenter
         ) {
-            when (val state = shopState) {
-                is ShopState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is ShopState.Error -> {
-                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
-                }
-                is ShopState.Success -> {
-                    if (state.stall == null) {
-                        // Vendor doesn't have a shop yet
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "You haven't set up your stall yet.",
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            Button(onClick = { navController.navigate(Screen.EditShop.route) }) {
-                                Icon(Icons.Filled.Add, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Create Stall")
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                when (val state = shopState) {
+                    is ShopState.Loading -> {
+                        // Managed by PullRefreshIndicator
+                    }
+                    is ShopState.Error -> {
+                        Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                    }
+                    is ShopState.Success -> {
+                        if (state.stall == null) {
+                            // Vendor doesn't have a shop yet
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "You haven't set up your stall yet.",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(bottom = 16.dp)
+                                )
+                                Button(onClick = { navController.navigate(Screen.EditShop.route) }) {
+                                    Icon(Icons.Filled.Add, contentDescription = null)
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("Create Stall")
+                                }
                             }
-                        }
-                    } else {
-                        // Vendor has a shop
-                        val stall = state.stall
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stall.name,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = stall.description,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                            
-                            Spacer(modifier = Modifier.height(32.dp))
+                        } else {
+                            // Vendor has a shop
+                            val stall = state.stall
+                            androidx.compose.foundation.rememberScrollState().let { scrollState ->
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .androidx.compose.foundation.verticalScroll(scrollState)
+                                        .padding(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Spacer(modifier = Modifier.height(32.dp))
+                                    Text(
+                                        text = stall.name,
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = stall.description,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(vertical = 8.dp)
+                                    )
+                                    
+                                    Spacer(modifier = Modifier.height(32.dp))
 
-                            Button(
-                                onClick = { navController.navigate(Screen.EditShop.route) },
-                                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                            ) {
-                                Icon(Icons.Filled.Edit, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Edit Stall Details & Location")
-                            }
+                                    Button(
+                                        onClick = { navController.navigate(Screen.EditShop.route) },
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                                    ) {
+                                        Icon(Icons.Filled.Edit, contentDescription = null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Edit Stall Details & Location")
+                                    }
 
-                            Button(
-                                onClick = { navController.navigate(Screen.ProductManagement.route) },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Icon(Icons.Filled.ShoppingCart, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Manage Products")
+                                    Button(
+                                        onClick = { navController.navigate(Screen.ProductManagement.route) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(Icons.Filled.ShoppingCart, contentDescription = null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Manage Products")
+                                    }
+                                }
                             }
                         }
                     }
+                    else -> {}
                 }
-                else -> {}
             }
+
+            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+                refreshing = shopState is ShopState.Loading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

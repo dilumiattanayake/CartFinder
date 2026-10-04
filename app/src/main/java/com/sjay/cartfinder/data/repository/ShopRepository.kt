@@ -43,7 +43,6 @@ class ShopRepository {
         return try {
             val snapshot = stallsCollection
                 .whereEqualTo("ownerId", ownerId)
-                .whereNotEqualTo("status", "ARCHIVED")
                 .limit(1)
                 .get()
                 .await()

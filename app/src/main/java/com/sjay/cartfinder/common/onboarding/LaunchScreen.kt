@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import com.sjay.cartfinder.R
 import com.sjay.cartfinder.core.navigation.Screen
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LaunchScreen(navController: NavController) {
@@ -35,7 +36,7 @@ fun LaunchScreen(navController: NavController) {
             try {
                 val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
                     .collection("users").document(auth.currentUser!!.uid).get()
-                    .kotlinx.coroutines.tasks.await()
+                    .await()
                 val role = doc.getString("role") ?: "Customer"
                 if (role == "Vendor") {
                     navController.navigate(Screen.VendorDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }

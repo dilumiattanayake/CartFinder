@@ -62,17 +62,27 @@ fun ProductManagementScreen(
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+            refreshing = productsState is ProductsState.Loading,
+            onRefresh = { if (stallId != null) viewModel.loadProducts(stallId) }
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
+        ) {
             when (val state = productsState) {
                 is ProductsState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    // Handled by PullRefreshIndicator
                 }
                 is ProductsState.Error -> {
                     Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
                 }
                 is ProductsState.Success -> {
                     if (state.products.isEmpty()) {
-                        Text("No products added yet.", modifier = Modifier.align(Alignment.Center))
+                        Text("No products added yet. Pull to refresh.", modifier = Modifier.align(Alignment.Center))
                     } else {
                         LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                             items(state.products) { item ->
@@ -86,6 +96,12 @@ fun ProductManagementScreen(
                 }
                 else -> {}
             }
+
+            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+                refreshing = productsState is ProductsState.Loading,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
 
         if (showAddDialog && stallId != null) {
