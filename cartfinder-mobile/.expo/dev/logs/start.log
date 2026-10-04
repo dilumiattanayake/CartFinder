@@ -611,3 +611,81 @@
 {"_e":"metro:client_log","_t":1790954079428,"level":"warn","data":["\"bell\" is not a valid icon name for family \"ionicons\""]}
 {"_e":"metro:client_log","_t":1790954079442,"level":"warn","data":["\"logout\" is not a valid icon name for family \"ionicons\""]}
 {"_e":"metro:client_log","_t":1790954079759,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"root:init","_t":1791106399789,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1791106399790,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791106399790,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1791106399975,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791106400137,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791106400257,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791106400599,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"root:init","_t":1791107416292,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1791107416293,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791107416294,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://10.0.2.2:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1791107416481,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791107416634,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791107416742,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791107417077,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791107452084,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1791107452085,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791107452088,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791107452189,"id":"1","progress":0.131665306122449,"total":350,"current":127}
+{"_e":"metro:bundling:progress","_t":1791107452289,"id":"1","progress":0.4602365334690402,"total":653,"current":443}
+{"_e":"metro:bundling:progress","_t":1791107452389,"id":"1","progress":0.7101573350694443,"total":960,"current":809}
+{"_e":"metro:bundling:progress","_t":1791107452489,"id":"1","progress":0.9324957930213295,"total":1223,"current":1181}
+{"_e":"metro:bundling:progress","_t":1791107452589,"id":"1","progress":0.999,"total":1602,"current":1602}
+{"_e":"metro:bundling:done","_t":1791107452627,"id":"1","total":1602,"ms":542.480792}
+{"_e":"metro:client_log","_t":1791107466043,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:bundling:started","_t":1791107482638,"id":"2","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1791107482638,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1791107482701,"id":"2","total":1,"ms":62.572583}
+{"_e":"metro:client_log","_t":1791107493825,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107535469,"level":"log","data":["[LoginScreen] Signing in with email:","customer@test.com"]}
+{"_e":"metro:client_log","_t":1791107536460,"level":"log","data":["[LoginScreen] Firebase login successful"]}
+{"_e":"metro:client_log","_t":1791107536463,"level":"log","data":["[LoginScreen] Loading user profile..."]}
+{"_e":"metro:client_log","_t":1791107536463,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107536466,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107553160,"level":"error","data":["[LoginScreen] Login error:","Network error. Please try again."]}
+{"_e":"metro:bundling:started","_t":1791107583090,"id":"4","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1791107583090,"id":"4","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1791107583153,"id":"4","total":1,"ms":63.412042}
+{"_e":"metro:client_log","_t":1791107595175,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107642293,"level":"log","data":["[LoginScreen] Signing in with email:","customer@test.com"]}
+{"_e":"metro:client_log","_t":1791107643112,"level":"log","data":["[LoginScreen] Firebase login successful"]}
+{"_e":"metro:client_log","_t":1791107643116,"level":"log","data":["[LoginScreen] Loading user profile..."]}
+{"_e":"metro:client_log","_t":1791107643116,"level":"log","data":["[apiClient] GET /auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107658688,"level":"error","data":["[LoginScreen] Login error:","Network error. Please try again."]}
+{"_e":"root:init","_t":1791107932664,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1791107932664,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791107932666,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1791107932837,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791107932987,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791107933095,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791107933525,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791107946019,"id":"1","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1791107946019,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791107946022,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1791107946122,"id":"1","progress":0.25967029256763696,"total":522,"current":266}
+{"_e":"metro:bundling:progress","_t":1791107946222,"id":"1","progress":0.7549863785169754,"total":1045,"current":908}
+{"_e":"metro:bundling:progress","_t":1791107946322,"id":"1","progress":0.9620329473271743,"total":1513,"current":1484}
+{"_e":"metro:bundling:done","_t":1791107946380,"id":"1","total":1513,"ms":360.736042}
+{"_e":"metro:client_log","_t":1791107958833,"level":"log","data":["[apiClient] GET http://172.20.212.60:5001/api/v1/auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791107962427,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"metro:client_log","_t":1791107962539,"level":"warn","data":["\"bell\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1791107962544,"level":"warn","data":["\"logout\" is not a valid icon name for family \"ionicons\""]}
+{"_e":"metro:client_log","_t":1791107962886,"level":"warn","data":["\"toggle\" is not a valid icon name for family \"material-community\""]}
+{"_e":"root:init","_t":1791108701509,"format":"v0-jsonl","version":"57.0.27"}
+{"_e":"env:mode","_t":1791108701510,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1791108701511,"mode":"development","files":["../../../.env"],"env":{"EXPO_PUBLIC_API_BASE_URL":"http://172.20.212.60:5001/api/v1","EXPO_PUBLIC_FIREBASE_API_KEY":"AIzaSyDIsdTPImAfmQR46p3ySu60wbKyQ-MB-4E","EXPO_PUBLIC_FIREBASE_APP_ID":"1:859998610814:web:fd42eb8aa286e6d53e3f2f","EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN":"cartfinder-3d381.firebaseapp.com","EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID":"859998610814","EXPO_PUBLIC_FIREBASE_PROJECT_ID":"cartfinder-3d381","EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET":"cartfinder-3d381.firebasestorage.app","GOOGLE_MAPS_API_KEY":"YOUR_GOOGLE_MAPS_API_KEY_HERE"}}
+{"_e":"devserver:start","_t":1791108701673,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../../../app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1791108701805,"serverRoot":"../../..","projectRoot":"../../..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1791108701910,"plugins":[]}
+{"_e":"metro:instantiate","_t":1791108702227,"atlas":false,"workers":7,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1791108760928,"id":"2","platform":"android","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1791108760929,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1791108760986,"id":"2","total":1,"ms":57.878625}
+{"_e":"metro:client_log","_t":1791108790137,"level":"log","data":["[LoginScreen] Signing in with email:","customer@test.com"]}
+{"_e":"metro:client_log","_t":1791108791729,"level":"log","data":["[LoginScreen] Firebase login successful"]}
+{"_e":"metro:client_log","_t":1791108791732,"level":"log","data":["[LoginScreen] Loading user profile..."]}
+{"_e":"metro:client_log","_t":1791108791732,"level":"log","data":["[apiClient] GET http://172.20.212.60:5001/api/v1/auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791108791899,"level":"log","data":["[apiClient] GET http://172.20.212.60:5001/api/v1/auth/me","{\"hasToken\": true, \"tokenPreview\": \"eyJhbGciOiJSUzI1NiIs...\"}"]}
+{"_e":"metro:client_log","_t":1791108792957,"level":"log","data":["[LoginScreen] User profile loaded, AppNavigator will auto-redirect"]}

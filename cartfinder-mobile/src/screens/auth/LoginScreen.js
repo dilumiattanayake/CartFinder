@@ -34,22 +34,12 @@ const LoginScreen = ({ navigation }) => {
       Alert.alert('Login Successful', 'Redirecting to your dashboard...');
     } catch (err) {
       console.error('[LoginScreen] Login error:', err);
-      const errorMessage = err?.message || 'Login failed. Please try again.';
+      const errorMessage = typeof err === 'string' ? err : (err?.message || 'Login failed. Please try again.');
       Alert.alert('Login Failed', errorMessage);
     } finally {
       setLoading(false);
     }
   };
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
-      <AppInput label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" placeholder="you@example.com" />
-      <AppInput label="Password" value={password} onChangeText={setPassword} secureTextEntry placeholder="••••••••" />
-      <AppButton title="Log In" onPress={handleLogin} loading={loading} style={styles.btn} />
-      <AppButton title="Create Account" onPress={() => navigation.navigate('RoleSelect')} variant="secondary" style={styles.btn} />
-    </ScrollView>
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

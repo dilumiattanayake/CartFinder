@@ -54,7 +54,7 @@ const ProfileScreen = ({ navigation }) => {
       icon: '🛡️',
       items: [
         { icon: 'checkmark-circle', label: 'Min. Hygiene Rating Level', value: '3.5+', onPress: () => navigation.navigate('HygienePreferences') },
-        { icon: 'toggle', label: 'Only Show PHI-Certified Carts', type: 'toggle', value: true, onPress: () => {} },
+        { icon: 'toggle-switch', label: 'Only Show PHI-Certified Carts', type: 'toggle', value: true, onPress: () => {} },
       ],
     },
     {
@@ -71,7 +71,7 @@ const ProfileScreen = ({ navigation }) => {
       icon: '🎨',
       items: [
         { icon: 'book', label: 'Dietary & Food Preferences', value: 'Halal / Veg', onPress: () => navigation.navigate('DietaryPreferences') },
-        { icon: 'bell', label: 'Notification Preferences', onPress: () => navigation.navigate('NotificationPreferences') },
+        { icon: 'notifications', label: 'Notification Preferences', onPress: () => navigation.navigate('NotificationPreferences') },
       ],
     },
     {
@@ -79,7 +79,7 @@ const ProfileScreen = ({ navigation }) => {
       icon: '🔐',
       items: [
         { icon: 'key', label: 'Change Password', onPress: () => navigation.navigate('ChangePassword') },
-        { icon: 'logout', label: 'Log Out', onPress: handleLogout, color: COLORS.error },
+        { icon: 'log-out', label: 'Log Out', onPress: handleLogout, color: COLORS.error },
       ],
     },
   ];

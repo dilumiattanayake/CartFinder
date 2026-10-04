@@ -16,7 +16,7 @@ import { firebaseAuth } from '../config/firebase';
  */
 const apiClient = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
       // forceRefresh=false: Firebase handles automatic refresh when < 5 min to expiry
       const token = await currentUser.getIdToken(false);
       config.headers.Authorization = `Bearer ${token}`;
-      console.log(`[apiClient] ${config.method.toUpperCase()} ${config.url}`, {
+      console.log(`[apiClient] ${config.method.toUpperCase()} ${config.baseURL || BASE_URL}${config.url}`, {
         hasToken: !!token,
         tokenPreview: token ? `${token.substring(0, 20)}...` : 'none',
       });
@@ -44,18 +44,23 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response.data,  // returns { success, data, message } directly
   async (error) => {
-    const { response } = error;
+    const { response, message, code } = error;
+    console.error('[apiClient] Request failed:', {
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+      message,
+      code,
+      status: response?.status,
+      data: response?.data,
+    });
 
     if (response?.status === 401) {
-      // Token is truly invalid (not just expired — Firebase handles expiry).
-      // Consider dispatching a store signOut action here:
-      // store.dispatch(signOut());
       console.warn('[apiClient] 401 Unauthorized — user may need to re-authenticate');
     }
 
     return Promise.reject({
       status:  response?.status  ?? 0,
-      message: response?.data?.message ?? 'Network error. Please try again.',
+      message: response?.data?.message ?? (code === 'ECONNABORTED' ? 'Request timed out' : 'Network error. Please try again.'),
       errors:  response?.data?.errors  ?? [],
     });
   },

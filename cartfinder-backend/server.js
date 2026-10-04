@@ -20,9 +20,17 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(',')
-      : '*',
+    origin: (origin, callback) => {
+      // In development or when no origin header is present (mobile apps), allow
+      if (process.env.NODE_ENV !== 'production' || !origin) {
+        return callback(null, true);
+      }
+      const allowed = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['*'];
+      if (allowed.includes('*') || allowed.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
   }),
 );

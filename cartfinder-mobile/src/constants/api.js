@@ -1,9 +1,40 @@
-/**
- * API base URL and route constants.
- * Import BASE_URL and ENDPOINTS throughout the app
- * to avoid hard-coded strings in service files.
- */
-export const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://10.0.2.2:5000/api/v1';
+import { Platform, NativeModules } from 'react-native';
+import Constants from 'expo-constants';
+
+const resolveBaseUrl = () => {
+  const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+
+  // If envUrl is explicitly set to a custom URL (not emulator loopback on device)
+  if (envUrl && !envUrl.includes('10.0.2.2') && !envUrl.includes('localhost')) {
+    return envUrl;
+  }
+
+  // Detect Metro dev server host from Expo Constants or NativeModules
+  try {
+    const hostUri = Constants?.expoConfig?.hostUri || Constants?.manifest2?.extra?.expoGo?.debuggerHost;
+    if (hostUri) {
+      const host = hostUri.split(':')[0];
+      if (host && host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:5001/api/v1`;
+      }
+    }
+
+    const scriptURL = NativeModules?.SourceCode?.scriptURL;
+    if (scriptURL) {
+      const host = scriptURL.split('://')[1]?.split('/')[0]?.split(':')[0];
+      if (host && host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:5001/api/v1`;
+      }
+    }
+  } catch (_e) {
+    // fallback
+  }
+
+  if (envUrl) return envUrl;
+  return Platform.OS === 'android' ? 'http://172.20.212.60:5001/api/v1' : 'http://localhost:5001/api/v1';
+};
+
+export const BASE_URL = resolveBaseUrl();
 
 export const ENDPOINTS = {
   // Auth
