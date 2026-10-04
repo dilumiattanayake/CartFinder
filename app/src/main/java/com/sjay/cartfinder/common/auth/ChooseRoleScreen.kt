@@ -89,7 +89,7 @@ fun ChooseRoleScreen(navController: NavController) {
                         title = "I'm Looking For Street Food",
                         buttonText = "FIND CARTS",
                         icon = Icons.Outlined.Person,
-                        onClick = { navController.navigate(Screen.Login.route) } // Navigate to Customer login/flow
+                        onClick = { navController.navigate(Screen.Login.createRoute("Customer")) } // Navigate to Customer login/flow
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -98,7 +98,7 @@ fun ChooseRoleScreen(navController: NavController) {
                         title = "I'm Street Food Vendor",
                         buttonText = "VENDOR LOGIN",
                         icon = Icons.Outlined.Restaurant,
-                        onClick = { navController.navigate(Screen.Login.route) }
+                        onClick = { navController.navigate(Screen.Login.createRoute("Vendor")) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -107,7 +107,7 @@ fun ChooseRoleScreen(navController: NavController) {
                         title = "I'm Public Health Inspector",
                         buttonText = "PHI LOGIN",
                         icon = Icons.Outlined.Shield,
-                        onClick = { navController.navigate(Screen.Login.route) }
+                        onClick = { navController.navigate(Screen.Login.createRoute("PHI")) }
                     )
                     
                     Spacer(modifier = Modifier.weight(1f))

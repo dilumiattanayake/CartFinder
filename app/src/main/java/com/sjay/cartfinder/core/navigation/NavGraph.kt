@@ -32,11 +32,19 @@ fun CartFinderNavGraph(
         composable(Screen.ChooseRole.route) {
             ChooseRoleScreen(navController = navController)
         }
-        composable(Screen.Login.route) {
-            LoginScreen(navController = navController)
+        composable(
+            route = Screen.Login.route,
+            arguments = listOf(androidx.navigation.navArgument("role") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role") ?: "Customer"
+            LoginScreen(navController = navController, role = role)
         }
-        composable(Screen.SignUp.route) {
-            SignUpScreen(navController = navController)
+        composable(
+            route = Screen.SignUp.route,
+            arguments = listOf(androidx.navigation.navArgument("role") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role") ?: "Customer"
+            SignUpScreen(navController = navController, role = role)
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController = navController)

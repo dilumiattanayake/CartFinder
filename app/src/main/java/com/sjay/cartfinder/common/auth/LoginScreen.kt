@@ -22,7 +22,7 @@ import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, role: String = "Customer") {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun LoginScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "VENDOR LOGIN",
+                        text = "${role.uppercase()} LOGIN",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Black,
                         color = Color(0xFF4A4A4A)
@@ -176,7 +176,7 @@ fun LoginScreen(navController: NavController) {
                     "Signup", 
                     fontWeight = FontWeight.Bold, 
                     color = Color.Black,
-                    modifier = Modifier.clickable { navController.navigate(Screen.SignUp.route) }
+                    modifier = Modifier.clickable { navController.navigate(Screen.SignUp.createRoute(role)) }
                 )
             }
         }

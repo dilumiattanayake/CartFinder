@@ -25,7 +25,7 @@ import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(navController: NavController, role: String = "Customer") {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var businessName by remember { mutableStateOf("") }
@@ -83,7 +83,7 @@ fun SignUpScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "VENDOR SIGN UP",
+                    text = "${role.uppercase()} SIGN UP",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Black,
                     color = Color.Black
