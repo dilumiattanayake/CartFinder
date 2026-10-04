@@ -19,10 +19,42 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LaunchScreen(navController: NavController) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     LaunchedEffect(Unit) {
         delay(2000)
-        navController.navigate(Screen.Onboarding.route) {
-            popUpTo(Screen.Launch.route) { inclusive = true }
+        
+        val sharedPrefs = context.getSharedPreferences("CartFinderPrefs", android.content.Context.MODE_PRIVATE)
+        val onboardingCompleted = sharedPrefs.getBoolean("onboarding_completed", false)
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        
+        if (auth.currentUser != null) {
+            // Logged in, we need to check role to go to right dashboard.
+            // For now, if role is unknown, just go to a default screen.
+            // Ideally, fetch from Firestore. Let's assume we don't know yet, we just go to a temporary split screen or VendorDashboard.
+            // Let's fetch role:
+            try {
+                val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("users").document(auth.currentUser!!.uid).get()
+                    .kotlinx.coroutines.tasks.await()
+                val role = doc.getString("role") ?: "Customer"
+                if (role == "Vendor") {
+                    navController.navigate(Screen.VendorDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+                } else {
+                    // Navigate to customer dashboard (ReviewList for now as placeholder)
+                    navController.navigate(Screen.ReviewList.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+                }
+            } catch (e: Exception) {
+                // Fallback
+                navController.navigate(Screen.ReviewList.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+            }
+        } else if (onboardingCompleted) {
+            navController.navigate(Screen.ChooseRole.route) {
+                popUpTo(Screen.Launch.route) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Screen.Onboarding.route) {
+                popUpTo(Screen.Launch.route) { inclusive = true }
+            }
         }
     }
 

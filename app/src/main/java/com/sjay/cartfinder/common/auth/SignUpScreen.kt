@@ -48,8 +48,14 @@ fun SignUpScreen(
             is AuthState.Success -> {
                 Toast.makeText(context, (authState as AuthState.Success).message, Toast.LENGTH_SHORT).show()
                 viewModel.resetState()
-                navController.navigate(Screen.Launch.route) { // Example: replace with main screen later
-                    popUpTo(0)
+                if (role.equals("Vendor", ignoreCase = true)) {
+                    navController.navigate(Screen.VendorDashboard.route) {
+                        popUpTo(0)
+                    }
+                } else {
+                    navController.navigate(Screen.ReviewList.route) {
+                        popUpTo(0)
+                    }
                 }
             }
             is AuthState.Error -> {

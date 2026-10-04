@@ -132,9 +132,14 @@ fun OnboardingScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        val context = androidx.compose.ui.platform.LocalContext.current
+
         Button(
             onClick = {
                 if (pagerState.currentPage == pages.size - 1) {
+                    val prefs = context.getSharedPreferences("CartFinderPrefs", android.content.Context.MODE_PRIVATE)
+                    prefs.edit().putBoolean("onboarding_completed", true).apply()
+                    
                     navController.navigate(Screen.ChooseRole.route) {
                         popUpTo(Screen.Onboarding.route) { inclusive = true }
                     }
