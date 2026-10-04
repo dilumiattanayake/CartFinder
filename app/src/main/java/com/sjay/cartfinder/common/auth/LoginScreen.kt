@@ -84,8 +84,9 @@ fun LoginScreen(navController: NavController) {
                             onValueChange = { email = it },
                             placeholder = { Text("baco_saman@gmail.com", color = Color.Gray) },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = Color(0xFFE8DEB6),
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color(0xFFE8DEB6),
+                                focusedContainerColor = Color(0xFFE8DEB6),
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
                             ),
@@ -107,8 +108,9 @@ fun LoginScreen(navController: NavController) {
                                 Icon(Icons.Outlined.VisibilityOff, contentDescription = null, tint = PrimaryOrange)
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.textFieldColors(
-                                containerColor = Color(0xFFE8DEB6),
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color(0xFFE8DEB6),
+                                focusedContainerColor = Color(0xFFE8DEB6),
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
                             ),
