@@ -1,6 +1,8 @@
 package com.sjay.cartfinder.shop
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -31,11 +33,6 @@ fun VendorDashboardScreen(
         }
     }
 
-    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
-        refreshing = shopState is ShopState.Loading,
-        onRefresh = { if (currentUserId.isNotEmpty()) viewModel.loadVendorShop(currentUserId) }
-    )
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,11 +40,12 @@ fun VendorDashboardScreen(
             )
         }
     ) { padding ->
-        Box(
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = shopState is ShopState.Loading,
+            onRefresh = { if (currentUserId.isNotEmpty()) viewModel.loadVendorShop(currentUserId) },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState),
+                .padding(padding),
             contentAlignment = Alignment.TopCenter
         ) {
             Box(
@@ -56,7 +54,7 @@ fun VendorDashboardScreen(
             ) {
                 when (val state = shopState) {
                     is ShopState.Loading -> {
-                        // Managed by PullRefreshIndicator
+                        // Managed by PullToRefreshBox
                     }
                     is ShopState.Error -> {
                         Text(text = state.message, color = MaterialTheme.colorScheme.error)
@@ -79,11 +77,11 @@ fun VendorDashboardScreen(
                         } else {
                             // Vendor has a shop
                             val stall = state.stall
-                            androidx.compose.foundation.rememberScrollState().let { scrollState ->
+                            rememberScrollState().let { scrollState ->
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .androidx.compose.foundation.verticalScroll(scrollState)
+                                        .verticalScroll(scrollState)
                                         .padding(16.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
@@ -125,12 +123,6 @@ fun VendorDashboardScreen(
                     else -> {}
                 }
             }
-
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
-                refreshing = shopState is ShopState.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }

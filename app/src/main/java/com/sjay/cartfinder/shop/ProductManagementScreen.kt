@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import com.sjay.cartfinder.data.model.MenuItem
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
 fun ProductManagementScreen(
     navController: NavController,
@@ -62,20 +62,16 @@ fun ProductManagementScreen(
             }
         }
     ) { padding ->
-        val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
-            refreshing = productsState is ProductsState.Loading,
-            onRefresh = { if (stallId != null) viewModel.loadProducts(stallId) }
-        )
-
-        Box(
+        androidx.compose.material3.pulltorefresh.PullToRefreshBox(
+            isRefreshing = productsState is ProductsState.Loading,
+            onRefresh = { if (stallId != null) viewModel.loadProducts(stallId) },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
         ) {
             when (val state = productsState) {
                 is ProductsState.Loading -> {
-                    // Handled by PullRefreshIndicator
+                    // Handled by PullToRefreshBox indicator
                 }
                 is ProductsState.Error -> {
                     Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
@@ -96,12 +92,6 @@ fun ProductManagementScreen(
                 }
                 else -> {}
             }
-
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
-                refreshing = productsState is ProductsState.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
 
         if (showAddDialog && stallId != null) {
