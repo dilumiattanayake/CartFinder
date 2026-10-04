@@ -1,0 +1,83 @@
+package com.sjay.cartfinder.reviews
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sjay.cartfinder.data.model.Review
+import com.sjay.cartfinder.data.repository.ReviewRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+sealed class ReviewState {
+    object Idle : ReviewState()
+    object Loading : ReviewState()
+    data class Success(val reviews: List<Review>) : ReviewState()
+    data class Error(val message: String) : ReviewState()
+}
+
+sealed class SubmitReviewState {
+    object Idle : SubmitReviewState()
+    object Submitting : SubmitReviewState()
+    object Success : SubmitReviewState()
+    data class Error(val message: String) : SubmitReviewState()
+}
+
+class ReviewViewModel(
+    private val repository: ReviewRepository = ReviewRepository()
+) : ViewModel() {
+
+    private val _reviewsState = MutableStateFlow<ReviewState>(ReviewState.Idle)
+    val reviewsState: StateFlow<ReviewState> = _reviewsState.asStateFlow()
+
+    private val _submitState = MutableStateFlow<SubmitReviewState>(SubmitReviewState.Idle)
+    val submitState: StateFlow<SubmitReviewState> = _submitState.asStateFlow()
+
+    fun getReviewsForStall(stallId: String) {
+        _reviewsState.value = ReviewState.Loading
+        viewModelScope.launch {
+            val result = repository.getReviewsForStall(stallId)
+            if (result.isSuccess) {
+                val reviews = result.getOrNull() ?: emptyList()
+                _reviewsState.value = ReviewState.Success(reviews)
+            } else {
+                _reviewsState.value = ReviewState.Error(result.exceptionOrNull()?.message ?: "Failed to fetch reviews")
+            }
+        }
+    }
+
+    fun submitReview(orderId: String, customerId: String, stallId: String, rating: Int, comment: String) {
+        if (rating < 1 || rating > 5) {
+            _submitState.value = SubmitReviewState.Error("Rating must be between 1 and 5")
+            return
+        }
+        if (comment.isBlank()) {
+            _submitState.value = SubmitReviewState.Error("Comment cannot be empty")
+            return
+        }
+
+        _submitState.value = SubmitReviewState.Submitting
+        viewModelScope.launch {
+            val review = Review(
+                orderId = orderId,
+                customerId = customerId,
+                stallId = stallId,
+                rating = rating,
+                comment = comment
+            )
+            
+            val result = repository.addReview(review)
+            if (result.isSuccess) {
+                _submitState.value = SubmitReviewState.Success
+                // Optionally refresh reviews if we are on the stall page
+                getReviewsForStall(stallId)
+            } else {
+                _submitState.value = SubmitReviewState.Error(result.exceptionOrNull()?.message ?: "Failed to submit review")
+            }
+        }
+    }
+
+    fun resetSubmitState() {
+        _submitState.value = SubmitReviewState.Idle
+    }
+}
