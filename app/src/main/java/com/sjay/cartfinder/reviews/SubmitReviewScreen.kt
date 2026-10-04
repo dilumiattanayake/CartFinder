@@ -1,6 +1,7 @@
 package com.sjay.cartfinder.reviews
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,8 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,16 +20,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubmitReviewScreen(navController: NavController) {
+fun SubmitReviewScreen(
+    navController: NavController,
+    viewModel: ReviewViewModel = viewModel()
+) {
     var reviewText by remember { mutableStateOf("") }
-    var c1 by remember { mutableStateOf(true) }
-    var c2 by remember { mutableStateOf(true) }
-    var c3 by remember { mutableStateOf(true) }
+    var rating by remember { mutableStateOf(5) }
+    
+    val submitState by viewModel.submitState.collectAsState()
+
+    // Handle submit state changes
+    LaunchedEffect(submitState) {
+        if (submitState is SubmitReviewState.Success) {
+            viewModel.resetSubmitState()
+            navController.popBackStack()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -44,12 +57,8 @@ fun SubmitReviewScreen(navController: NavController) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text("Rate Kottu Kraze", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.QrCodeScanner, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Verified QR check-in recorded at Kaduwela Road", color = Color.Gray, fontSize = 12.sp)
-                }
+                Text("Rate your order", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text("Share your experience with others", color = Color.Gray, fontSize = 14.sp)
             }
             IconButton(
                 onClick = { navController.popBackStack() },
@@ -72,8 +81,16 @@ fun SubmitReviewScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    repeat(5) {
-                        Icon(Icons.Filled.Star, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(36.dp))
+                    for (i in 1..5) {
+                        val icon = if (i <= rating) Icons.Filled.Star else Icons.Filled.StarBorder
+                        Icon(
+                            icon, 
+                            contentDescription = "Rate $i", 
+                            tint = PrimaryOrange, 
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable { rating = i }
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -84,7 +101,14 @@ fun SubmitReviewScreen(navController: NavController) {
                     Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(modifier = Modifier.size(8.dp).background(PrimaryOrange, RoundedCornerShape(50)))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("4.8 - Outstanding Hygiene", fontWeight = FontWeight.Bold, color = Color(0xFF8B5A2B))
+                        val ratingText = when(rating) {
+                            1 -> "Poor"
+                            2 -> "Fair"
+                            3 -> "Good"
+                            4 -> "Very Good"
+                            else -> "Excellent"
+                        }
+                        Text("$rating - $ratingText", fontWeight = FontWeight.Bold, color = Color(0xFF8B5A2B))
                     }
                 }
             }
@@ -92,23 +116,7 @@ fun SubmitReviewScreen(navController: NavController) {
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        // Hygiene Quick-Check
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-            Text("Hygiene Quick-Check", fontWeight = FontWeight.Bold)
-            Text("Tap to verify", fontSize = 10.sp, color = Color.Gray)
-        }
-        
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        HygieneCheckItem("Staff wore clean gloves", c1) { c1 = it }
-        Spacer(modifier = Modifier.height(8.dp))
-        HygieneCheckItem("Stainless steel counter clean", c2) { c2 = it }
-        Spacer(modifier = Modifier.height(8.dp))
-        HygieneCheckItem("Eco packaging & covered bins", c3) { c3 = it }
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Text("FIELD NOTES & OBSERVATIONS", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+        Text("WRITE YOUR REVIEW", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
         Spacer(modifier = Modifier.height(8.dp))
         
         Card(
@@ -120,14 +128,14 @@ fun SubmitReviewScreen(navController: NavController) {
                 TextField(
                     value = reviewText,
                     onValueChange = { reviewText = it },
-                    placeholder = { Text("Add a comment about food safety or cleanliness (Optional)...", color = Color.Gray) },
+                    placeholder = { Text("What did you like or dislike?", color = Color.Gray) },
                     colors = TextFieldDefaults.colors(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent
                     ),
-                    modifier = Modifier.fillMaxWidth().height(100.dp)
+                    modifier = Modifier.fillMaxWidth().height(150.dp)
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -144,56 +152,45 @@ fun SubmitReviewScreen(navController: NavController) {
                             Text("Attach Photo", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
                         }
                     }
-                    Text("${reviewText.length}/140", fontSize = 12.sp, color = Color.Gray)
                 }
             }
         }
         
+        if (submitState is SubmitReviewState.Error) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = (submitState as SubmitReviewState.Error).message, 
+                color = Color.Red, 
+                fontSize = 14.sp
+            )
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
         
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                // Hardcoded IDs for assignment demonstration purposes. 
+                // Normally these would come from the navigation arguments/current user.
+                viewModel.submitReview(
+                    orderId = "demo_order_123",
+                    customerId = "demo_customer_1",
+                    stallId = "demo_stall_1",
+                    rating = rating,
+                    comment = reviewText
+                )
+            },
+            enabled = submitState !is SubmitReviewState.Submitting,
             modifier = Modifier.fillMaxWidth().height(56.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Icon(Icons.Filled.Check, contentDescription = null, tint = Color.Black)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Submit Verification", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 16.sp)
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Check, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(12.dp))
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("Syncs anonymously to Colombo Municipal PHI public logs", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.DarkGray)
-        }
-    }
-}
-
-@Composable
-fun HygieneCheckItem(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF8E1))
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange,
-                    colors = CheckboxDefaults.colors(checkedColor = PrimaryOrange, checkmarkColor = Color.Black)
-                )
+            if (submitState is SubmitReviewState.Submitting) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.Black)
+            } else {
+                Icon(Icons.Filled.Check, contentDescription = null, tint = Color.Black)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(label, color = Color.Black)
+                Text("Submit Review", fontWeight = FontWeight.Bold, color = Color.Black, fontSize = 16.sp)
             }
-            Icon(Icons.Filled.Check, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
         }
     }
 }

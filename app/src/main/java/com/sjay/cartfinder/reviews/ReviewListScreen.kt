@@ -1,10 +1,10 @@
 package com.sjay.cartfinder.reviews
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,19 +19,29 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sjay.cartfinder.core.navigation.Screen
+import com.sjay.cartfinder.data.model.Review
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReviewListScreen(navController: NavController) {
+fun ReviewListScreen(
+    navController: NavController,
+    viewModel: ReviewViewModel = viewModel()
+) {
     var searchQuery by remember { mutableStateOf("") }
+    val reviewsState by viewModel.reviewsState.collectAsState()
+
+    // Assuming we fetch reviews for a specific stall, e.g., "demo_stall_1"
+    LaunchedEffect(Unit) {
+        viewModel.getReviewsForStall("demo_stall_1")
+    }
     
     Scaffold(
         topBar = {
@@ -108,49 +118,6 @@ fun ReviewListScreen(navController: NavController) {
                                 shape = RoundedCornerShape(16.dp)
                             )
                         }
-                        item {
-                            FilterChip(
-                                selected = false,
-                                onClick = { },
-                                label = { Text("Kottu Kraze") },
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                        }
-                        item {
-                            FilterChip(
-                                selected = false,
-                                onClick = { },
-                                label = { Text("Hopper Hub") },
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                        }
-                    }
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                        ) {
-                            Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Filled.Star, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("4.0+ only", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                        ) {
-                            Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("PHI Verified", fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.Bold)
-                            }
-                        }
                     }
                 }
             }
@@ -176,17 +143,6 @@ fun ReviewListScreen(navController: NavController) {
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().background(Color(0xFFF5F7FF), RoundedCornerShape(8.dp)).padding(12.dp)) {
-                            repeat(4) {
-                                Icon(Icons.Filled.Star, contentDescription = null, tint = PrimaryOrange)
-                            }
-                            Icon(Icons.Filled.Star, contentDescription = null, tint = Color.LightGray)
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text("Great (4.0)", fontWeight = FontWeight.Bold, color = Color(0xFF8B5A2B), fontSize = 12.sp)
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
                         Button(
                             onClick = { navController.navigate(Screen.SubmitReview.route) },
                             modifier = Modifier.fillMaxWidth().height(48.dp),
@@ -201,95 +157,104 @@ fun ReviewListScreen(navController: NavController) {
                 }
             }
             
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("Kottu Kraze", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                            Text(" (Malabe Gate)", color = Color.Gray, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.weight(1f))
-                            Card(shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))) {
-                                Row(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text("PHI Grade A", fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.Bold)
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Star, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
-                            Text(" 4.8", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text(" • 142 reviews", color = Color.Gray, fontSize = 14.sp)
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(40.dp).background(Color.Gray, CircleShape)) // Profile pic
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text("Nuwan Senanayake", fontWeight = FontWeight.Bold)
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
-                                }
-                                Text("Verified Eater • Yesterday", color = Color.Gray, fontSize = 12.sp)
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                            Row {
-                                repeat(5) {
-                                    Icon(Icons.Filled.Star, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Text(
-                            "The chicken kottu here is unbeatable! Griddle was spotless, chef was wearing gloves and aprons. Totally safe and delicious."
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        // Image Placeholder
-                        Box(modifier = Modifier.fillMaxWidth().height(180.dp).background(Color.LightGray, RoundedCornerShape(12.dp)))
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Card(
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F7FF))
-                            ) {
-                                Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Outlined.ThumbUp, contentDescription = null, modifier = Modifier.size(16.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Helpful (24)", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                }
-                            }
-                            
-                            Spacer(modifier = Modifier.width(16.dp))
-                            
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Reply", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                            }
-                            
-                            Spacer(modifier = Modifier.weight(1f))
-                            
-                            Icon(Icons.Outlined.Share, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray)
+            when (val state = reviewsState) {
+                is ReviewState.Loading -> {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = PrimaryOrange)
                         }
                     }
                 }
+                is ReviewState.Error -> {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                            Text(text = "Error: ${state.message}", color = Color.Red)
+                        }
+                    }
+                }
+                is ReviewState.Success -> {
+                    if (state.reviews.isEmpty()) {
+                        item {
+                            Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                                Text(text = "No reviews yet.", color = Color.Gray)
+                            }
+                        }
+                    } else {
+                        items(state.reviews) { review ->
+                            ReviewItemCard(review)
+                        }
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+}
+
+@Composable
+fun ReviewItemCard(review: Review) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(40.dp).background(Color.Gray, CircleShape))
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(review.customerId, fontWeight = FontWeight.Bold) // Ideally fetch user name
+                    }
+                    Text("Verified Eater", color = Color.Gray, fontSize = 12.sp)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    repeat(5) { index ->
+                        val icon = if (index < review.rating) Icons.Filled.Star else Icons.Filled.Star
+                        val tint = if (index < review.rating) PrimaryOrange else Color.LightGray
+                        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp))
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(review.comment)
+            
+            if (review.vendorReply != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F7FF))
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text("Vendor Reply:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = PrimaryOrange)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(review.vendorReply, fontSize = 14.sp)
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F7FF))
+                ) {
+                    Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.ThumbUp, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Helpful", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
+                
+                Spacer(modifier = Modifier.weight(1f))
+                
+                Icon(Icons.Outlined.Share, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray)
             }
         }
     }
