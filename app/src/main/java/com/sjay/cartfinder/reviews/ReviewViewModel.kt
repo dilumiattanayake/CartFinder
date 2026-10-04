@@ -80,4 +80,37 @@ class ReviewViewModel(
     fun resetSubmitState() {
         _submitState.value = SubmitReviewState.Idle
     }
+
+    fun editReview(review: Review, newRating: Int, newComment: String, stallId: String) {
+        if (newRating < 1 || newRating > 5) return
+        if (newComment.isBlank()) return
+
+        viewModelScope.launch {
+            val updated = review.copy(rating = newRating, comment = newComment)
+            repository.updateReview(updated)
+            getReviewsForStall(stallId)
+        }
+    }
+
+    fun reportReview(reviewId: String, stallId: String) {
+        viewModelScope.launch {
+            repository.reportReview(reviewId)
+            getReviewsForStall(stallId)
+        }
+    }
+
+    fun deleteReview(reviewId: String, stallId: String) {
+        viewModelScope.launch {
+            repository.deleteReview(reviewId)
+            getReviewsForStall(stallId)
+        }
+    }
+
+    fun replyToReview(reviewId: String, reply: String, stallId: String) {
+        if (reply.isBlank()) return
+        viewModelScope.launch {
+            repository.replyToReview(reviewId, reply)
+            getReviewsForStall(stallId)
+        }
+    }
 }

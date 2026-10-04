@@ -66,4 +66,52 @@ class ReviewRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun reportReview(reviewId: String): Result<Unit> {
+        return try {
+            reviewsCollection.document(reviewId)
+                .update(
+                    mapOf(
+                        "status" to "REPORTED",
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                )
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteReview(reviewId: String): Result<Unit> {
+        return try {
+            reviewsCollection.document(reviewId)
+                .update(
+                    mapOf(
+                        "status" to "ARCHIVED",
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                )
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun replyToReview(reviewId: String, reply: String): Result<Unit> {
+        return try {
+            reviewsCollection.document(reviewId)
+                .update(
+                    mapOf(
+                        "vendorReply" to reply,
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                )
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
