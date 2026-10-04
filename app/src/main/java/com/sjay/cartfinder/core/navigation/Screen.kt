@@ -16,4 +16,10 @@ sealed class Screen(val route: String) {
     // Member 1 - Reviews
     object ReviewList : Screen("review_list")
     object SubmitReview : Screen("submit_review")
+
+    // Member 2 - Shop & Products
+    object VendorDashboard : Screen("vendor_dashboard")
+    object EditShop : Screen("edit_shop")
+    object MapPicker : Screen("map_picker")
+    object ProductManagement : Screen("product_management")
 }

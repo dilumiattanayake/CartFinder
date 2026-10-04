@@ -58,5 +58,17 @@ fun CartFinderNavGraph(
         composable(Screen.SubmitReview.route) {
             SubmitReviewScreen(navController = navController)
         }
+        composable(Screen.VendorDashboard.route) {
+            com.sjay.cartfinder.shop.VendorDashboardScreen(navController = navController)
+        }
+        composable(Screen.EditShop.route) {
+            com.sjay.cartfinder.shop.EditShopScreen(navController = navController)
+        }
+        composable(Screen.MapPicker.route) {
+            com.sjay.cartfinder.shop.MapPickerScreen(navController = navController)
+        }
+        composable(Screen.ProductManagement.route) {
+            com.sjay.cartfinder.shop.ProductManagementScreen(navController = navController)
+        }
     }
 }
