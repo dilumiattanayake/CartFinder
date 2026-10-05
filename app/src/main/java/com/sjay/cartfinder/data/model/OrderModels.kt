@@ -17,6 +17,7 @@ data class Order(
     val items: List<CartItem> = emptyList(),
     val totalAmount: Double = 0.0,
     val status: String = "PENDING", // PENDING, PREPARING, READY, COMPLETED, CANCELLED
+    val pickupSlot: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )
 

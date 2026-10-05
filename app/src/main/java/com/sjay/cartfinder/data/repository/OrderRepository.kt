@@ -9,12 +9,12 @@ class OrderRepository {
     private val firestore = FirebaseFirestore.getInstance()
     private val ordersCollection = firestore.collection("orders")
 
-    suspend fun placeOrder(order: Order): Result<Unit> {
+    suspend fun placeOrder(order: Order): Result<String> {
         return try {
             val document = ordersCollection.document()
             val newOrder = order.copy(id = document.id)
             document.set(newOrder).await()
-            Result.success(Unit)
+            Result.success(document.id)
         } catch (e: Exception) {
             Result.failure(e)
         }

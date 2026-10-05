@@ -23,6 +23,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.ui.graphics.asImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -108,6 +109,9 @@ fun CustomerOrderCard(order: Order) {
                     color = if (order.status == "COMPLETED") androidx.compose.ui.graphics.Color(0xFF4CAF50) else PrimaryOrange
                 )
             }
+            if (order.pickupSlot.isNotEmpty()) {
+                Text("Pickup: ${order.pickupSlot}", style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color.Gray)
+            }
             Spacer(modifier = Modifier.height(8.dp))
             order.items.forEach { item ->
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
@@ -119,6 +123,22 @@ fun CustomerOrderCard(order: Order) {
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Text("Total", fontWeight = FontWeight.Bold)
                 Text("Rs. ${order.totalAmount}", fontWeight = FontWeight.Bold, color = PrimaryOrange, fontSize = 16.sp)
+            }
+
+            if (order.status == "READY") {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Show this QR Code at pickup", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Spacer(modifier = Modifier.height(8.dp))
+                val qrBitmap = remember(order.id) {
+                    com.sjay.cartfinder.common.utils.QRCodeGenerator.generateQRCode(order.id, 400, 400)
+                }
+                qrBitmap?.let { bitmap ->
+                    androidx.compose.foundation.Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Pickup QR Code",
+                        modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
     }

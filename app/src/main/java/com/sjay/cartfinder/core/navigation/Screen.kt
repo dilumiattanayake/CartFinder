@@ -31,4 +31,7 @@ sealed class Screen(val route: String) {
     object Cart : Screen("cart")
     object CustomerOrders : Screen("customer_orders")
     object VendorOrders : Screen("vendor_orders")
+    object PayHereSandbox : Screen("payhere_sandbox/{orderId}/{amount}") {
+        fun createRoute(orderId: String, amount: Double) = "payhere_sandbox/$orderId/$amount"
+    }
 }

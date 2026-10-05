@@ -135,7 +135,26 @@ fun VendorOrderCard(order: Order, onUpdateStatus: (String) -> Unit) {
                         Button(onClick = { onUpdateStatus("READY") }) { Text("Mark as Ready") }
                     }
                     "READY" -> {
-                        Button(onClick = { onUpdateStatus("COMPLETED") }) { Text("Complete Order") }
+                        var showScanSimulation by remember { mutableStateOf(false) }
+                        
+                        Button(onClick = { showScanSimulation = true }) { Text("Scan QR & Verify") }
+                        
+                        if (showScanSimulation) {
+                            AlertDialog(
+                                onDismissRequest = { showScanSimulation = false },
+                                title = { Text("Simulating QR Scan") },
+                                text = { Text("In a real environment, the camera would scan the customer's QR code. Verify pickup?") },
+                                confirmButton = {
+                                    Button(onClick = {
+                                        showScanSimulation = false
+                                        onUpdateStatus("COMPLETED")
+                                    }) { Text("Verify & Collect") }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { showScanSimulation = false }) { Text("Cancel") }
+                                }
+                            )
+                        }
                     }
                 }
             }

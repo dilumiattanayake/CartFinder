@@ -97,5 +97,26 @@ fun CartFinderNavGraph(
         composable(Screen.VendorOrders.route) {
             com.sjay.cartfinder.checkout.VendorOrdersScreen(navController = navController)
         }
+        composable(
+            route = Screen.PayHereSandbox.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("orderId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("amount") { type = androidx.navigation.NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            val amount = backStackEntry.arguments?.getFloat("amount")?.toDouble() ?: 0.0
+            
+            com.sjay.cartfinder.checkout.PayHereSandboxScreen(
+                navController = navController,
+                orderId = orderId,
+                totalAmount = amount,
+                onPaymentSuccess = {
+                    navController.navigate(Screen.CustomerOrders.route) {
+                        popUpTo(Screen.CustomerDashboard.route) // go back to dashboard context
+                    }
+                }
+            )
+        }
     }
 }

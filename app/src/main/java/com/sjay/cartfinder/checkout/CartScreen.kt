@@ -39,9 +39,11 @@ fun CartScreen(
 
     LaunchedEffect(cartState) {
         if (cartState is CartState.CheckoutSuccess) {
-            Toast.makeText(context, "Order placed successfully!", Toast.LENGTH_SHORT).show()
-            // Optional: navigate to Customer Orders screen instead of popping back
-            navController.popBackStack() 
+            val successState = cartState as CartState.CheckoutSuccess
+            Toast.makeText(context, "Order created. Proceeding to payment...", Toast.LENGTH_SHORT).show()
+            navController.navigate(Screen.PayHereSandbox.createRoute(successState.orderId, successState.totalAmount)) {
+                popUpTo(Screen.Cart.route) { inclusive = true }
+            }
         } else if (cartState is CartState.Error) {
             val message = (cartState as CartState.Error).message
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -70,27 +72,59 @@ fun CartScreen(
             if (cartState is CartState.Success) {
                 val items = (cartState as CartState.Success).cart.items
                 if (items.isNotEmpty()) {
+                    var selectedPickupSlot by remember { mutableStateOf("10:00 AM - 10:30 AM") }
+                    var expanded by remember { mutableStateOf(false) }
+                    val pickupSlots = listOf("10:00 AM - 10:30 AM", "10:30 AM - 11:00 AM", "11:00 AM - 11:30 AM", "11:30 AM - 12:00 PM")
+
                     val total = items.sumOf { it.price * it.quantity }
                     Surface(
                         shadowElevation = 8.dp,
                         color = MaterialTheme.colorScheme.surfaceVariant
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text("Total", fontWeight = FontWeight.SemiBold)
-                                Text("Rs. $total", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = PrimaryOrange)
-                            }
-                            Button(
-                                onClick = { viewModel.checkout(currentUserId) },
-                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange)
+                        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                            // Pickup Slot Selector
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Checkout", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                Text("Pickup Time:", fontWeight = FontWeight.SemiBold)
+                                Box {
+                                    TextButton(onClick = { expanded = true }) {
+                                        Text(selectedPickupSlot, color = PrimaryOrange, fontWeight = FontWeight.Bold)
+                                    }
+                                    DropdownMenu(
+                                        expanded = expanded,
+                                        onDismissRequest = { expanded = false }
+                                    ) {
+                                        pickupSlots.forEach { slot ->
+                                            DropdownMenuItem(
+                                                text = { Text(slot) },
+                                                onClick = {
+                                                    selectedPickupSlot = slot
+                                                    expanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text("Total", fontWeight = FontWeight.SemiBold)
+                                    Text("Rs. $total", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = PrimaryOrange)
+                                }
+                                Button(
+                                    onClick = { viewModel.checkout(currentUserId, selectedPickupSlot) },
+                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange)
+                                ) {
+                                    Text("Checkout", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }

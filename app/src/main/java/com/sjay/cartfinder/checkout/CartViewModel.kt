@@ -18,7 +18,7 @@ sealed class CartState {
     object Loading : CartState()
     data class Success(val cart: Cart) : CartState()
     data class Error(val message: String) : CartState()
-    object CheckoutSuccess : CartState()
+    data class CheckoutSuccess(val orderId: String, val totalAmount: Double) : CartState()
 }
 
 class CartViewModel : ViewModel() {
@@ -118,7 +118,7 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun checkout(userId: String) {
+    fun checkout(userId: String, pickupSlot: String) {
         viewModelScope.launch {
             val currentState = _cartState.value
             if (currentState is CartState.Success) {
@@ -132,13 +132,15 @@ class CartViewModel : ViewModel() {
                     stallId = cart.stallId,
                     items = cart.items,
                     totalAmount = totalAmount,
-                    status = "PENDING"
+                    status = "PENDING_PAYMENT",
+                    pickupSlot = pickupSlot
                 )
 
                 val orderResult = orderRepo.placeOrder(newOrder)
                 if (orderResult.isSuccess) {
+                    val orderId = orderResult.getOrNull() ?: ""
                     cartRepo.clearCart(userId) // Empty cart on success
-                    _cartState.value = CartState.CheckoutSuccess
+                    _cartState.value = CartState.CheckoutSuccess(orderId, totalAmount)
                 } else {
                     _cartState.value = CartState.Error("Failed to place order")
                 }
