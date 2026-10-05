@@ -54,6 +54,19 @@ class ShopRepository {
         }
     }
 
+    suspend fun getAllStalls(): Result<List<Stall>> {
+        return try {
+            val snapshot = stallsCollection
+                .whereEqualTo("status", "ACTIVE")
+                .get()
+                .await()
+            val stalls = snapshot.documents.mapNotNull { it.toObject(Stall::class.java) }
+            Result.success(stalls)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     // --- MenuItem CRUD ---
 
     suspend fun addMenuItem(stallId: String, menuItem: MenuItem): Result<String> {

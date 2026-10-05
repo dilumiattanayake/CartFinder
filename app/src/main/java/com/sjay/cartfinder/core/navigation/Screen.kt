@@ -23,7 +23,11 @@ sealed class Screen(val route: String) {
     object MapPicker : Screen("map_picker")
     object ProductManagement : Screen("product_management")
 
-    // Member 3 - Cart & Checkout
+    // Member 3 - Cart & Checkout & Browsing Stalls
+    object CustomerDashboard : Screen("customer_dashboard")
+    object StallMenu : Screen("stall_menu/{stallId}/{stallName}") {
+        fun createRoute(stallId: String, stallName: String) = "stall_menu/$stallId/$stallName"
+    }
     object Cart : Screen("cart")
     object CustomerOrders : Screen("customer_orders")
     object VendorOrders : Screen("vendor_orders")

@@ -49,7 +49,7 @@ fun LoginScreen(
                         popUpTo(0)
                     }
                 } else {
-                    navController.navigate(Screen.ReviewList.route) {
+                    navController.navigate(Screen.CustomerDashboard.route) {
                         popUpTo(0)
                     }
                 }

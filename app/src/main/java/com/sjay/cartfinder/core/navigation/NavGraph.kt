@@ -76,6 +76,24 @@ fun CartFinderNavGraph(
         composable(Screen.CustomerOrders.route) {
             com.sjay.cartfinder.checkout.CustomerOrdersScreen(navController = navController)
         }
+        composable(Screen.CustomerDashboard.route) {
+            com.sjay.cartfinder.checkout.CustomerDashboardScreen(navController = navController)
+        }
+        composable(
+            route = Screen.StallMenu.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            val stallName = backStackEntry.arguments?.getString("stallName") ?: ""
+            com.sjay.cartfinder.checkout.StallMenuScreen(
+                stallId = stallId,
+                stallName = stallName,
+                navController = navController
+            )
+        }
         composable(Screen.VendorOrders.route) {
             com.sjay.cartfinder.checkout.VendorOrdersScreen(navController = navController)
         }
