@@ -234,7 +234,7 @@ fun VendorProfileContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .clickable { navController.navigate("phi_certificate/${stall.id}") },
+                        .clickable { navController.navigate(com.sjay.cartfinder.core.navigation.Screen.PhiCertificate.createRoute(stall.id, stall.name)) },
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(12.dp)
@@ -292,15 +292,22 @@ fun VendorProfileContent(
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Mon: Closed", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
-                        Text("Tue: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
-                        Text("Fri: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Wed: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
-                        Text("Thu: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
-                        Text("Sat-Sun: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                    val hoursStr = stall.openingHours ?: "No hours specified"
+                    if (hoursStr == "No hours specified") {
+                        Text(hoursStr, fontSize = 12.sp, color = Color.DarkGray)
+                    } else {
+                        val hoursList = hoursStr.split("\n")
+                        val mid = (hoursList.size + 1) / 2
+                        Column(modifier = Modifier.weight(1f)) {
+                            hoursList.take(mid).forEach { line ->
+                                Text(line.trim(), fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                            }
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
+                            hoursList.drop(mid).forEach { line ->
+                                Text(line.trim(), fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                            }
+                        }
                     }
                 }
             }
@@ -362,7 +369,17 @@ fun VendorProductSummaryCard(product: MenuItem, navController: NavController) {
                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFFFFF3E0)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.RestaurantMenu, contentDescription = null, tint = Color(0xFFF39C12))
+                if (product.imageUrl != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(product.imageUrl),
+                        contentDescription = product.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(Icons.Filled.RestaurantMenu, contentDescription = null, tint = Color(0xFFF39C12))
+                }
+                
                 // Green dot for availability
                 if (product.stockQuantity > 0) {
                     Box(modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp).size(12.dp).background(Color(0xFF27AE60), CircleShape))

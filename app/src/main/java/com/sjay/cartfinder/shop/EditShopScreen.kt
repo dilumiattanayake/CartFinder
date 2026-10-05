@@ -57,11 +57,13 @@ fun EditShopScreen(
     var locationLon by rememberSaveable { mutableStateOf(0.0) }
     var imageUrl by rememberSaveable { mutableStateOf<String?>(null) }
     
+    val context = androidx.compose.ui.platform.LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            imageUrl = uri.toString()
+            val savedUri = com.sjay.cartfinder.utils.ImageUtils.saveImageToInternalStorage(context, uri)
+            imageUrl = savedUri?.toString() ?: uri.toString()
         }
     }
 
@@ -228,20 +230,47 @@ fun EditShopScreen(
                 }
             }
 
+            val timeOptions = listOf(
+                "Closed", "Open 24 Hours",
+                "06:00 AM - 02:00 PM", "08:00 AM - 05:00 PM",
+                "09:00 AM - 06:00 PM", "10:00 AM - 08:00 PM",
+                "11:00 AM - 09:00 PM", "12:00 PM - 10:00 PM",
+                "05:00 PM - 12:00 AM", "06:00 PM - 02:00 AM"
+            )
+
             Text("Opening Hours", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
             days.forEach { day ->
-                OutlinedTextField(
-                    value = openingHoursMap[day] ?: "",
-                    onValueChange = { newValue -> 
-                        val newMap = openingHoursMap.toMutableMap()
-                        newMap[day] = newValue
-                        openingHoursMap = newMap
-                    },
-                    label = { Text(day) },
-                    placeholder = { Text("e.g. 9 AM - 5 PM or Closed") },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                )
+                var expandedTime by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = expandedTime,
+                    onExpandedChange = { expandedTime = !expandedTime }
+                ) {
+                    OutlinedTextField(
+                        value = openingHoursMap[day] ?: "Closed",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(day) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTime) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth().padding(vertical = 4.dp)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedTime,
+                        onDismissRequest = { expandedTime = false }
+                    ) {
+                        timeOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    val newMap = openingHoursMap.toMutableMap()
+                                    newMap[day] = option
+                                    openingHoursMap = newMap
+                                    expandedTime = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.height(24.dp))

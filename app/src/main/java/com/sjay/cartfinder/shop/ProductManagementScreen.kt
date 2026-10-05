@@ -172,11 +172,16 @@ fun ProductManagementScreen(
             var newPrice by remember { mutableStateOf("") }
             var newStock by remember { mutableStateOf("10") }
             var imageUri by remember { mutableStateOf<Uri?>(null) }
+            var selectedCategory by remember { mutableStateOf("Main Course") }
             
+            val context = androidx.compose.ui.platform.LocalContext.current
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.GetContent()
             ) { uri: Uri? ->
-                imageUri = uri
+                if (uri != null) {
+                    val savedUri = com.sjay.cartfinder.utils.ImageUtils.saveImageToInternalStorage(context, uri)
+                    imageUri = savedUri ?: uri
+                }
             }
 
             AlertDialog(
@@ -213,6 +218,38 @@ fun ProductManagementScreen(
                         OutlinedTextField(value = newDesc, onValueChange = { newDesc = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(value = newPrice, onValueChange = { newPrice = it }, label = { Text("Price") }, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(value = newStock, onValueChange = { newStock = it }, label = { Text("Stock Quantity") }, modifier = Modifier.fillMaxWidth())
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        val categories = listOf("Main Course", "Fast Food", "Drinks", "Desserts", "Bakery", "Healthy", "Other")
+                        var expandedCategory by remember { mutableStateOf(false) }
+                        
+                        ExposedDropdownMenuBox(
+                            expanded = expandedCategory,
+                            onExpandedChange = { expandedCategory = !expandedCategory }
+                        ) {
+                            OutlinedTextField(
+                                value = selectedCategory,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Category") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
+                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandedCategory,
+                                onDismissRequest = { expandedCategory = false }
+                            ) {
+                                categories.forEach { cat ->
+                                    DropdownMenuItem(
+                                        text = { Text(cat) },
+                                        onClick = {
+                                            selectedCategory = cat
+                                            expandedCategory = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                 },
                 confirmButton = {
@@ -221,7 +258,7 @@ fun ProductManagementScreen(
                         val stockInt = newStock.toIntOrNull() ?: 0
                         // Use a dummy image URL for now if an image is selected, or handle actual upload in ViewModel
                         val finalImageUrl = if (imageUri != null) imageUri.toString() else null
-                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, "Main Course", stockInt, finalImageUrl)
+                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl)
                         showAddDialog = false
                     }) {
                         Text("Add")
@@ -247,11 +284,13 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
     var imageUrl by remember { mutableStateOf(item.imageUrl) }
     var spiceLevel by remember { mutableStateOf(1) } // 1 to 3
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            imageUrl = uri.toString()
+            val savedUri = com.sjay.cartfinder.utils.ImageUtils.saveImageToInternalStorage(context, uri)
+            imageUrl = savedUri?.toString() ?: uri.toString()
         }
     }
 
@@ -320,20 +359,44 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
                     textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
                 )
                 
-                TextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = { Text("CATEGORY", fontSize = 10.sp, color = Color.Gray) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.LightGray,
-                        unfocusedIndicatorColor = Color.LightGray
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
-                )
+                val categories = listOf("Main Course", "Fast Food", "Drinks", "Desserts", "Bakery", "Healthy", "Other")
+                var expandedCategory by remember { mutableStateOf(false) }
+                
+                ExposedDropdownMenuBox(
+                    expanded = expandedCategory,
+                    onExpandedChange = { expandedCategory = !expandedCategory }
+                ) {
+                    TextField(
+                        value = category,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("CATEGORY", fontSize = 10.sp, color = Color.Gray) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.LightGray,
+                            unfocusedIndicatorColor = Color.LightGray
+                        ),
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedCategory,
+                        onDismissRequest = { expandedCategory = false }
+                    ) {
+                        categories.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text(cat) },
+                                onClick = {
+                                    category = cat
+                                    expandedCategory = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
         
