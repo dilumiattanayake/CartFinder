@@ -96,7 +96,7 @@ fun CustomerOrdersScreen(
 
 @Composable
 fun CustomerOrderCard(order: Order) {
-    val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+    val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.US)
     val dateString = formatter.format(Date(order.createdAt))
 
     Card(modifier = Modifier.fillMaxWidth()) {

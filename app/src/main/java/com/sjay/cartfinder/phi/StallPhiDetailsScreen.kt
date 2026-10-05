@@ -101,7 +101,7 @@ fun StallPhiDetailsScreen(
                             items(state.inspections) { insp ->
                                 Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                                     Column(modifier = Modifier.padding(16.dp)) {
-                                        val formatter = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                                        val formatter = SimpleDateFormat("dd MMM yyyy", java.util.Locale.US)
                                         Text("Date: ${formatter.format(Date(insp.inspectionDate))}")
                                         Text("Score: ${insp.score}")
                                         Text("Result: ${insp.result}")

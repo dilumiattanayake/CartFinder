@@ -104,7 +104,7 @@ fun VendorOrdersScreen(
 
 @Composable
 fun VendorOrderCard(order: Order, onUpdateStatus: (String) -> Unit) {
-    val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+    val formatter = SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.US)
     val dateString = formatter.format(Date(order.createdAt))
     var expanded by remember { mutableStateOf(false) }
 
