@@ -63,6 +63,14 @@ fun ReviewListScreen(
                     Box(modifier = Modifier.padding(16.dp).size(32.dp).background(Color(0xFFFDE6C8), CircleShape), contentAlignment = Alignment.Center) {
                         Icon(Icons.Filled.Search, contentDescription = null, tint = PrimaryOrange)
                     }
+                },
+                actions = {
+                    IconButton(onClick = { navController.navigate(Screen.CustomerOrders.route) }) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.List, contentDescription = "My Orders")
+                    }
+                    IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.ShoppingCart, contentDescription = "My Cart")
+                    }
                 }
             )
         }

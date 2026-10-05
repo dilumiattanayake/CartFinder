@@ -110,11 +110,20 @@ fun VendorDashboardScreen(
 
                                     Button(
                                         onClick = { navController.navigate(Screen.ProductManagement.route) },
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                                     ) {
                                         Icon(Icons.Filled.ShoppingCart, contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
                                         Text("Manage Products")
+                                    }
+
+                                    Button(
+                                        onClick = { navController.navigate(Screen.VendorOrders.route) },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(androidx.compose.material.icons.filled.ShoppingCart, contentDescription = null) // Replace with better icon if needed
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("View Incoming Orders")
                                     }
                                 }
                             }

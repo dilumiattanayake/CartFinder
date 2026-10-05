@@ -22,4 +22,9 @@ sealed class Screen(val route: String) {
     object EditShop : Screen("edit_shop")
     object MapPicker : Screen("map_picker")
     object ProductManagement : Screen("product_management")
+
+    // Member 3 - Cart & Checkout
+    object Cart : Screen("cart")
+    object CustomerOrders : Screen("customer_orders")
+    object VendorOrders : Screen("vendor_orders")
 }
