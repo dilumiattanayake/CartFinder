@@ -10,7 +10,9 @@ sealed class Screen(val route: String) {
     object SignUp : Screen("sign_up/{role}") {
         fun createRoute(role: String) = "sign_up/$role"
     }
-    object Settings : Screen("settings")
+    object Settings : Screen("settings/{role}") {
+        fun createRoute(role: String) = "settings/$role"
+    }
     object Profile : Screen("profile")
     
     // Member 1 - Reviews

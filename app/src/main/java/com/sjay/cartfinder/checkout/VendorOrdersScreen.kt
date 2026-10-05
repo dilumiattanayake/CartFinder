@@ -58,6 +58,9 @@ fun VendorOrdersScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "vendor")
         }
     ) { padding ->
         Box(

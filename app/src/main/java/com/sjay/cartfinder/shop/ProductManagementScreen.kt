@@ -60,6 +60,9 @@ fun ProductManagementScreen(
                     Icon(Icons.Filled.Add, contentDescription = "Add Product")
                 }
             }
+        },
+        bottomBar = {
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "vendor")
         }
     ) { padding ->
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(

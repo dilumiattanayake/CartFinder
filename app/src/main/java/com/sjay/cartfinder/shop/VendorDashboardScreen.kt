@@ -38,6 +38,9 @@ fun VendorDashboardScreen(
             TopAppBar(
                 title = { Text("Vendor Dashboard", fontWeight = FontWeight.Bold) }
             )
+        },
+        bottomBar = {
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "vendor")
         }
     ) { padding ->
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(

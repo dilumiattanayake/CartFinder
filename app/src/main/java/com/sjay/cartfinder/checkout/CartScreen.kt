@@ -70,8 +70,9 @@ fun CartScreen(
             )
         },
         bottomBar = {
-            if (cartState is CartState.Success) {
-                val items = (cartState as CartState.Success).cart.items
+            Column {
+                if (cartState is CartState.Success) {
+                    val items = (cartState as CartState.Success).cart.items
                 if (items.isNotEmpty()) {
                     var selectedPickupSlot by remember { mutableStateOf("10:00 AM - 10:30 AM") }
                     var expanded by remember { mutableStateOf(false) }
@@ -131,6 +132,8 @@ fun CartScreen(
                     }
                 }
             }
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "customer")
+        }
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {

@@ -46,8 +46,12 @@ fun CartFinderNavGraph(
             val role = backStackEntry.arguments?.getString("role") ?: "Customer"
             SignUpScreen(navController = navController, role = role)
         }
-        composable(Screen.Settings.route) {
-            SettingsScreen(navController = navController)
+        composable(
+            route = Screen.Settings.route,
+            arguments = listOf(androidx.navigation.navArgument("role") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val role = backStackEntry.arguments?.getString("role") ?: "customer"
+            SettingsScreen(navController = navController, role = role)
         }
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController)

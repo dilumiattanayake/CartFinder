@@ -34,6 +34,9 @@ fun PhiDashboardScreen(
             TopAppBar(
                 title = { Text("PHI Dashboard (Stall Directory)", fontWeight = FontWeight.Bold) }
             )
+        },
+        bottomBar = {
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "phi")
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
