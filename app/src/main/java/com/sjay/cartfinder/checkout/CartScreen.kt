@@ -21,7 +21,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.data.model.CartItem
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 import com.sjay.cartfinder.core.navigation.Screen
-import com.sjay.cartfinder.core.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +43,7 @@ fun CartScreen(
             val successState = cartState as CartState.CheckoutSuccess
             Toast.makeText(context, "Order created. Proceeding to payment...", Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.PayHereSandbox.createRoute(successState.orderId, successState.totalAmount)) {
-                popUpTo(Screen.Cart.route) { inclusive = true }
+                popUpTo(Screen.CustomerDashboard.route)
             }
         } else if (cartState is CartState.Error) {
             val message = (cartState as CartState.Error).message
