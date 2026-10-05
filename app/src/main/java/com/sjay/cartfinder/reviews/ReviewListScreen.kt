@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.Report
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Reply
@@ -66,10 +68,10 @@ fun ReviewListScreen(
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.CustomerOrders.route) }) {
-                        Icon(androidx.compose.material.icons.Icons.Filled.List, contentDescription = "My Orders")
+                        Icon(Icons.Filled.List, contentDescription = "My Orders")
                     }
                     IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(androidx.compose.material.icons.Icons.Filled.ShoppingCart, contentDescription = "My Cart")
+                        Icon(Icons.Filled.ShoppingCart, contentDescription = "My Cart")
                     }
                 }
             )

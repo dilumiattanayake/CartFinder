@@ -19,8 +19,12 @@ import androidx.navigation.NavController
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.Stall
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun CustomerDashboardScreen(
     navController: NavController,
@@ -28,7 +32,7 @@ fun CustomerDashboardScreen(
 ) {
     val stallsState by viewModel.stallsState.collectAsState()
 
-    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+    val pullRefreshState = rememberPullRefreshState(
         refreshing = stallsState is StallListState.Loading,
         onRefresh = { viewModel.loadAllStalls() }
     )
@@ -56,7 +60,7 @@ fun CustomerDashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
+                .pullRefresh(pullRefreshState)
         ) {
             when (val state = stallsState) {
                 is StallListState.Loading -> {
@@ -84,7 +88,7 @@ fun CustomerDashboardScreen(
                 else -> {}
             }
 
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+            PullRefreshIndicator(
                 refreshing = stallsState is StallListState.Loading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)

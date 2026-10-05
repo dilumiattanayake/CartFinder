@@ -19,8 +19,12 @@ import com.sjay.cartfinder.data.model.Order
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun CustomerOrdersScreen(
     navController: NavController,
@@ -29,7 +33,7 @@ fun CustomerOrdersScreen(
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val orderState by viewModel.orderState.collectAsState()
 
-    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+    val pullRefreshState = rememberPullRefreshState(
         refreshing = orderState is OrderListState.Loading,
         onRefresh = { if (currentUserId.isNotEmpty()) viewModel.loadCustomerOrders(currentUserId) }
     )
@@ -56,7 +60,7 @@ fun CustomerOrdersScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
+                .pullRefresh(pullRefreshState)
         ) {
             when (val state = orderState) {
                 is OrderListState.Loading -> {
@@ -80,7 +84,7 @@ fun CustomerOrdersScreen(
                 else -> {}
             }
 
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+            PullRefreshIndicator(
                 refreshing = orderState is OrderListState.Loading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)

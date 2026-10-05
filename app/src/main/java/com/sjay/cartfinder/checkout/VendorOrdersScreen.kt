@@ -20,8 +20,12 @@ import com.sjay.cartfinder.shop.ShopViewModel
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun VendorOrdersScreen(
     navController: NavController,
@@ -33,7 +37,7 @@ fun VendorOrdersScreen(
     
     val stallId = (shopState as? ShopState.Success)?.stall?.id
 
-    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+    val pullRefreshState = rememberPullRefreshState(
         refreshing = orderState is OrderListState.Loading,
         onRefresh = { if (stallId != null) orderViewModel.loadVendorOrders(stallId) }
     )
@@ -60,7 +64,7 @@ fun VendorOrdersScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
+                .pullRefresh(pullRefreshState)
         ) {
             when (val state = orderState) {
                 is OrderListState.Loading -> {
@@ -89,7 +93,7 @@ fun VendorOrdersScreen(
                 else -> {}
             }
 
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+            PullRefreshIndicator(
                 refreshing = orderState is OrderListState.Loading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)

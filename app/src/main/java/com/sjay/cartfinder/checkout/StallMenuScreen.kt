@@ -23,8 +23,12 @@ import com.sjay.cartfinder.data.model.CartItem
 import com.sjay.cartfinder.data.model.MenuItem
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 import kotlinx.coroutines.launch
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun StallMenuScreen(
     stallId: String,
@@ -39,7 +43,7 @@ fun StallMenuScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val pullRefreshState = androidx.compose.material.pullrefresh.rememberPullRefreshState(
+    val pullRefreshState = rememberPullRefreshState(
         refreshing = menuState is StallMenuState.Loading,
         onRefresh = { dashboardViewModel.loadStallMenu(stallId) }
     )
@@ -75,7 +79,7 @@ fun StallMenuScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .androidx.compose.material.pullrefresh.pullRefresh(pullRefreshState)
+                .pullRefresh(pullRefreshState)
         ) {
             when (val state = menuState) {
                 is StallMenuState.Loading -> {
@@ -113,7 +117,7 @@ fun StallMenuScreen(
                 else -> {}
             }
 
-            androidx.compose.material.pullrefresh.PullRefreshIndicator(
+            PullRefreshIndicator(
                 refreshing = menuState is StallMenuState.Loading,
                 state = pullRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
