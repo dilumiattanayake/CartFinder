@@ -42,8 +42,15 @@ fun ProductManagementScreen(
 ) {
     val shopState by viewModel.shopState.collectAsState()
     val productsState by viewModel.productsState.collectAsState()
+    val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
     
     var showAddDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentUserId) {
+        if (currentUserId.isNotEmpty()) {
+            viewModel.loadVendorShop(currentUserId)
+        }
+    }
 
     LaunchedEffect(shopState) {
         if (shopState is ShopState.Success) {

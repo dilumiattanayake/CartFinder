@@ -56,9 +56,20 @@ class ShopViewModel(
         viewModelScope.launch {
             val result = repository.getAllStalls()
             if (result.isSuccess) {
-                _allStallsState.value = ShopState.StallsList(result.getOrDefault(emptyList()))
+                val activeStalls = result.getOrDefault(emptyList()).filter { it.isOpen }
+                _allStallsState.value = ShopState.StallsList(activeStalls)
             } else {
                 _allStallsState.value = ShopState.Error(result.exceptionOrNull()?.message ?: "Failed to load stalls")
+            }
+        }
+    }
+    
+    fun toggleStallStatus(stall: Stall, isOpen: Boolean) {
+        viewModelScope.launch {
+            val updated = stall.copy(isOpen = isOpen)
+            val result = repository.updateStall(updated)
+            if (result.isSuccess) {
+                _shopState.value = ShopState.Success(updated)
             }
         }
     }

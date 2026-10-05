@@ -61,14 +61,20 @@ fun MapPickerScreen(navController: NavController) {
                 MapView(ctx).apply {
                     setMultiTouchControls(true)
                     controller.setZoom(15.0)
-                    // Set to a default location (e.g., Colombo, Sri Lanka)
+                    
+                    val myLocationOverlay = org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay(org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider(ctx), this)
+                    myLocationOverlay.enableMyLocation()
+                    myLocationOverlay.enableFollowLocation()
+                    overlays.add(myLocationOverlay)
+                    
+                    // Set to a default location (e.g., Colombo, Sri Lanka) if location is not available yet
                     controller.setCenter(GeoPoint(6.9271, 79.8612))
                     
                     val mapEventsReceiver = object : MapEventsReceiver {
                         override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
                             if (p != null) {
                                 selectedPoint = p
-                                // Clear old markers and add new one
+                                // Clear old custom markers and add new one
                                 overlays.removeAll { it is Marker }
                                 val marker = Marker(this@apply).apply {
                                     position = p

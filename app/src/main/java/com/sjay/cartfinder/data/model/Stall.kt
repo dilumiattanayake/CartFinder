@@ -13,6 +13,7 @@ data class Stall(
     val ratingAverage: Double = 0.0,
     val ratingCount: Int = 0,
     val status: String = "ACTIVE",
+    val isOpen: Boolean = true,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

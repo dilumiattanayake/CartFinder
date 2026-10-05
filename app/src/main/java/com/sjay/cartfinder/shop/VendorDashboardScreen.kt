@@ -105,7 +105,6 @@ fun VendorProfileContent(
     viewModel: ShopViewModel
 ) {
     val scrollState = rememberScrollState()
-    var isOpen by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -213,14 +212,14 @@ fun VendorProfileContent(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .background(if (isOpen) Color(0xFFE8F5E9) else Color(0xFFFFEBEE), RoundedCornerShape(24.dp))
+                        .background(if (stall.isOpen) Color(0xFFE8F5E9) else Color(0xFFFFEBEE), RoundedCornerShape(24.dp))
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
-                    Text(if (isOpen) "Open Now" else "Closed", color = if (isOpen) Color(0xFF2E7D32) else Color(0xFFC62828), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(if (stall.isOpen) "Open Now" else "Closed", color = if (stall.isOpen) Color(0xFF2E7D32) else Color(0xFFC62828), fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
-                        checked = isOpen,
-                        onCheckedChange = { isOpen = it },
+                        checked = stall.isOpen,
+                        onCheckedChange = { viewModel.toggleStallStatus(stall, it) },
                         modifier = Modifier.height(24.dp)
                     )
                 }
@@ -232,7 +231,10 @@ fun VendorProfileContent(
             val cert = phiState.certificate
             if (cert != null) {
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clickable { navController.navigate("phi_certificate/${stall.id}") },
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(12.dp)
@@ -252,9 +254,9 @@ fun VendorProfileContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text("PHI Certified", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("• Exp Apr 2026", color = Color.Gray, fontSize = 12.sp)
+                                Text("• Grade ${cert.grade}", color = Color.Gray, fontSize = 12.sp)
                             }
-                            Text("Audited by Off. N. Silva (PHI-7104)", color = Color.Gray, fontSize = 12.sp)
+                            Text("Audited by PHI", color = Color.Gray, fontSize = 12.sp)
                         }
                         
                         Row(
@@ -265,7 +267,7 @@ fun VendorProfileContent(
                         ) {
                             Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = Color(0xFF27AE60), modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Pass", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.DarkGray)
+                            Text("View", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.DarkGray)
                         }
                     }
                 }

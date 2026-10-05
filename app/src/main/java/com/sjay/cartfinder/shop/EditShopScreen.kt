@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,12 +46,16 @@ fun EditShopScreen(
     val pickedLat = savedStateHandle?.getLiveData<Double>("picked_lat")?.value
     val pickedLon = savedStateHandle?.getLiveData<Double>("picked_lon")?.value
 
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf(Location()) }
-    var imageUrl by remember { mutableStateOf<String?>(null) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var category by rememberSaveable { mutableStateOf("") }
+    var phone by rememberSaveable { mutableStateOf("") }
+    var address by rememberSaveable { mutableStateOf("") }
+    var openingHours by rememberSaveable { mutableStateOf("") }
+    
+    var locationLat by rememberSaveable { mutableStateOf(0.0) }
+    var locationLon by rememberSaveable { mutableStateOf(0.0) }
+    var imageUrl by rememberSaveable { mutableStateOf<String?>(null) }
     
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -69,11 +74,14 @@ fun EditShopScreen(
                 if (description.isEmpty()) description = stall.description
                 if (category.isEmpty()) category = stall.category
                 if (phone.isEmpty()) phone = stall.phone ?: ""
+                if (address.isEmpty()) address = stall.location.address ?: ""
+                if (openingHours.isEmpty()) openingHours = stall.openingHours ?: ""
                 if (imageUrl == null) imageUrl = stall.imageUrl
                 
-                // If we haven't just picked a new location, use the existing one
-                if (pickedLat == null && pickedLon == null) {
-                    location = stall.location
+                // If we haven't picked a location yet, load the existing one
+                if (locationLat == 0.0 && locationLon == 0.0 && stall.location.latitude != 0.0) {
+                    locationLat = stall.location.latitude
+                    locationLon = stall.location.longitude
                 }
             }
         }
@@ -82,7 +90,8 @@ fun EditShopScreen(
     // Update location if returned from map
     LaunchedEffect(pickedLat, pickedLon) {
         if (pickedLat != null && pickedLon != null) {
-            location = location.copy(latitude = pickedLat, longitude = pickedLon)
+            locationLat = pickedLat
+            locationLon = pickedLon
             // Consume the value so it doesn't re-trigger on config change
             savedStateHandle?.remove<Double>("picked_lat")
             savedStateHandle?.remove<Double>("picked_lon")
@@ -165,6 +174,20 @@ fun EditShopScreen(
                 label = { Text("Phone Number") },
                 modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedTextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Physical Address") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedTextField(
+                value = openingHours,
+                onValueChange = { openingHours = it },
+                label = { Text("Opening Hours (e.g. Mon-Fri 9AM-5PM)") },
+                modifier = Modifier.fillMaxWidth()
+            )
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -172,11 +195,11 @@ fun EditShopScreen(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Shop Location", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (location.latitude == 0.0 && location.longitude == 0.0) {
+                    if (locationLat == 0.0 && locationLon == 0.0) {
                         Text("No location selected yet.", color = MaterialTheme.colorScheme.error)
                     } else {
-                        Text("Lat: ${location.latitude}")
-                        Text("Lon: ${location.longitude}")
+                        Text("Lat: $locationLat")
+                        Text("Lon: $locationLon")
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = { navController.navigate(Screen.MapPicker.route) }, modifier = Modifier.fillMaxWidth()) {
@@ -191,11 +214,12 @@ fun EditShopScreen(
             
             Button(
                 onClick = { 
-                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, location, imageUrl)
+                    val newLocation = Location(address = address, latitude = locationLat, longitude = locationLon)
+                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, newLocation, imageUrl, openingHours)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-                enabled = name.isNotBlank() && location.latitude != 0.0,
+                enabled = name.isNotBlank() && locationLat != 0.0,
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange)
             ) {
                 Text("Save Stall", color = androidx.compose.ui.graphics.Color.Black, fontWeight = FontWeight.Bold)
