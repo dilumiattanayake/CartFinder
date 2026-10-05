@@ -29,12 +29,12 @@ class ReviewRepository {
         return try {
             val snapshot = reviewsCollection
                 .whereEqualTo("stallId", stallId)
-                .whereEqualTo("status", "ACTIVE")
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
             
             val reviews = snapshot.toObjects(Review::class.java)
+                .filter { it.status == "ACTIVE" }
+                .sortedByDescending { it.createdAt }
             Result.success(reviews)
         } catch (e: Exception) {
             Result.failure(e)

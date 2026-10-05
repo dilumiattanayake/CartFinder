@@ -24,11 +24,12 @@ class OrderRepository {
         return try {
             val snapshot = ordersCollection
                 .whereEqualTo("customerId", customerId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
             
-            val orders = snapshot.documents.mapNotNull { it.toObject(Order::class.java) }
+            val orders = snapshot.documents
+                .mapNotNull { it.toObject(Order::class.java) }
+                .sortedByDescending { it.createdAt }
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
@@ -39,11 +40,12 @@ class OrderRepository {
         return try {
             val snapshot = ordersCollection
                 .whereEqualTo("stallId", stallId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
             
-            val orders = snapshot.documents.mapNotNull { it.toObject(Order::class.java) }
+            val orders = snapshot.documents
+                .mapNotNull { it.toObject(Order::class.java) }
+                .sortedByDescending { it.createdAt }
             Result.success(orders)
         } catch (e: Exception) {
             Result.failure(e)
