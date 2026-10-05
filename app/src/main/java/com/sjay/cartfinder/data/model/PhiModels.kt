@@ -18,6 +18,7 @@ data class Certificate(
     val issueDate: Long = System.currentTimeMillis(),
     val expiryDate: Long = System.currentTimeMillis() + 31536000000, // +1 year
     val grade: String = "A", // A, B, C, D
+    val score: Int = 100,
     val status: String = "ACTIVE" // ACTIVE, REVOKED, PENDING_REQUEST
 )
 

@@ -25,7 +25,8 @@ import com.sjay.cartfinder.core.navigation.BottomNavigationBar
 fun PhiSpotAuditScreen(
     navController: NavController,
     stallId: String = "",
-    phiViewModel: PhiViewModel = viewModel()
+    phiViewModel: PhiViewModel = viewModel(),
+    shopViewModel: com.sjay.cartfinder.shop.ShopViewModel = viewModel()
 ) {
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     var personalHygiene by remember { mutableStateOf("PASS") }
@@ -35,12 +36,22 @@ fun PhiSpotAuditScreen(
     var remarks by remember { mutableStateOf("") }
     
     val score = calculateScore(personalHygiene, foodTemp, waterOil, wasteBin)
-    val grade = if (score >= 90) "A" else if (score >= 75) "B" else "C"
+    val grade = if (score >= 90) "A" else if (score >= 75) "B" else if (score >= 50) "C" else "Rejected"
 
+    var selectedStallId by remember { mutableStateOf(stallId) }
     val stall by phiViewModel.stallState.collectAsState()
+    val allStallsState by shopViewModel.allStallsState.collectAsState()
+    
+    var showStallDropdown by remember { mutableStateOf(false) }
 
-    LaunchedEffect(stallId) {
-        phiViewModel.loadStall(stallId)
+    LaunchedEffect(selectedStallId) {
+        if (selectedStallId.isNotEmpty()) {
+            phiViewModel.loadStall(selectedStallId)
+        }
+    }
+    
+    LaunchedEffect(Unit) {
+        shopViewModel.loadAllStalls()
     }
 
     Scaffold(
@@ -84,37 +95,7 @@ fun PhiSpotAuditScreen(
                 )
             }
 
-            // Quick Scan
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.QrCodeScanner, contentDescription = null, tint = Color(0xFFE67E22))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Duty Quick Scan", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Badge(containerColor = Color(0xFFE67E22)) { Text("NFC READY", color = Color.White) }
-                    }
-                    Text("Scan vendor QR badge or tap NFC tag to immediately load stall checklist.", color = Color.Gray, fontSize = 12.sp, modifier = Modifier.padding(vertical = 8.dp))
-                    Button(
-                        onClick = { },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Icon(Icons.Filled.CameraAlt, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Open Scanner (Camera)")
-                    }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Start Inspection
             Row(
@@ -129,7 +110,7 @@ fun PhiSpotAuditScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Start Spot Inspection", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 }
-                Badge(containerColor = Color(0xFFE5E7EB)) { Text("REF #PHI-${stallId.take(4)}", color = Color.DarkGray) }
+                Badge(containerColor = Color(0xFFE5E7EB)) { Text("REF #PHI-${selectedStallId.take(4)}", color = Color.DarkGray) }
             }
 
             // Vendor Info
@@ -145,11 +126,37 @@ fun PhiSpotAuditScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("ACTIVE VENDOR MATCH", color = Color(0xFFE67E22), fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        Text(stall?.name ?: "Unknown Stall", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Text(stall?.location?.address ?: "No Address", color = Color.Gray, fontSize = 12.sp)
+                        Text(stall?.name ?: "No Stall Selected", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(stall?.location?.address ?: "Tap swap icon to select stall", color = Color.Gray, fontSize = 12.sp)
                     }
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Filled.SwapHoriz, contentDescription = null)
+                    Box {
+                        IconButton(onClick = { showStallDropdown = true }) {
+                            Icon(Icons.Filled.SwapHoriz, contentDescription = "Change Stall")
+                        }
+                        DropdownMenu(
+                            expanded = showStallDropdown,
+                            onDismissRequest = { showStallDropdown = false }
+                        ) {
+                            when (val state = allStallsState) {
+                                is com.sjay.cartfinder.shop.ShopState.StallsList -> {
+                                    state.stalls.forEach { s ->
+                                        DropdownMenuItem(
+                                            text = { Text(s.name) },
+                                            onClick = {
+                                                selectedStallId = s.id
+                                                showStallDropdown = false
+                                            }
+                                        )
+                                    }
+                                }
+                                is com.sjay.cartfinder.shop.ShopState.Loading -> {
+                                    DropdownMenuItem(text = { Text("Loading...") }, onClick = {})
+                                }
+                                else -> {
+                                    DropdownMenuItem(text = { Text("No Stalls Found") }, onClick = {})
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -170,18 +177,7 @@ fun PhiSpotAuditScreen(
             CriteriaCard("Filtered Water & Cooking Oil", "Fresh frying oil & sealed drinking water", waterOil) { waterOil = it }
             CriteriaCard("Waste Bin Lid & Stall Perimeter", "Foot-pedal bin, zero drain blockage", wasteBin) { wasteBin = it }
 
-            // Attach Photo
-            Text("Attach Photo Evidence", fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
-            Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Box(modifier = Modifier
-                    .size(80.dp)
-                    .background(Color(0xFFFDF2E9), RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = Color(0xFFE67E22))
-                        Text("Add Slot", color = Color(0xFFE67E22), fontSize = 10.sp)
-                    }
-                }
-            }
+
 
             // Remarks
             Text("Inspector Remarks & Corrective Directives", fontWeight = FontWeight.Bold, modifier = Modifier.padding(16.dp))
@@ -203,21 +199,21 @@ fun PhiSpotAuditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF9C3))
+                colors = CardDefaults.cardColors(containerColor = if (grade == "Rejected") Color(0xFFFDE8E8) else Color(0xFFFEF9C3))
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .background(Color(0xFF27AE60), RoundedCornerShape(8.dp)),
+                            .background(if (grade == "Rejected") Color.Red else Color(0xFF27AE60), RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(grade, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                        Text(if (grade == "Rejected") "F" else grade, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 24.sp)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Provisional MOH Rating", fontWeight = FontWeight.Bold)
-                        Text("Compliant for Green QR Sticker Issue", fontSize = 12.sp)
+                        Text(if (grade == "Rejected") "Failed Compliance Standard" else "Compliant for Green QR Sticker Issue", fontSize = 12.sp, color = if (grade == "Rejected") Color.Red else Color.Black)
                     }
                     Text("SEC ID: PHI-084", fontSize = 10.sp)
                 }
@@ -226,11 +222,16 @@ fun PhiSpotAuditScreen(
             // Buttons
             Button(
                 onClick = { 
-                    val resultText = if (score >= 75) "PASS" else "FAIL"
-                    val notesJson = """{"personalHygiene":"$personalHygiene", "foodTemp":"$foodTemp", "waterOil":"$waterOil", "wasteBin":"$wasteBin", "remarks":"$remarks"}"""
-                    phiViewModel.addInspection(stallId, currentUserId, score, resultText, notesJson)
-                    navController.popBackStack()
+                    if (selectedStallId.isNotEmpty()) {
+                        val resultText = if (score >= 75) "PASS" else "FAIL"
+                        val notesJson = """{"personalHygiene":"$personalHygiene", "foodTemp":"$foodTemp", "waterOil":"$waterOil", "wasteBin":"$wasteBin", "remarks":"$remarks"}"""
+                        phiViewModel.addInspection(selectedStallId, currentUserId, score, resultText, notesJson)
+                        // Also automatically update or issue certificate based on this grade
+                        phiViewModel.issueCertificate(selectedStallId, grade, score)
+                        navController.popBackStack()
+                    }
                 },
+                enabled = selectedStallId.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),

@@ -65,13 +65,14 @@ class PhiViewModel : ViewModel() {
         }
     }
 
-    fun issueCertificate(stallId: String, grade: String) {
+    fun issueCertificate(stallId: String, grade: String, score: Int = 100) {
         viewModelScope.launch {
             _phiState.value = PhiState.Loading
             val cert = Certificate(
                 id = stallId,
                 stallId = stallId,
                 grade = grade,
+                score = score,
                 status = "ACTIVE"
             )
             val result = repository.issueCertificate(cert)
@@ -96,6 +97,27 @@ class PhiViewModel : ViewModel() {
         }
     }
 
+    private suspend fun updateCertificateAverageScore(stallId: String) {
+        val inspectionsResult = repository.getInspections(stallId)
+        val certResult = repository.getCertificate(stallId)
+        
+        if (inspectionsResult.isSuccess && certResult.isSuccess) {
+            val inspections = inspectionsResult.getOrDefault(emptyList())
+            val cert = certResult.getOrNull()
+            if (cert != null) {
+                val avgScore = if (inspections.isNotEmpty()) {
+                    inspections.sumOf { it.score } / inspections.size
+                } else {
+                    100
+                }
+                val newGrade = if (avgScore >= 90) "A" else if (avgScore >= 75) "B" else if (avgScore >= 50) "C" else "Rejected"
+                
+                val updatedCert = cert.copy(score = avgScore, grade = newGrade)
+                repository.issueCertificate(updatedCert)
+            }
+        }
+    }
+
     fun addInspection(stallId: String, inspectorId: String, score: Int, resultText: String, notes: String) {
         viewModelScope.launch {
             _phiState.value = PhiState.Loading
@@ -108,6 +130,7 @@ class PhiViewModel : ViewModel() {
             )
             val result = repository.addInspection(insp)
             if (result.isSuccess) {
+                updateCertificateAverageScore(stallId)
                 _phiState.value = PhiState.Success
                 loadInspections(stallId)
             } else {
@@ -134,6 +157,7 @@ class PhiViewModel : ViewModel() {
             _phiState.value = PhiState.Loading
             val result = repository.deleteInspection(inspectionId)
             if (result.isSuccess) {
+                updateCertificateAverageScore(stallId)
                 _phiState.value = PhiState.Success
                 loadInspections(stallId)
             } else {
@@ -147,6 +171,7 @@ class PhiViewModel : ViewModel() {
             _phiState.value = PhiState.Loading
             val result = repository.updateInspection(inspection)
             if (result.isSuccess) {
+                updateCertificateAverageScore(stallId)
                 _phiState.value = PhiState.Success
                 loadInspections(stallId)
             } else {

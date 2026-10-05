@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.VerifiedUser
@@ -67,7 +68,8 @@ fun PhiCertificateScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF8F9FA)),
+                .background(Color(0xFFF8F9FA))
+                .verticalScroll(androidx.compose.foundation.rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Gradient header logic... skipping complex UI for brevity, focusing on core elements
@@ -172,7 +174,7 @@ fun CertificateDetails(cert: Certificate, stallName: String, stallAddress: Strin
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text("SANITATION RATING", fontSize = 10.sp, color = Color.Gray)
-                Text("Grade ${cert.grade} (Score: 96/100)", fontWeight = FontWeight.Bold)
+                Text("Grade ${cert.grade} (Score: ${cert.score}/100)", fontWeight = FontWeight.Bold)
             }
         }
     }
