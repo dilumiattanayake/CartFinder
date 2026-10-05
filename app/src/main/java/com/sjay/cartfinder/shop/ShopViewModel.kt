@@ -133,7 +133,7 @@ class ShopViewModel(
         }
     }
 
-    fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int) {
+    fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null) {
         viewModelScope.launch {
             val item = MenuItem(
                 stallId = stallId,
@@ -141,7 +141,8 @@ class ShopViewModel(
                 description = description,
                 price = price,
                 categoryId = categoryId,
-                stockQuantity = stockQuantity
+                stockQuantity = stockQuantity,
+                imageUrl = imageUrl
             )
             val result = repository.addMenuItem(stallId, item)
             if (result.isSuccess) {

@@ -65,6 +65,10 @@ fun EditShopScreen(
         }
     }
 
+    LaunchedEffect(currentUserId) {
+        viewModel.loadVendorShop(currentUserId)
+    }
+
     // Pre-fill existing data if we have it
     LaunchedEffect(shopState) {
         if (shopState is ShopState.Success) {
@@ -161,12 +165,37 @@ fun EditShopScreen(
                 minLines = 3
             )
             Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
-                value = category,
-                onValueChange = { category = it },
-                label = { Text("Category (e.g. Fast Food, Drinks)") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            
+            val categories = listOf("Fast Food", "Drinks", "Desserts", "Bakery", "Healthy", "Other")
+            var expandedCategory by remember { mutableStateOf(false) }
+            
+            ExposedDropdownMenuBox(
+                expanded = expandedCategory,
+                onExpandedChange = { expandedCategory = !expandedCategory }
+            ) {
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCategory) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expandedCategory,
+                    onDismissRequest = { expandedCategory = false }
+                ) {
+                    categories.forEach { cat ->
+                        DropdownMenuItem(
+                            text = { Text(cat) },
+                            onClick = {
+                                category = cat
+                                expandedCategory = false
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(12.dp))
             OutlinedTextField(
                 value = phone,
@@ -182,12 +211,38 @@ fun EditShopScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
-            OutlinedTextField(
-                value = openingHours,
-                onValueChange = { openingHours = it },
-                label = { Text("Opening Hours (e.g. Mon-Fri 9AM-5PM)") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            
+            val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+            var openingHoursMap by rememberSaveable { mutableStateOf(mapOf<String, String>()) }
+
+            LaunchedEffect(openingHours) {
+                if (openingHoursMap.isEmpty() && openingHours.isNotBlank()) {
+                    val map = mutableMapOf<String, String>()
+                    openingHours.split("\n").forEach { line ->
+                        val parts = line.split(":", limit = 2)
+                        if (parts.size == 2) {
+                            map[parts[0].trim()] = parts[1].trim()
+                        }
+                    }
+                    openingHoursMap = map
+                }
+            }
+
+            Text("Opening Hours", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(8.dp))
+            days.forEach { day ->
+                OutlinedTextField(
+                    value = openingHoursMap[day] ?: "",
+                    onValueChange = { newValue -> 
+                        val newMap = openingHoursMap.toMutableMap()
+                        newMap[day] = newValue
+                        openingHoursMap = newMap
+                    },
+                    label = { Text(day) },
+                    placeholder = { Text("e.g. 9 AM - 5 PM or Closed") },
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                )
+            }
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -214,8 +269,13 @@ fun EditShopScreen(
             
             Button(
                 onClick = { 
+                    val formattedHours = days.mapNotNull { day -> 
+                        val hours = openingHoursMap[day]
+                        if (!hours.isNullOrBlank()) "$day: $hours" else null
+                    }.joinToString("\n")
+                    
                     val newLocation = Location(address = address, latitude = locationLat, longitude = locationLon)
-                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, newLocation, imageUrl, openingHours)
+                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, newLocation, imageUrl, formattedHours)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),

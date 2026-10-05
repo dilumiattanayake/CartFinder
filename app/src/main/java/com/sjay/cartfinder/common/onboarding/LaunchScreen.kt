@@ -29,24 +29,12 @@ fun LaunchScreen(navController: NavController) {
         val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
         
         if (auth.currentUser != null) {
-            // Logged in, we need to check role to go to right dashboard.
-            // For now, if role is unknown, just go to a default screen.
-            // Ideally, fetch from Firestore. Let's assume we don't know yet, we just go to a temporary split screen or VendorDashboard.
-            // Let's fetch role:
-            try {
-                val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                    .collection("users").document(auth.currentUser!!.uid).get()
-                    .await()
-                val role = doc.getString("role") ?: "Customer"
-                if (role.equals("Vendor", ignoreCase = true)) {
-                    navController.navigate(Screen.VendorDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
-                } else if (role.equals("PHI", ignoreCase = true)) {
-                    navController.navigate(Screen.PhiDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
-                } else {
-                    navController.navigate(Screen.CustomerDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
-                }
-            } catch (e: Exception) {
-                // Fallback
+            val role = sharedPrefs.getString("user_role", "Customer") ?: "Customer"
+            if (role.equals("Vendor", ignoreCase = true)) {
+                navController.navigate(Screen.VendorDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+            } else if (role.equals("PHI", ignoreCase = true)) {
+                navController.navigate(Screen.PhiDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+            } else {
                 navController.navigate(Screen.CustomerDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
             }
         } else if (onboardingCompleted) {

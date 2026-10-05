@@ -46,6 +46,9 @@ fun SignUpScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
+                val prefs = context.getSharedPreferences("CartFinderPrefs", android.content.Context.MODE_PRIVATE)
+                prefs.edit().putString("user_role", role).apply()
+
                 Toast.makeText(context, (authState as AuthState.Success).message, Toast.LENGTH_SHORT).show()
                 viewModel.resetState()
                 if (role.equals("Vendor", ignoreCase = true)) {

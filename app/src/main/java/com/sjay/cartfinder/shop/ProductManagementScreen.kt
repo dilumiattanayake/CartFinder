@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -169,23 +171,57 @@ fun ProductManagementScreen(
             var newDesc by remember { mutableStateOf("") }
             var newPrice by remember { mutableStateOf("") }
             var newStock by remember { mutableStateOf("10") }
+            var imageUri by remember { mutableStateOf<Uri?>(null) }
+            
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri: Uri? ->
+                imageUri = uri
+            }
 
             AlertDialog(
                 onDismissRequest = { showAddDialog = false },
                 title = { Text("Add New Product") },
                 text = {
-                    Column {
-                        OutlinedTextField(value = newName, onValueChange = { newName = it }, label = { Text("Name") })
-                        OutlinedTextField(value = newDesc, onValueChange = { newDesc = it }, label = { Text("Description") })
-                        OutlinedTextField(value = newPrice, onValueChange = { newPrice = it }, label = { Text("Price") })
-                        OutlinedTextField(value = newStock, onValueChange = { newStock = it }, label = { Text("Stock Quantity") })
+                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.LightGray)
+                                .clickable { launcher.launch("image/*") },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (imageUri != null) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(model = imageUri),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = Color.DarkGray)
+                                    Text("Tap to add Image", color = Color.DarkGray, fontSize = 12.sp)
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        OutlinedTextField(value = newName, onValueChange = { newName = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(value = newDesc, onValueChange = { newDesc = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(value = newPrice, onValueChange = { newPrice = it }, label = { Text("Price") }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(value = newStock, onValueChange = { newStock = it }, label = { Text("Stock Quantity") }, modifier = Modifier.fillMaxWidth())
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = {
                         val priceDouble = newPrice.toDoubleOrNull() ?: 0.0
                         val stockInt = newStock.toIntOrNull() ?: 0
-                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, "Main Course", stockInt)
+                        // Use a dummy image URL for now if an image is selected, or handle actual upload in ViewModel
+                        val finalImageUrl = if (imageUri != null) imageUri.toString() else null
+                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, "Main Course", stockInt, finalImageUrl)
                         showAddDialog = false
                     }) {
                         Text("Add")
