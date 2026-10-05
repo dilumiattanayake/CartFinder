@@ -118,5 +118,18 @@ fun CartFinderNavGraph(
                 }
             )
         }
+        composable(Screen.PhiDashboard.route) {
+            com.sjay.cartfinder.phi.PhiDashboardScreen(navController = navController)
+        }
+        composable(
+            route = Screen.StallPhiDetails.route,
+            arguments = listOf(androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            com.sjay.cartfinder.phi.StallPhiDetailsScreen(
+                navController = navController,
+                stallId = stallId
+            )
+        }
     }
 }

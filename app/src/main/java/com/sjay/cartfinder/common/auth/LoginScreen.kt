@@ -48,6 +48,10 @@ fun LoginScreen(
                     navController.navigate(Screen.VendorDashboard.route) {
                         popUpTo(0)
                     }
+                } else if (role.equals("PHI", ignoreCase = true)) {
+                    navController.navigate(Screen.PhiDashboard.route) {
+                        popUpTo(0)
+                    }
                 } else {
                     navController.navigate(Screen.CustomerDashboard.route) {
                         popUpTo(0)

@@ -34,4 +34,10 @@ sealed class Screen(val route: String) {
     object PayHereSandbox : Screen("payhere_sandbox/{orderId}/{amount}") {
         fun createRoute(orderId: String, amount: Double) = "payhere_sandbox/$orderId/$amount"
     }
+
+    // Member 4 - PHI
+    object PhiDashboard : Screen("phi_dashboard")
+    object StallPhiDetails : Screen("phi_stall_details/{stallId}") {
+        fun createRoute(stallId: String) = "phi_stall_details/$stallId"
+    }
 }

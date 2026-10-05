@@ -119,11 +119,48 @@ fun VendorDashboardScreen(
 
                                     Button(
                                         onClick = { navController.navigate(Screen.VendorOrders.route) },
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
                                     ) {
                                         Icon(Icons.Filled.ShoppingCart, contentDescription = null) // Replace with better icon if needed
                                         Spacer(Modifier.width(8.dp))
                                         Text("View Incoming Orders")
+                                    }
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Divider()
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    
+                                    val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel()
+                                    val phiState by phiViewModel.phiState.collectAsState()
+                                    
+                                    LaunchedEffect(stall.id) {
+                                        phiViewModel.loadCertificate(stall.id)
+                                    }
+                                    
+                                    Text("PHI Certificate Status", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    
+                                    when (val pState = phiState) {
+                                        is com.sjay.cartfinder.phi.PhiState.CertificateData -> {
+                                            if (pState.certificate != null) {
+                                                Text("Status: ${pState.certificate.status}")
+                                                if (pState.certificate.status == "ACTIVE") {
+                                                    Text("Grade: ${pState.certificate.grade}")
+                                                }
+                                            } else {
+                                                Text("No Certificate found.")
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                                Button(onClick = { phiViewModel.requestCertificate(stall.id) }) {
+                                                    Text("Request PHI Certificate")
+                                                }
+                                            }
+                                        }
+                                        is com.sjay.cartfinder.phi.PhiState.Loading -> {
+                                            CircularProgressIndicator()
+                                        }
+                                        else -> {
+                                            Text("Loading PHI status...")
+                                        }
                                     }
                                 }
                             }

@@ -15,6 +15,7 @@ sealed class ShopState {
     object Idle : ShopState()
     object Loading : ShopState()
     data class Success(val stall: Stall?) : ShopState()
+    data class StallsList(val stalls: List<Stall>) : ShopState()
     data class Error(val message: String) : ShopState()
 }
 
@@ -32,6 +33,9 @@ class ShopViewModel(
     private val _shopState = MutableStateFlow<ShopState>(ShopState.Idle)
     val shopState: StateFlow<ShopState> = _shopState.asStateFlow()
 
+    private val _allStallsState = MutableStateFlow<ShopState>(ShopState.Idle)
+    val allStallsState: StateFlow<ShopState> = _allStallsState.asStateFlow()
+
     private val _productsState = MutableStateFlow<ProductsState>(ProductsState.Idle)
     val productsState: StateFlow<ProductsState> = _productsState.asStateFlow()
 
@@ -43,6 +47,18 @@ class ShopViewModel(
                 _shopState.value = ShopState.Success(result.getOrNull())
             } else {
                 _shopState.value = ShopState.Error(result.exceptionOrNull()?.message ?: "Failed to load shop")
+            }
+        }
+    }
+
+    fun loadAllStalls() {
+        _allStallsState.value = ShopState.Loading
+        viewModelScope.launch {
+            val result = repository.getAllStalls()
+            if (result.isSuccess) {
+                _allStallsState.value = ShopState.StallsList(result.getOrDefault(emptyList()))
+            } else {
+                _allStallsState.value = ShopState.Error(result.exceptionOrNull()?.message ?: "Failed to load stalls")
             }
         }
     }

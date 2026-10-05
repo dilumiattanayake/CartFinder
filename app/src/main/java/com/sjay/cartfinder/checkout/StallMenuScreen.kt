@@ -92,9 +92,34 @@ fun StallMenuScreen(
                     if (state.items.isEmpty()) {
                         Text("This stall has no products available yet.", modifier = Modifier.align(Alignment.Center))
                     } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(16.dp)
-                        ) {
+                        val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel()
+                        val phiState by phiViewModel.phiState.collectAsState()
+                        
+                        LaunchedEffect(stallId) {
+                            phiViewModel.loadCertificate(stallId)
+                        }
+                        
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            // PHI Header
+                            if (phiState is com.sjay.cartfinder.phi.PhiState.CertificateData) {
+                                val cert = (phiState as com.sjay.cartfinder.phi.PhiState.CertificateData).certificate
+                                if (cert != null && cert.status == "ACTIVE") {
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                                        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFE8F5E9)) // Light green
+                                    ) {
+                                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Filled.ShoppingCart, contentDescription = "Verified", tint = androidx.compose.ui.graphics.Color(0xFF4CAF50))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("PHI Certified: Grade ${cert.grade}", fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color(0xFF2E7D32))
+                                        }
+                                    }
+                                }
+                            }
+                        
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
+                            ) {
                             items(state.items) { menuItem ->
                                 MenuItemCard(menuItem = menuItem) {
                                     if (currentUserId.isNotEmpty()) {
@@ -112,6 +137,7 @@ fun StallMenuScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
+                        } // Close Column
                     }
                 }
                 else -> {}
