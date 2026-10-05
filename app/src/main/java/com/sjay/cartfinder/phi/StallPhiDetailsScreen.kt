@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sjay.cartfinder.core.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,6 +26,7 @@ fun StallPhiDetailsScreen(
     phiViewModel: PhiViewModel = viewModel()
 ) {
     val phiState by phiViewModel.phiState.collectAsState()
+    val stall by phiViewModel.stallState.collectAsState()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     
     var showInspectionDialog by remember { mutableStateOf(false) }
@@ -33,13 +35,14 @@ fun StallPhiDetailsScreen(
     var inspectionNotes by remember { mutableStateOf("") }
     
     LaunchedEffect(stallId) {
+        phiViewModel.loadStall(stallId)
         phiViewModel.loadCertificate(stallId)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("PHI Details") },
+                title = { Text(stall?.name?.let { "$it - PHI Details" } ?: "PHI Details") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
@@ -70,18 +73,26 @@ fun StallPhiDetailsScreen(
                                 Button(onClick = { phiViewModel.issueCertificate(stallId, "B") }) { Text("Approve (Grade B)") }
                             }
                         } else {
-                            Text("Grade: ${state.certificate.grade}")
+                        Text("Grade: ${state.certificate.grade}")
+                            Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Button(onClick = { navController.navigate(Screen.PhiCertificate.createRoute(stallId, stall?.name ?: "Stall")) }) {
+                                    Text("View Certificate")
+                                }
+                                OutlinedButton(onClick = { phiViewModel.deleteCertificate(stallId) }, colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                                    Text("Revoke/Delete")
+                                }
+                            }
                         }
                     } else {
                         Text("No Certificate Record")
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
-                    Divider()
+                    HorizontalDivider()
                     Spacer(modifier = Modifier.height(16.dp))
                     
-                    Button(onClick = { showInspectionDialog = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text("Add Inspection Record")
+                    Button(onClick = { navController.navigate(Screen.PhiSpotAudit.createRoute(stallId)) }, modifier = Modifier.fillMaxWidth()) {
+                        Text("Perform Spot Audit")
                     }
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -106,6 +117,25 @@ fun StallPhiDetailsScreen(
                                         Text("Score: ${insp.score}")
                                         Text("Result: ${insp.result}")
                                         Text("Notes: ${insp.notes}")
+                                        
+                                        Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.End) {
+                                            TextButton(onClick = {
+                                                // Pre-fill dialog for update
+                                                inspectionScore = insp.score.toString()
+                                                inspectionResult = insp.result
+                                                inspectionNotes = insp.notes
+                                                // We'd need an ID to update. We'll just delete and create a new one to simulate update.
+                                                phiViewModel.deleteInspection(stallId, insp.id)
+                                                showInspectionDialog = true
+                                            }) {
+                                                Text("Edit")
+                                            }
+                                            TextButton(onClick = {
+                                                phiViewModel.deleteInspection(stallId, insp.id)
+                                            }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                                                Text("Delete")
+                                            }
+                                        }
                                     }
                                 }
                             }

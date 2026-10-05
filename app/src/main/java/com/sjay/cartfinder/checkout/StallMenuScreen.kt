@@ -2,11 +2,13 @@ package com.sjay.cartfinder.checkout
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -105,13 +107,18 @@ fun StallMenuScreen(
                                 val cert = (phiState as com.sjay.cartfinder.phi.PhiState.CertificateData).certificate
                                 if (cert != null && cert.status == "ACTIVE") {
                                     Card(
-                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                                            .clickable {
+                                                navController.navigate(Screen.PhiCertificate.createRoute(stallId, stallName))
+                                            },
                                         colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFE8F5E9)) // Light green
                                     ) {
                                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                            Icon(Icons.Filled.ShoppingCart, contentDescription = "Verified", tint = androidx.compose.ui.graphics.Color(0xFF4CAF50))
+                                            Icon(Icons.Filled.VerifiedUser, contentDescription = "Verified", tint = androidx.compose.ui.graphics.Color(0xFF4CAF50))
                                             Spacer(modifier = Modifier.width(8.dp))
-                                            Text("PHI Certified: Grade ${cert.grade}", fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color(0xFF2E7D32))
+                                            Text("PHI Certified: Grade ${cert.grade} (Tap to view)", fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color(0xFF2E7D32), fontSize = 12.sp)
                                         }
                                     }
                                 }

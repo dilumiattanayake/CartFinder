@@ -2,6 +2,7 @@ package com.sjay.cartfinder.reviews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import kotlinx.coroutines.tasks.await
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -75,6 +76,20 @@ fun ReviewListScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            var role by remember { mutableStateOf("Customer") }
+            LaunchedEffect(currentUserId) {
+                if (currentUserId.isNotEmpty()) {
+                    try {
+                        val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                            .collection("users").document(currentUserId).get()
+                            .await()
+                        role = doc.getString("role") ?: "Customer"
+                    } catch (e: Exception) {}
+                }
+            }
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = role)
         }
     ) { padding ->
         LazyColumn(

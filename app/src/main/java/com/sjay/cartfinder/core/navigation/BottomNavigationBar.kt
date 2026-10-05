@@ -28,10 +28,12 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var route: 
     object VendorOrders : BottomNavItem("Orders", Icons.Filled.List, Screen.VendorOrders.route)
 
     // PHI
-    object PhiHome : BottomNavItem("Dashboard", Icons.Filled.Home, Screen.PhiDashboard.route)
+    object PhiAlerts : BottomNavItem("Alerts", Icons.Filled.List, Screen.PhiAlerts.route)
+    object PhiHome : BottomNavItem("Stalls", Icons.Filled.Store, Screen.PhiDashboard.route)
+    object PhiSpotAudit : BottomNavItem("Spot Audit", Icons.Filled.List, Screen.PhiSpotAudit.createRoute()) // No dummy argument needed
 
     // Shared
-    class Settings(role: String) : BottomNavItem("Settings", Icons.Filled.Settings, Screen.Settings.createRoute(role))
+    class Settings(role: String) : BottomNavItem("Profile", Icons.Filled.Settings, Screen.Settings.createRoute(role))
 }
 
 @Composable
@@ -50,7 +52,9 @@ fun BottomNavigationBar(navController: NavController, role: String) {
             BottomNavItem.Settings("vendor")
         )
         "phi" -> listOf(
+            BottomNavItem.PhiAlerts,
             BottomNavItem.PhiHome,
+            BottomNavItem.PhiSpotAudit,
             BottomNavItem.Settings("phi")
         )
         else -> emptyList()

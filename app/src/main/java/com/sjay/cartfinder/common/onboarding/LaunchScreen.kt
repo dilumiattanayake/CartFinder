@@ -38,15 +38,16 @@ fun LaunchScreen(navController: NavController) {
                     .collection("users").document(auth.currentUser!!.uid).get()
                     .await()
                 val role = doc.getString("role") ?: "Customer"
-                if (role == "Vendor") {
+                if (role.equals("Vendor", ignoreCase = true)) {
                     navController.navigate(Screen.VendorDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+                } else if (role.equals("PHI", ignoreCase = true)) {
+                    navController.navigate(Screen.PhiDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
                 } else {
-                    // Navigate to customer dashboard (ReviewList for now as placeholder)
-                    navController.navigate(Screen.ReviewList.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+                    navController.navigate(Screen.CustomerDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
                 }
             } catch (e: Exception) {
                 // Fallback
-                navController.navigate(Screen.ReviewList.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
+                navController.navigate(Screen.CustomerDashboard.route) { popUpTo(Screen.Launch.route) { inclusive = true } }
             }
         } else if (onboardingCompleted) {
             navController.navigate(Screen.ChooseRole.route) {

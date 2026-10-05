@@ -39,6 +39,13 @@ sealed class Screen(val route: String) {
 
     // Member 4 - PHI
     object PhiDashboard : Screen("phi_dashboard")
+    object PhiAlerts : Screen("phi_alerts")
+    object PhiSpotAudit : Screen("phi_spot_audit?stallId={stallId}") {
+        fun createRoute(stallId: String? = null) = if (stallId != null) "phi_spot_audit?stallId=$stallId" else "phi_spot_audit"
+    }
+    object PhiCertificate : Screen("phi_certificate/{stallId}/{stallName}") {
+        fun createRoute(stallId: String, stallName: String) = "phi_certificate/$stallId/$stallName"
+    }
     object StallPhiDetails : Screen("phi_stall_details/{stallId}") {
         fun createRoute(stallId: String) = "phi_stall_details/$stallId"
     }

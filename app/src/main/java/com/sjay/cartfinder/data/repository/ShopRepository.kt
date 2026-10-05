@@ -67,6 +67,16 @@ class ShopRepository {
         }
     }
 
+    suspend fun getStallById(stallId: String): Result<Stall?> {
+        return try {
+            val snapshot = stallsCollection.document(stallId).get().await()
+            val stall = snapshot.toObject(Stall::class.java)
+            Result.success(stall)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     // --- MenuItem CRUD ---
 
     suspend fun addMenuItem(stallId: String, menuItem: MenuItem): Result<String> {

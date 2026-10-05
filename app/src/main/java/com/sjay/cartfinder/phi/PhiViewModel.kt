@@ -16,15 +16,29 @@ sealed class PhiState {
     object Loading : PhiState()
     data class CertificateData(val certificate: Certificate?) : PhiState()
     data class InspectionData(val inspections: List<Inspection>) : PhiState()
+    data class AlertData(val alerts: List<PhiAlert>) : PhiState()
     data class Error(val message: String) : PhiState()
     object Success : PhiState()
 }
 
 class PhiViewModel : ViewModel() {
     private val repository = PhiRepository()
+    private val shopRepository = com.sjay.cartfinder.data.repository.ShopRepository()
 
     private val _phiState = MutableStateFlow<PhiState>(PhiState.Idle)
     val phiState: StateFlow<PhiState> = _phiState.asStateFlow()
+
+    private val _stallState = MutableStateFlow<com.sjay.cartfinder.data.model.Stall?>(null)
+    val stallState: StateFlow<com.sjay.cartfinder.data.model.Stall?> = _stallState.asStateFlow()
+
+    fun loadStall(stallId: String) {
+        viewModelScope.launch {
+            val result = shopRepository.getStallById(stallId)
+            if (result.isSuccess) {
+                _stallState.value = result.getOrNull()
+            }
+        }
+    }
 
     fun loadCertificate(stallId: String) {
         viewModelScope.launch {
@@ -96,6 +110,57 @@ class PhiViewModel : ViewModel() {
             if (result.isSuccess) {
                 _phiState.value = PhiState.Success
                 loadInspections(stallId)
+            } else {
+                _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun deleteCertificate(stallId: String) {
+        viewModelScope.launch {
+            _phiState.value = PhiState.Loading
+            val result = repository.deleteCertificate(stallId)
+            if (result.isSuccess) {
+                _phiState.value = PhiState.Success
+                loadCertificate(stallId)
+            } else {
+                _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun deleteInspection(stallId: String, inspectionId: String) {
+        viewModelScope.launch {
+            _phiState.value = PhiState.Loading
+            val result = repository.deleteInspection(inspectionId)
+            if (result.isSuccess) {
+                _phiState.value = PhiState.Success
+                loadInspections(stallId)
+            } else {
+                _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun updateInspection(stallId: String, inspection: Inspection) {
+        viewModelScope.launch {
+            _phiState.value = PhiState.Loading
+            val result = repository.updateInspection(inspection)
+            if (result.isSuccess) {
+                _phiState.value = PhiState.Success
+                loadInspections(stallId)
+            } else {
+                _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun loadAllAlerts() {
+        viewModelScope.launch {
+            _phiState.value = PhiState.Loading
+            val result = repository.getAllActiveAlerts()
+            if (result.isSuccess) {
+                _phiState.value = PhiState.AlertData(result.getOrDefault(emptyList()))
             } else {
                 _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
             }

@@ -48,11 +48,38 @@ class PhiRepository {
         }
     }
 
+    suspend fun deleteCertificate(stallId: String): Result<Unit> {
+        return try {
+            certificatesCollection.document(stallId).delete().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     // --- Inspections ---
     suspend fun addInspection(inspection: Inspection): Result<Unit> {
         return try {
             val docRef = inspectionsCollection.document()
             docRef.set(inspection.copy(id = docRef.id)).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateInspection(inspection: Inspection): Result<Unit> {
+        return try {
+            inspectionsCollection.document(inspection.id).set(inspection).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteInspection(inspectionId: String): Result<Unit> {
+        return try {
+            inspectionsCollection.document(inspectionId).delete().await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -88,6 +115,20 @@ class PhiRepository {
         return try {
             val snapshot = alertsCollection
                 .whereEqualTo("stallId", stallId)
+                .whereEqualTo("status", "OPEN")
+                .get()
+                .await()
+            val list = snapshot.documents.mapNotNull { it.toObject(PhiAlert::class.java) }
+                .sortedByDescending { it.createdAt }
+            Result.success(list)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getAllActiveAlerts(): Result<List<PhiAlert>> {
+        return try {
+            val snapshot = alertsCollection
                 .whereEqualTo("status", "OPEN")
                 .get()
                 .await()

@@ -135,5 +135,37 @@ fun CartFinderNavGraph(
                 stallId = stallId
             )
         }
+        composable(Screen.PhiAlerts.route) {
+            com.sjay.cartfinder.phi.PhiAlertsScreen(navController = navController)
+        }
+        composable(
+            route = Screen.PhiSpotAudit.route,
+            arguments = listOf(androidx.navigation.navArgument("stallId") {
+                type = androidx.navigation.NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            com.sjay.cartfinder.phi.PhiSpotAuditScreen(
+                navController = navController,
+                stallId = stallId
+            )
+        }
+        composable(
+            route = Screen.PhiCertificate.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            val stallName = backStackEntry.arguments?.getString("stallName") ?: ""
+            com.sjay.cartfinder.phi.PhiCertificateScreen(
+                navController = navController,
+                stallId = stallId,
+                stallName = stallName
+            )
+        }
     }
 }
