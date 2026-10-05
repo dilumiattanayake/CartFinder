@@ -1,19 +1,31 @@
 package com.sjay.cartfinder.shop
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.Location
@@ -38,6 +50,15 @@ fun EditShopScreen(
     var category by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var location by remember { mutableStateOf(Location()) }
+    var imageUrl by remember { mutableStateOf<String?>(null) }
+    
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            imageUrl = uri.toString()
+        }
+    }
 
     // Pre-fill existing data if we have it
     LaunchedEffect(shopState) {
@@ -48,6 +69,7 @@ fun EditShopScreen(
                 if (description.isEmpty()) description = stall.description
                 if (category.isEmpty()) category = stall.category
                 if (phone.isEmpty()) phone = stall.phone ?: ""
+                if (imageUrl == null) imageUrl = stall.imageUrl
                 
                 // If we haven't just picked a new location, use the existing one
                 if (pickedLat == null && pickedLon == null) {
@@ -87,6 +109,34 @@ fun EditShopScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Image Picker
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.LightGray)
+                    .clickable { imagePickerLauncher.launch("image/*") },
+                contentAlignment = Alignment.Center
+            ) {
+                if (imageUrl != null) {
+                    Image(
+                        painter = rememberAsyncImagePainter(imageUrl),
+                        contentDescription = "Shop Image",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.Gray)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Tap to upload Shop Image", color = Color.Gray, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -141,7 +191,7 @@ fun EditShopScreen(
             
             Button(
                 onClick = { 
-                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, location)
+                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, location, imageUrl)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),

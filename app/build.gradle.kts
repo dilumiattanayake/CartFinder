@@ -61,4 +61,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.osmdroid.android)
     implementation(libs.zxing.core)
+    implementation(libs.coil.compose)
 }

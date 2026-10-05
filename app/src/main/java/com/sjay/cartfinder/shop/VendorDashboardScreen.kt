@@ -1,24 +1,33 @@
 package com.sjay.cartfinder.shop
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.core.navigation.Screen
+import com.sjay.cartfinder.data.model.MenuItem
+import com.sjay.cartfinder.data.model.Stall
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +37,9 @@ fun VendorDashboardScreen(
 ) {
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val shopState by viewModel.shopState.collectAsState()
+    val productsState by viewModel.productsState.collectAsState()
+    val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel()
+    val phiState by phiViewModel.phiState.collectAsState()
 
     LaunchedEffect(currentUserId) {
         if (currentUserId.isNotEmpty()) {
@@ -36,11 +48,6 @@ fun VendorDashboardScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Vendor Dashboard", fontWeight = FontWeight.Bold) }
-            )
-        },
         bottomBar = {
             com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "vendor")
         }
@@ -54,20 +61,14 @@ fun VendorDashboardScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize().background(Color(0xFFF9FAFB)),
+                contentAlignment = Alignment.TopCenter
             ) {
                 when (val state = shopState) {
-                    is ShopState.Loading -> {
-                        // Managed by PullToRefreshBox
-                    }
-                    is ShopState.Error -> {
-                        Text(text = state.message, color = MaterialTheme.colorScheme.error)
-                    }
                     is ShopState.Success -> {
                         if (state.stall == null) {
                             // Vendor doesn't have a shop yet
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                                 Text(
                                     text = "You haven't set up your stall yet.",
                                     style = MaterialTheme.typography.titleMedium,
@@ -80,132 +81,315 @@ fun VendorDashboardScreen(
                                 }
                             }
                         } else {
-                            // Vendor has a shop
                             val stall = state.stall
-                            rememberScrollState().let { scrollState ->
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .verticalScroll(scrollState)
-                                        .padding(16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Spacer(modifier = Modifier.height(32.dp))
-                                    Text(
-                                        text = stall.name,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = stall.description,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.padding(vertical = 8.dp)
-                                    )
-                                    
-                                    Spacer(modifier = Modifier.height(32.dp))
-
-                                    Button(
-                                        onClick = { navController.navigate(Screen.EditShop.route) },
-                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                    ) {
-                                        Icon(Icons.Filled.Edit, contentDescription = null)
-                                        Spacer(Modifier.width(8.dp))
-                                        Text("Edit Stall Details & Location")
-                                    }
-
-                                    Button(
-                                        onClick = { navController.navigate(Screen.ProductManagement.route) },
-                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                    ) {
-                                        Icon(Icons.Filled.ShoppingCart, contentDescription = null)
-                                        Spacer(Modifier.width(8.dp))
-                                        Text("Manage Products")
-                                    }
-
-                                    Button(
-                                        onClick = { navController.navigate(Screen.VendorOrders.route) },
-                                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-                                    ) {
-                                        Icon(Icons.Filled.ShoppingCart, contentDescription = null) // Replace with better icon if needed
-                                        Spacer(Modifier.width(8.dp))
-                                        Text("View Incoming Orders")
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    Divider()
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                    
-                                    val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel()
-                                    val phiState by phiViewModel.phiState.collectAsState()
-                                    
-                                    LaunchedEffect(stall.id) {
-                                        phiViewModel.loadCertificate(stall.id)
-                                    }
-                                    
-                                    Text("PHI Certificate Status", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    
-                                    when (val pState = phiState) {
-                                        is com.sjay.cartfinder.phi.PhiState.CertificateData -> {
-                                            if (pState.certificate != null) {
-                                                val cert = pState.certificate
-                                                val bgColor = if (cert.status == "ACTIVE") androidx.compose.ui.graphics.Color(0xFFD1FAE5) else if (cert.status == "PENDING_REQUEST") androidx.compose.ui.graphics.Color(0xFFFEF3C7) else androidx.compose.ui.graphics.Color(0xFFFEE2E2)
-                                                val contentColor = if (cert.status == "ACTIVE") androidx.compose.ui.graphics.Color(0xFF065F46) else if (cert.status == "PENDING_REQUEST") androidx.compose.ui.graphics.Color(0xFF92400E) else androidx.compose.ui.graphics.Color(0xFF991B1B)
-                                                
-                                                Card(
-                                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                                    colors = CardDefaults.cardColors(containerColor = bgColor)
-                                                ) {
-                                                    Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                                        Icon(
-                                                            if (cert.status == "ACTIVE") Icons.Filled.VerifiedUser else Icons.Filled.Security,
-                                                            contentDescription = null,
-                                                            tint = contentColor,
-                                                            modifier = Modifier.size(48.dp)
-                                                        )
-                                                        Spacer(modifier = Modifier.height(8.dp))
-                                                        Text("Status: ${cert.status}", fontWeight = FontWeight.Bold, color = contentColor)
-                                                        if (cert.status == "ACTIVE") {
-                                                            Text("Grade: ${cert.grade} (Score: ${cert.score}/100)", color = contentColor)
-                                                        }
-                                                        Spacer(modifier = Modifier.height(12.dp))
-                                                        Button(
-                                                            onClick = { navController.navigate(Screen.PhiCertificate.createRoute(stall.id, stall.name)) },
-                                                            colors = ButtonDefaults.buttonColors(containerColor = contentColor)
-                                                        ) {
-                                                            Text("View / Download Full Certificate")
-                                                        }
-                                                    }
-                                                }
-                                            } else {
-                                                Card(
-                                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                                    colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF3F4F6))
-                                                ) {
-                                                    Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                                        Icon(Icons.Filled.Security, contentDescription = null, tint = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.size(48.dp))
-                                                        Spacer(modifier = Modifier.height(8.dp))
-                                                        Text("No Certificate Found", color = androidx.compose.ui.graphics.Color.DarkGray)
-                                                        Spacer(modifier = Modifier.height(12.dp))
-                                                        Button(onClick = { phiViewModel.requestCertificate(stall.id) }) {
-                                                            Text("Request PHI Certificate")
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        is com.sjay.cartfinder.phi.PhiState.Loading -> {
-                                            CircularProgressIndicator()
-                                        }
-                                        else -> {
-                                            Text("Loading PHI status...")
-                                        }
-                                    }
-                                }
+                            LaunchedEffect(stall.id) {
+                                phiViewModel.loadCertificate(stall.id)
+                                viewModel.loadProducts(stall.id)
                             }
+                            VendorProfileContent(stall, navController, phiState, productsState, viewModel)
                         }
                     }
                     else -> {}
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun VendorProfileContent(
+    stall: Stall,
+    navController: NavController,
+    phiState: com.sjay.cartfinder.phi.PhiState,
+    productsState: ProductsState,
+    viewModel: ShopViewModel
+) {
+    val scrollState = rememberScrollState()
+    var isOpen by remember { mutableStateOf(true) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
+        // Cover Image Section
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(260.dp)
+                .background(Color.DarkGray)
+        ) {
+            if (stall.imageUrl != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(stall.imageUrl),
+                    contentDescription = "Cover Image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Filled.Store, contentDescription = null, modifier = Modifier.size(64.dp), tint = Color.LightGray)
+                }
+            }
+            
+            // Top Right Settings
+            IconButton(
+                onClick = { /* TODO settings */ },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .background(Color.White.copy(alpha = 0.8f), CircleShape)
+            ) {
+                Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.Black)
+            }
+
+            // Bottom Labels
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Row(
+                    modifier = Modifier
+                        .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                        .clickable { navController.navigate(Screen.EditShop.route) }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = Color(0xFFF39C12), modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Tap photo to update", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+                
+                Text(
+                    text = "Stall ID: #${stall.id.take(6).uppercase()}",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .background(Color(0xFF00B894), RoundedCornerShape(16.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                )
+            }
+        }
+
+        // Info Section
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stall.name, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Filled.CheckCircle, contentDescription = "Verified", tint = Color(0xFF27AE60), modifier = Modifier.size(20.dp))
+                }
+                OutlinedButton(
+                    onClick = { navController.navigate(Screen.EditShop.route) },
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    modifier = Modifier.height(32.dp)
+                ) {
+                    Text("Edit Info", color = Color(0xFFF39C12), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                }
+            }
+            
+            Text(stall.location.address ?: "No Address Provided", color = Color.Gray, fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(stall.category, color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("4.2", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("120+ ratings", color = Color.Gray, fontSize = 14.sp)
+                }
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .background(if (isOpen) Color(0xFFE8F5E9) else Color(0xFFFFEBEE), RoundedCornerShape(24.dp))
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Text(if (isOpen) "Open Now" else "Closed", color = if (isOpen) Color(0xFF2E7D32) else Color(0xFFC62828), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Switch(
+                        checked = isOpen,
+                        onCheckedChange = { isOpen = it },
+                        modifier = Modifier.height(24.dp)
+                    )
+                }
+            }
+        }
+        
+        // PHI Certificate
+        if (phiState is com.sjay.cartfinder.phi.PhiState.CertificateData) {
+            val cert = phiState.certificate
+            if (cert != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier.size(48.dp).background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = Color(0xFF27AE60))
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("PHI Certified", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("• Exp Apr 2026", color = Color.Gray, fontSize = 12.sp)
+                            }
+                            Text("Audited by Off. N. Silva (PHI-7104)", color = Color.Gray, fontSize = 12.sp)
+                        }
+                        
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .background(Color(0xFFF9FAFB), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = Color(0xFF27AE60), modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Pass", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.DarkGray)
+                        }
+                    }
+                }
+            }
+        }
+
+        // Opening Hours
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Schedule, contentDescription = null, tint = Color(0xFFF39C12), modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("OPENING HOURS", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    }
+                    Text("Edit Schedule", color = Color(0xFFF39C12), fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.clickable { navController.navigate(Screen.EditShop.route) })
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Mon: Closed", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                        Text("Tue: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                        Text("Fri: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Wed: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                        Text("Thu: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                        Text("Sat-Sun: 5:30 PM - 11:30 PM", fontSize = 12.sp, color = Color.DarkGray, modifier = Modifier.padding(vertical = 2.dp))
+                    }
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Dishes & Menu Items Header
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text("DISHES & MENU ITEMS", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
+                    Text("Manage daily stock and stall visibility", color = Color.Gray, fontSize = 12.sp)
+                }
+                
+                val productCount = if (productsState is ProductsState.Success) productsState.products.size else 0
+                Text(
+                    text = "$productCount Active Items",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = Color.DarkGray,
+                    modifier = Modifier.background(Color(0xFFE5E7EB), RoundedCornerShape(16.dp)).padding(horizontal = 10.dp, vertical = 4.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            if (productsState is ProductsState.Success) {
+                productsState.products.take(2).forEach { product ->
+                    VendorProductSummaryCard(product, navController)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                if (productsState.products.isEmpty()) {
+                    Text("No products added yet. Go to Menu to add some.", color = Color.Gray, modifier = Modifier.padding(8.dp))
+                }
+            } else {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun VendorProductSummaryCard(product: MenuItem, navController: NavController) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Screen.ProductManagement.route) },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Image Placeholder (or real if available)
+            Box(
+                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFFFFF3E0)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Filled.RestaurantMenu, contentDescription = null, tint = Color(0xFFF39C12))
+                // Green dot for availability
+                if (product.stockQuantity > 0) {
+                    Box(modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp).size(12.dp).background(Color(0xFF27AE60), CircleShape))
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(product.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Rs. ${product.price.toInt()}", color = Color(0xFFF39C12), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Row(
+                        modifier = Modifier.background(Color(0xFFFFEBEE), RoundedCornerShape(4.dp)).padding(horizontal = 4.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Favorite, contentDescription = null, tint = Color(0xFFE53935), modifier = Modifier.size(10.dp))
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text("Local Favorite", color = Color(0xFFE53935), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+                Text(if (product.stockQuantity > 0) "Stock: Plenty" else "Out of stock", color = Color.Gray, fontSize = 12.sp)
+            }
+            
+            Column(horizontalAlignment = Alignment.End) {
+                Switch(checked = product.stockQuantity > 0, onCheckedChange = { /* toggle logic */ }, modifier = Modifier.scale(0.8f))
+                Row {
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit", tint = Color.Gray, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Gray, modifier = Modifier.size(16.dp))
                 }
             }
         }

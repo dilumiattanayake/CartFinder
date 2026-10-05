@@ -63,7 +63,7 @@ class ShopViewModel(
         }
     }
 
-    fun createOrUpdateShop(ownerId: String, name: String, description: String, category: String, phone: String, location: Location) {
+    fun createOrUpdateShop(ownerId: String, name: String, description: String, category: String, phone: String, location: Location, imageUrl: String? = null, openingHours: String = "") {
         _shopState.value = ShopState.Loading
         viewModelScope.launch {
             // First check if shop exists
@@ -76,7 +76,9 @@ class ShopViewModel(
                         description = description,
                         category = category,
                         phone = phone,
-                        location = location
+                        location = location,
+                        imageUrl = imageUrl ?: existing.imageUrl,
+                        openingHours = openingHours.ifEmpty { existing.openingHours }
                     )
                     val result = repository.updateStall(updated)
                     if (result.isSuccess) {
@@ -95,7 +97,9 @@ class ShopViewModel(
                 description = description,
                 category = category,
                 phone = phone,
-                location = location
+                location = location,
+                imageUrl = imageUrl,
+                openingHours = openingHours
             )
             val createResult = repository.createStall(newStall)
             if (createResult.isSuccess) {
