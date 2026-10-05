@@ -7,6 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -146,15 +148,49 @@ fun VendorDashboardScreen(
                                     when (val pState = phiState) {
                                         is com.sjay.cartfinder.phi.PhiState.CertificateData -> {
                                             if (pState.certificate != null) {
-                                                Text("Status: ${pState.certificate.status}")
-                                                if (pState.certificate.status == "ACTIVE") {
-                                                    Text("Grade: ${pState.certificate.grade}")
+                                                val cert = pState.certificate
+                                                val bgColor = if (cert.status == "ACTIVE") androidx.compose.ui.graphics.Color(0xFFD1FAE5) else if (cert.status == "PENDING_REQUEST") androidx.compose.ui.graphics.Color(0xFFFEF3C7) else androidx.compose.ui.graphics.Color(0xFFFEE2E2)
+                                                val contentColor = if (cert.status == "ACTIVE") androidx.compose.ui.graphics.Color(0xFF065F46) else if (cert.status == "PENDING_REQUEST") androidx.compose.ui.graphics.Color(0xFF92400E) else androidx.compose.ui.graphics.Color(0xFF991B1B)
+                                                
+                                                Card(
+                                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                                    colors = CardDefaults.cardColors(containerColor = bgColor)
+                                                ) {
+                                                    Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                                                        Icon(
+                                                            if (cert.status == "ACTIVE") Icons.Filled.VerifiedUser else Icons.Filled.Security,
+                                                            contentDescription = null,
+                                                            tint = contentColor,
+                                                            modifier = Modifier.size(48.dp)
+                                                        )
+                                                        Spacer(modifier = Modifier.height(8.dp))
+                                                        Text("Status: ${cert.status}", fontWeight = FontWeight.Bold, color = contentColor)
+                                                        if (cert.status == "ACTIVE") {
+                                                            Text("Grade: ${cert.grade} (Score: ${cert.score}/100)", color = contentColor)
+                                                        }
+                                                        Spacer(modifier = Modifier.height(12.dp))
+                                                        Button(
+                                                            onClick = { navController.navigate(Screen.PhiCertificate.createRoute(stall.id, stall.name)) },
+                                                            colors = ButtonDefaults.buttonColors(containerColor = contentColor)
+                                                        ) {
+                                                            Text("View / Download Full Certificate")
+                                                        }
+                                                    }
                                                 }
                                             } else {
-                                                Text("No Certificate found.")
-                                                Spacer(modifier = Modifier.height(8.dp))
-                                                Button(onClick = { phiViewModel.requestCertificate(stall.id) }) {
-                                                    Text("Request PHI Certificate")
+                                                Card(
+                                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                                    colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF3F4F6))
+                                                ) {
+                                                    Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                                                        Icon(Icons.Filled.Security, contentDescription = null, tint = androidx.compose.ui.graphics.Color.Gray, modifier = Modifier.size(48.dp))
+                                                        Spacer(modifier = Modifier.height(8.dp))
+                                                        Text("No Certificate Found", color = androidx.compose.ui.graphics.Color.DarkGray)
+                                                        Spacer(modifier = Modifier.height(12.dp))
+                                                        Button(onClick = { phiViewModel.requestCertificate(stall.id) }) {
+                                                            Text("Request PHI Certificate")
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

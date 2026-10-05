@@ -109,9 +109,22 @@ fun PhiCertificateScreen(
             
             Spacer(modifier = Modifier.weight(1f))
             
+            val context = androidx.compose.ui.platform.LocalContext.current
+            
             // Footer Buttons
             Button(
-                onClick = { },
+                onClick = {
+                    if (phiState is PhiState.CertificateData && (phiState as PhiState.CertificateData).certificate != null) {
+                        PdfDownloader.downloadCertificatePdf(
+                            context = context,
+                            cert = (phiState as PhiState.CertificateData).certificate!!,
+                            stallName = stallName,
+                            stallAddress = stall?.location?.address ?: "Pending"
+                        )
+                    } else {
+                        android.widget.Toast.makeText(context, "Certificate not ready", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22))
             ) {
@@ -121,7 +134,9 @@ fun PhiCertificateScreen(
             }
             
             OutlinedButton(
-                onClick = { },
+                onClick = {
+                    android.widget.Toast.makeText(context, "Entering Kiosk Mode...", android.widget.Toast.LENGTH_SHORT).show()
+                },
                 modifier = Modifier.fillMaxWidth().padding(16.dp, 8.dp, 16.dp, 16.dp)
             ) {
                 Icon(Icons.Outlined.Fullscreen, contentDescription = null)

@@ -118,7 +118,7 @@ fun StallMenuScreen(
                                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                                             Icon(Icons.Filled.VerifiedUser, contentDescription = "Verified", tint = androidx.compose.ui.graphics.Color(0xFF4CAF50))
                                             Spacer(modifier = Modifier.width(8.dp))
-                                            Text("PHI Certified: Grade ${cert.grade} (Tap to view)", fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color(0xFF2E7D32), fontSize = 12.sp)
+                                            Text("PHI Certified: Grade ${cert.grade} (Score: ${cert.score}/100) - Tap to view", fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color(0xFF2E7D32), fontSize = 12.sp)
                                         }
                                     }
                                 }

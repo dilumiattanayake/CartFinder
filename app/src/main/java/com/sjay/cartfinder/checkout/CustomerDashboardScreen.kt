@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -109,7 +110,33 @@ fun StallCard(stall: Stall, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(stall.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text(stall.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                
+                // Fetch Certificate specifically for this card
+                val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel(key = stall.id)
+                val phiState by phiViewModel.phiState.collectAsState()
+                
+                LaunchedEffect(stall.id) {
+                    phiViewModel.loadCertificate(stall.id)
+                }
+                
+                var certScore: String? = null
+                if (phiState is com.sjay.cartfinder.phi.PhiState.CertificateData) {
+                    val cert = (phiState as com.sjay.cartfinder.phi.PhiState.CertificateData).certificate
+                    if (cert != null && cert.status == "ACTIVE") {
+                        certScore = "Grade ${cert.grade} (${cert.score})"
+                    }
+                }
+                
+                if (certScore != null) {
+                    Badge(containerColor = androidx.compose.ui.graphics.Color(0xFF27AE60)) {
+                        Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = androidx.compose.ui.graphics.Color.White, modifier = Modifier.size(12.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(certScore!!, color = androidx.compose.ui.graphics.Color.White)
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Text(stall.description, style = MaterialTheme.typography.bodyMedium)
         }
