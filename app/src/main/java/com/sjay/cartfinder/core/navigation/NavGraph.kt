@@ -10,6 +10,12 @@ import com.sjay.cartfinder.common.auth.ChooseRoleScreen
 import com.sjay.cartfinder.common.auth.LoginScreen
 import com.sjay.cartfinder.common.auth.SignUpScreen
 import com.sjay.cartfinder.common.settings.SettingsScreen
+import com.sjay.cartfinder.common.settings.AboutUsScreen
+import com.sjay.cartfinder.common.settings.PrivacyPolicyScreen
+import com.sjay.cartfinder.common.settings.TermsOfServiceScreen
+import com.sjay.cartfinder.common.settings.HelpSupportScreen
+import com.sjay.cartfinder.common.settings.EditProfileScreen
+import com.sjay.cartfinder.common.settings.ChangePasswordScreen
 import com.sjay.cartfinder.common.profile.ProfileScreen
 import com.sjay.cartfinder.reviews.ReviewListScreen
 import com.sjay.cartfinder.reviews.SubmitReviewScreen
@@ -205,6 +211,24 @@ fun CartFinderNavGraph(
         }
         composable(Screen.Notifications.route) {
             com.sjay.cartfinder.notifications.NotificationsScreen(navController = navController)
+        }
+        composable(Screen.AboutUs.route) {
+            AboutUsScreen(navController = navController)
+        }
+        composable(Screen.PrivacyPolicy.route) {
+            PrivacyPolicyScreen(navController = navController)
+        }
+        composable(Screen.TermsOfService.route) {
+            TermsOfServiceScreen(navController = navController)
+        }
+        composable(Screen.HelpSupport.route) {
+            HelpSupportScreen(navController = navController)
+        }
+        composable(Screen.EditProfile.route) {
+            EditProfileScreen(navController = navController)
+        }
+        composable(Screen.ChangePassword.route) {
+            ChangePasswordScreen(navController = navController)
         }
     }
 }

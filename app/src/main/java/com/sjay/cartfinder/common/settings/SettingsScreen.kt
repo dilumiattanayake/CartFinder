@@ -1,6 +1,5 @@
 package com.sjay.cartfinder.common.settings
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,24 +17,53 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.sjay.cartfinder.common.rememberSafeImagePainter
 import com.sjay.cartfinder.core.navigation.BottomNavigationBar
 import com.sjay.cartfinder.core.navigation.Screen
-import com.sjay.cartfinder.shop.ShopState
-import com.sjay.cartfinder.shop.ShopViewModel
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
 @Composable
 fun SettingsScreen(navController: NavController, role: String) {
     val currentUser = FirebaseAuth.getInstance().currentUser
+    val viewModel: SettingsViewModel = viewModel()
+    
+    val customerStats by viewModel.customerStats.collectAsState()
+    val vendorStats by viewModel.vendorStats.collectAsState()
+    val phiStats by viewModel.phiStats.collectAsState()
+
+    LaunchedEffect(currentUser?.uid) {
+        val uid = currentUser?.uid ?: return@LaunchedEffect
+        when (role.lowercase()) {
+            "vendor" -> viewModel.loadVendorStats(uid)
+            "phi" -> viewModel.loadPhiStats()
+            else -> viewModel.loadCustomerStats(uid)
+        }
+    }
+
+    val stats = when (role.lowercase()) {
+        "vendor" -> listOf(
+            "PRODUCTS" to "${vendorStats.products}",
+            "ORDERS" to "${vendorStats.orders}",
+            "REVIEWS" to "${vendorStats.reviews}"
+        )
+        "phi" -> listOf(
+            "INSPECTIONS" to "${phiStats.inspections}",
+            "CERTIFIED" to "${phiStats.certified}"
+        )
+        else -> listOf(
+            "ORDERS" to "${customerStats.orders}",
+            "REVIEWS" to "${customerStats.reviews}",
+            "CARTS" to "${customerStats.carts}"
+        )
+    }
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController, role = role)
@@ -45,230 +73,17 @@ fun SettingsScreen(navController: NavController, role: String) {
             .padding(padding)
             .fillMaxSize()
             .background(Color(0xFFF9F9F9))) {
-            when (role.lowercase()) {
-                "vendor" -> VendorSettingsScreen(navController, currentUser)
-                "phi" -> PhiProfileScreen(navController, currentUser)
-                else -> CustomerProfileScreen(navController, currentUser)
-            }
+            UnifiedProfileScreen(navController, currentUser, role, stats)
         }
     }
 }
 
 @Composable
-fun VendorSettingsScreen(navController: NavController, currentUser: FirebaseUser?) {
-    val viewModel: ShopViewModel = viewModel()
-    val shopState by viewModel.shopState.collectAsState()
-
-    LaunchedEffect(currentUser?.uid) {
-        currentUser?.uid?.let { viewModel.loadVendorShop(it) }
-    }
-
-    val stall = (shopState as? ShopState.Success)?.stall
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        ) {
-            if (stall?.imageUrl != null) {
-                Image(
-                    painter = rememberSafeImagePainter(stall.imageUrl),
-                    contentDescription = "Cover Image",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.DarkGray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Filled.Store, contentDescription = null, tint = Color.White, modifier = Modifier.size(64.dp))
-                }
-            }
-
-            // Top bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier
-                        .background(Color.Black.copy(alpha = 0.5f), CircleShape)
-                        .size(40.dp)
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                }
-            }
-
-            // Overlay elements
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Row(
-                    modifier = Modifier
-                        .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(16.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Tap photo to update", color = Color.White, fontSize = 12.sp)
-                }
-                
-                Text(
-                    text = "Stall ID: #${stall?.id?.takeLast(6)?.uppercase() ?: "UNKNOWN"}",
-                    color = Color.White,
-                    fontSize = 12.sp,
-                    modifier = Modifier
-                        .background(Color(0xFF00C853), RoundedCornerShape(16.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Settings", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(stall?.name ?: "Unknown Stall", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = Color.DarkGray)
-        Text(currentUser?.email ?: "", fontSize = 14.sp, color = Color(0xFFFF5252))
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        SettingsItem(Icons.Filled.Person, "Account")
-        SettingsItem(Icons.Filled.Notifications, "Notifications")
-        SettingsItem(Icons.Filled.Description, "Report")
-        SettingsItem(Icons.Filled.Lock, "Privacy Policy")
-        SettingsItem(Icons.Filled.Info, "About")
-        SettingsItem(
-            icon = Icons.AutoMirrored.Filled.ExitToApp,
-            title = "Logout",
-            isDestructive = true,
-            onClick = {
-                FirebaseAuth.getInstance().signOut()
-                navController.navigate(Screen.Launch.route) { popUpTo(0) }
-            }
-        )
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.ShoppingCart, contentDescription = null, tint = Color.Gray)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("CartFinder", color = Color.Gray, fontWeight = FontWeight.Bold)
-        }
-        Spacer(modifier = Modifier.height(32.dp))
-    }
-}
-
-@Composable
-fun CustomerProfileScreen(navController: NavController, currentUser: FirebaseUser?) {
-    ProfileBaseScreen(
-        navController = navController,
-        currentUser = currentUser,
-        title = "My Profile",
-        badgeText = "✨ Foodie Level 3 ✨",
-        stat1Value = "54", stat1Label = "REVIEWS",
-        stat2Value = "12", stat2Label = "BOOKMARKS",
-        stat3Value = "8", stat3Label = "COMPLAINTS",
-        stat3Color = Color(0xFFE53935)
-    ) {
-        SectionTitle(Icons.Filled.VerifiedUser, "HEALTH & SAFETY SETTINGS")
-        SettingsItem(Icons.Filled.CheckCircle, "Min. Hygiene Rating Level", label = "3.5★ +", iconTint = Color(0xFF4CAF50))
-        SettingsItem(Icons.Filled.Verified, "Only Show PHI-Certified Carts", hasSwitch = true, switchState = true, iconTint = Color(0xFF4CAF50))
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Menu, "MY APP ACTIVITY")
-        SettingsItem(Icons.Filled.Star, "My Reviews & Ratings", iconTint = PrimaryOrange)
-        SettingsItem(Icons.Filled.Bookmark, "Saved Carts & Favorites", iconTint = PrimaryOrange)
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Person, "PERSONALIZATION")
-        SettingsItem(Icons.Filled.Book, "Dietary & Food Preferences", label = "Halal / Veg", iconTint = PrimaryOrange)
-        SettingsItem(Icons.Filled.Notifications, "Notification Preferences")
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Settings, "ACCOUNT ACTIONS")
-        SettingsItem(Icons.Filled.VpnKey, "Change Password")
-        SettingsItem(
-            icon = Icons.AutoMirrored.Filled.ExitToApp,
-            title = "Log Out",
-            isDestructive = true,
-            onClick = {
-                FirebaseAuth.getInstance().signOut()
-                navController.navigate(Screen.Launch.route) { popUpTo(0) }
-            }
-        )
-    }
-}
-
-@Composable
-fun PhiProfileScreen(navController: NavController, currentUser: FirebaseUser?) {
-    ProfileBaseScreen(
-        navController = navController,
-        currentUser = currentUser,
-        title = "PHI Officer Profile",
-        badgeText = "Senior Public Health Inspector • MOH Sector 08",
-        statusText = "Active Field Duty • Kaduwela & SLIIT Perimeter",
-        stat1Value = "14", stat1Label = "MONITORED STALLS",
-        stat2Value = "03", stat2Label = "URGENT ALERTS", stat2Color = Color(0xFFE53935),
-        stat3Value = "98%", stat3Label = "COMPLIANCE", stat3Color = Color(0xFF4CAF50)
-    ) {
-        SectionTitle(Icons.Filled.Warning, "HYGIENE ALERTS & FLAGS")
-        SettingsItem(Icons.Filled.QrCodeScanner, "Quick Stall Scan", label = "Scan Badge", labelColor = Color.White, labelBackground = PrimaryOrange, iconTint = PrimaryOrange)
-        SettingsItem(Icons.Filled.Update, "Show Pending Re-inspections", hasSwitch = true, switchState = true, iconTint = Color(0xFF4CAF50))
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Build, "TOOLS & ACTIVITY")
-        SettingsItem(Icons.Filled.FactCheck, "PHI Field Protocol & Kit", iconTint = Color(0xFF2196F3))
-        SettingsItem(Icons.Filled.Folder, "MOH Sector 08 Audit Dossier", iconTint = PrimaryOrange)
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Person, "PERSONALIZATION")
-        SettingsItem(Icons.Filled.Receipt, "Spot Fine & Penalty Receipts", iconTint = PrimaryOrange)
-        SettingsItem(Icons.Filled.Notifications, "Notification Preferences")
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        SectionTitle(Icons.Filled.Settings, "ACCOUNT ACTIONS")
-        SettingsItem(Icons.Filled.VpnKey, "Change Password")
-        SettingsItem(
-            icon = Icons.AutoMirrored.Filled.ExitToApp,
-            title = "Log Out",
-            isDestructive = true,
-            onClick = {
-                FirebaseAuth.getInstance().signOut()
-                navController.navigate(Screen.Launch.route) { popUpTo(0) }
-            }
-        )
-    }
-}
-
-@Composable
-fun ProfileBaseScreen(
+fun UnifiedProfileScreen(
     navController: NavController,
     currentUser: FirebaseUser?,
-    title: String,
-    badgeText: String,
-    statusText: String? = null,
-    stat1Value: String, stat1Label: String, stat1Color: Color = Color.Black,
-    stat2Value: String, stat2Label: String, stat2Color: Color = Color.Black,
-    stat3Value: String, stat3Label: String, stat3Color: Color = Color.Black,
-    content: @Composable ColumnScope.() -> Unit
+    role: String,
+    stats: List<Pair<String, String>>
 ) {
     Column(
         modifier = Modifier
@@ -276,57 +91,51 @@ fun ProfileBaseScreen(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Top section
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .background(
+                    color = PrimaryOrange,
+                    shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                )
+                .padding(bottom = 24.dp)
         ) {
-            // Orange Background
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .background(
-                        color = PrimaryOrange,
-                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
-                    )
-            )
-
-            // Top Bar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                        .size(40.dp)
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
-                }
-                Text(title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                IconButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.2f), CircleShape)
-                        .size(40.dp)
-                ) {
-                    Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
-                }
-            }
-
-            // Profile Info
             Column(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 70.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Top Bar
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                            .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                            .size(40.dp)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                    Text("Profile", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    IconButton(
+                        onClick = { },
+                        modifier = Modifier
+                            .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                            .size(40.dp)
+                    ) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Profile Image
                 Box {
                     Icon(
                         Icons.Filled.AccountCircle,
@@ -337,30 +146,22 @@ fun ProfileBaseScreen(
                             .background(Color.LightGray),
                         tint = Color.White
                     )
-                    // Edit Icon
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset(x = (-4).dp, y = (-4).dp)
-                            .background(PrimaryOrange, CircleShape)
-                            .padding(4.dp)
-                    ) {
-                        Icon(Icons.Filled.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(14.dp))
-                    }
-                    // Status dot
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .offset(x = 8.dp, y = 8.dp)
-                            .size(14.dp)
-                            .background(Color(0xFF4CAF50), CircleShape)
-                    )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Name and Role
+                Text(
+                    text = currentUser?.displayName ?: "User Name", 
+                    color = Color.White, 
+                    fontSize = 24.sp, 
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
                 
                 Text(
-                    text = badgeText,
+                    text = role.uppercase(),
                     color = PrimaryOrange,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -368,66 +169,71 @@ fun ProfileBaseScreen(
                         .background(Color.White, RoundedCornerShape(16.dp))
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 )
-                
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(currentUser?.displayName ?: "User Name", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            }
+        }
 
-                if (statusText != null) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
-                    ) {
-                        Box(modifier = Modifier.size(8.dp).background(Color(0xFF4CAF50), CircleShape))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(statusText, color = Color.White, fontSize = 12.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Stats Row
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                stats.forEachIndexed { index, stat ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                        Text(stat.second, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                        Text(stat.first, fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+                    }
+                    if (index < stats.size - 1) {
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .height(40.dp)
+                                .width(1.dp), 
+                            color = Color.LightGray
+                        )
                     }
                 }
             }
-
-            // Stats Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 20.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    StatItem(stat1Value, stat1Label, stat1Color)
-                    Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color.LightGray)
-                    StatItem(stat2Value, stat2Label, stat2Color)
-                    Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color.LightGray)
-                    StatItem(stat3Value, stat3Label, stat3Color)
-                }
-            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Links
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            content()
+            SectionTitle(Icons.Filled.Settings, "ACCOUNT")
+            SettingsItem(Icons.Filled.Person, "Edit Profile", onClick = { navController.navigate(Screen.EditProfile.route) })
+            SettingsItem(Icons.Filled.VpnKey, "Change Password", onClick = { navController.navigate(Screen.ChangePassword.route) })
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            SectionTitle(Icons.Filled.List, "PAGES & LINKS")
+            SettingsItem(Icons.Filled.Info, "About Us", onClick = { navController.navigate(Screen.AboutUs.route) })
+            SettingsItem(Icons.Filled.Lock, "Privacy Policy", onClick = { navController.navigate(Screen.PrivacyPolicy.route) })
+            SettingsItem(Icons.Filled.Description, "Terms of Service", onClick = { navController.navigate(Screen.TermsOfService.route) })
+            SettingsItem(Icons.Filled.HeadsetMic, "Help & Support", onClick = { navController.navigate(Screen.HelpSupport.route) })
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            SettingsItem(
+                icon = Icons.AutoMirrored.Filled.ExitToApp,
+                title = "Log Out",
+                isDestructive = true,
+                onClick = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Screen.Launch.route) { popUpTo(0) }
+                }
+            )
         }
         
         Spacer(modifier = Modifier.height(32.dp))
-    }
-}
-
-@Composable
-fun StatItem(value: String, label: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
-        Text(label, fontSize = 10.sp, color = Color.Gray, fontWeight = FontWeight.SemiBold)
     }
 }
 

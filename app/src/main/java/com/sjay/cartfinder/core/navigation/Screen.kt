@@ -15,6 +15,12 @@ sealed class Screen(val route: String) {
     }
     object Profile : Screen("profile")
     object Notifications : Screen("notifications")
+    object AboutUs : Screen("about_us")
+    object PrivacyPolicy : Screen("privacy_policy")
+    object TermsOfService : Screen("terms_of_service")
+    object HelpSupport : Screen("help_support")
+    object EditProfile : Screen("edit_profile")
+    object ChangePassword : Screen("change_password")
     
     // Member 1 - Reviews
     object ReviewList : Screen("review_list/{stallId}/{stallName}") {
