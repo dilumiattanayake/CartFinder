@@ -222,12 +222,17 @@ fun UnifiedProfileScreen(
             SettingsItem(Icons.Filled.HeadsetMic, "Help & Support", onClick = { navController.navigate(Screen.HelpSupport.route) })
             
             Spacer(modifier = Modifier.height(24.dp))
+            val context = androidx.compose.ui.platform.LocalContext.current
             SettingsItem(
                 icon = Icons.AutoMirrored.Filled.ExitToApp,
                 title = "Log Out",
                 isDestructive = true,
                 onClick = {
                     FirebaseAuth.getInstance().signOut()
+                    val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(
+                        com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
+                    ).build()
+                    com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso).signOut()
                     navController.navigate(Screen.Launch.route) { popUpTo(0) }
                 }
             )

@@ -39,12 +39,21 @@ class AuthViewModel : ViewModel() {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                 val userId = authResult.user?.uid
                 if (userId != null) {
+                    // Fetch FCM token
+                    var fcmToken = ""
+                    try {
+                        fcmToken = com.google.firebase.messaging.FirebaseMessaging.getInstance().token.await()
+                    } catch (e: Exception) {
+                        // ignore if token fetch fails
+                    }
+
                     val userMap = hashMapOf(
                         "uid" to userId,
                         "email" to email,
                         "fullName" to fullName,
                         "phone" to phone,
                         "role" to role,
+                        "fcmToken" to fcmToken,
                         "createdAt" to System.currentTimeMillis()
                     )
                     // Store user data in Firestore
@@ -63,7 +72,18 @@ class AuthViewModel : ViewModel() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                auth.signInWithEmailAndPassword(email, password).await()
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                
+                // Update FCM token on login
+                authResult.user?.uid?.let { uid ->
+                    try {
+                        val token = com.google.firebase.messaging.FirebaseMessaging.getInstance().token.await()
+                        firestore.collection("users").document(uid).update("fcmToken", token).await()
+                    } catch (e: Exception) {
+                        // ignore
+                    }
+                }
+
                 _authState.value = AuthState.Success("Login successful")
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Login failed")
@@ -82,6 +102,12 @@ class AuthViewModel : ViewModel() {
                     // Check if user exists in Firestore
                     val docRef = firestore.collection("users").document(user.uid)
                     val doc = docRef.get().await()
+                    
+                    var fcmToken = ""
+                    try {
+                        fcmToken = com.google.firebase.messaging.FirebaseMessaging.getInstance().token.await()
+                    } catch (e: Exception) {}
+
                     if (!doc.exists()) {
                         // First time login with Google, create profile
                         val userMap = hashMapOf(
@@ -90,14 +116,25 @@ class AuthViewModel : ViewModel() {
                             "fullName" to (user.displayName ?: "Google User"),
                             "phone" to "",
                             "role" to role,
+                            "fcmToken" to fcmToken,
                             "createdAt" to System.currentTimeMillis()
                         )
                         docRef.set(userMap).await()
+                        _authState.value = AuthState.Success("Google Login successful")
                     } else {
                         // If user exists but role is different?
-                        // For simplicity, we just proceed.
+                        val existingRole = doc.getString("role")
+                        if (existingRole != null && existingRole.lowercase() != role.lowercase()) {
+                            auth.signOut()
+                            _authState.value = AuthState.Error("This email is already registered as $existingRole. Please login as $existingRole.")
+                        } else {
+                            // Update FCM token
+                            if (fcmToken.isNotEmpty()) {
+                                docRef.update("fcmToken", fcmToken).await()
+                            }
+                            _authState.value = AuthState.Success("Google Login successful")
+                        }
                     }
-                    _authState.value = AuthState.Success("Google Login successful")
                 } else {
                     _authState.value = AuthState.Error("Google Login failed: No user returned")
                 }
