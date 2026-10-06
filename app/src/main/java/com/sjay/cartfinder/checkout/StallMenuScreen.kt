@@ -168,11 +168,17 @@ fun StallMenuScreen(
                         
                         // Rating & Open Status
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable { navController.navigate(Screen.ReviewList.createRoute(stallId, stall?.name ?: stallName)) }
+                                    .padding(4.dp)
+                            ) {
                                 Text("4.5", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("120+ ratings", color = Color.Gray, fontSize = 14.sp)
+                                Text("See Reviews", color = PrimaryOrange, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             }
                             
                             val isOpen = stall?.isOpen ?: true

@@ -2,7 +2,6 @@ package com.sjay.cartfinder.reviews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import kotlinx.coroutines.tasks.await
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -13,121 +12,111 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Report
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.VerifiedUser
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Reply
-import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Reply
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.Review
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewListScreen(
     navController: NavController,
+    stallId: String,
+    stallName: String,
     viewModel: ReviewViewModel = viewModel()
 ) {
-    var searchQuery by remember { mutableStateOf("") }
     val reviewsState by viewModel.reviewsState.collectAsState()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-    val stallId = "demo_stall_1" // TODO: pass actual stall id dynamically
+    var role by remember { mutableStateOf("Customer") }
+
+    LaunchedEffect(currentUserId) {
+        if (currentUserId.isNotEmpty()) {
+            try {
+                val doc = FirebaseFirestore.getInstance()
+                    .collection("users").document(currentUserId).get()
+                    .await()
+                role = doc.getString("role") ?: "Customer"
+            } catch (e: Exception) {}
+        }
+    }
 
     var selectedReviewForEdit by remember { mutableStateOf<Review?>(null) }
     var selectedReviewForReply by remember { mutableStateOf<Review?>(null) }
     var selectedReviewForReport by remember { mutableStateOf<Review?>(null) }
     var selectedReviewForDelete by remember { mutableStateOf<Review?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(stallId) {
         viewModel.getReviewsForStall(stallId)
     }
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Reviews", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    Box(modifier = Modifier.padding(16.dp).size(32.dp).background(Color(0xFFFDE6C8), CircleShape), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Filled.Search, contentDescription = null, tint = PrimaryOrange)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Screen.CustomerOrders.route) }) {
-                        Icon(Icons.Filled.List, contentDescription = "My Orders")
-                    }
-                    IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(Icons.Filled.ShoppingCart, contentDescription = "My Cart")
-                    }
-                }
+                title = { Text("$stallName Reviews", fontWeight = FontWeight.Bold) }
             )
-        },
-        bottomBar = {
-            var role by remember { mutableStateOf("Customer") }
-            LaunchedEffect(currentUserId) {
-                if (currentUserId.isNotEmpty()) {
-                    try {
-                        val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                            .collection("users").document(currentUserId).get()
-                            .await()
-                        role = doc.getString("role") ?: "Customer"
-                    } catch (e: Exception) {}
-                }
-            }
-            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = role)
         }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF8F9FA))
+                .background(Color(0xFFF9FAFB))
                 .padding(padding)
         ) {
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(48.dp).background(Color(0xFFFDE6C8), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                                Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = null, tint = Color.Black)
+                if (role == "Customer" || role == "customer") {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(modifier = Modifier.size(48.dp).background(Color(0xFFFDE6C8), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
+                                    Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = null, tint = Color.Black)
+                                }
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Column {
+                                    Text("Visited recently?", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                    Text("Share your experience with others", color = Color.Gray, fontSize = 14.sp)
+                                }
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column {
-                                Text("Visited a street stall?", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                                Text("Rate taste & stall cleanliness", color = Color.Gray, fontSize = 14.sp)
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Button(
+                                onClick = { navController.navigate(Screen.SubmitReview.createRoute(stallId, stallName)) },
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(Icons.Outlined.Edit, contentDescription = null, tint = Color.Black)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Write a Review", fontWeight = FontWeight.Bold, color = Color.Black)
                             }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Button(
-                            onClick = { navController.navigate(Screen.SubmitReview.route) },
-                            modifier = Modifier.fillMaxWidth().height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Icon(Icons.Outlined.Edit, contentDescription = null, tint = Color.Black)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Write a Review", fontWeight = FontWeight.Bold, color = Color.Black)
                         }
                     }
                 }
@@ -160,10 +149,13 @@ fun ReviewListScreen(
                             ReviewItemCard(
                                 review = review,
                                 currentUserId = currentUserId,
+                                userRole = role,
                                 onEditClick = { selectedReviewForEdit = it },
                                 onDeleteClick = { selectedReviewForDelete = it },
                                 onReportClick = { selectedReviewForReport = it },
-                                onReplyClick = { selectedReviewForReply = it }
+                                onReplyClick = { selectedReviewForReply = it },
+                                onLikeClick = { viewModel.toggleLike(it.id, currentUserId, stallId) },
+                                onDislikeClick = { viewModel.toggleDislike(it.id, currentUserId, stallId) }
                             )
                         }
                     }
@@ -280,14 +272,21 @@ fun ReviewListScreen(
 fun ReviewItemCard(
     review: Review, 
     currentUserId: String,
+    userRole: String,
     onEditClick: (Review) -> Unit,
     onDeleteClick: (Review) -> Unit,
     onReportClick: (Review) -> Unit,
-    onReplyClick: (Review) -> Unit
+    onReplyClick: (Review) -> Unit,
+    onLikeClick: (Review) -> Unit,
+    onDislikeClick: (Review) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val isOwner = review.customerId == currentUserId
+    val isVendor = userRole == "Vendor" || userRole == "vendor"
     
+    val isLiked = review.likedBy.contains(currentUserId)
+    val isDisliked = review.dislikedBy.contains(currentUserId)
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
@@ -331,12 +330,13 @@ fun ReviewItemCard(
                                 onClick = { expanded = false; onReportClick(review) },
                                 leadingIcon = { Icon(Icons.Filled.Report, contentDescription = null) }
                             )
-                            // Basic logic for Vendor Reply (in a real app, verify they are the stall owner)
-                            DropdownMenuItem(
-                                text = { Text("Vendor Reply") },
-                                onClick = { expanded = false; onReplyClick(review) },
-                                leadingIcon = { Icon(Icons.Outlined.Reply, contentDescription = null) }
-                            )
+                            if (isVendor) {
+                                DropdownMenuItem(
+                                    text = { Text("Vendor Reply") },
+                                    onClick = { expanded = false; onReplyClick(review) },
+                                    leadingIcon = { Icon(Icons.Filled.Reply, contentDescription = null) }
+                                )
+                            }
                         }
                     }
                 }
@@ -351,6 +351,40 @@ fun ReviewItemCard(
             }
             
             Text(review.comment)
+            
+            if (review.imageUrls.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(review.imageUrls) { imageUrl ->
+                        Box(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.LightGray)
+                        ) {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = "Review Image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { onLikeClick(review) }, modifier = Modifier.size(24.dp)) {
+                    Icon(if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, contentDescription = "Like", tint = if (isLiked) PrimaryOrange else Color.Gray)
+                }
+                Text(" ${review.likedBy.size}", color = Color.Gray, fontSize = 12.sp)
+                Spacer(modifier = Modifier.width(16.dp))
+                IconButton(onClick = { onDislikeClick(review) }, modifier = Modifier.size(24.dp)) {
+                    Icon(if (isDisliked) Icons.Filled.ThumbDown else Icons.Outlined.ThumbDown, contentDescription = "Dislike", tint = if (isDisliked) PrimaryOrange else Color.Gray)
+                }
+                Text(" ${review.dislikedBy.size}", color = Color.Gray, fontSize = 12.sp)
+            }
             
             if (!review.vendorReply.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(16.dp))

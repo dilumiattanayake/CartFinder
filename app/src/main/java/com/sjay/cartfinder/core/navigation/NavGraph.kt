@@ -56,11 +56,27 @@ fun CartFinderNavGraph(
         composable(Screen.Profile.route) {
             ProfileScreen(navController = navController)
         }
-        composable(Screen.ReviewList.route) {
-            ReviewListScreen(navController = navController)
+        composable(
+            route = Screen.ReviewList.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            val stallName = backStackEntry.arguments?.getString("stallName") ?: ""
+            ReviewListScreen(navController = navController, stallId = stallId, stallName = stallName)
         }
-        composable(Screen.SubmitReview.route) {
-            SubmitReviewScreen(navController = navController)
+        composable(
+            route = Screen.SubmitReview.route,
+            arguments = listOf(
+                androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            val stallName = backStackEntry.arguments?.getString("stallName") ?: ""
+            SubmitReviewScreen(navController = navController, stallId = stallId, stallName = stallName)
         }
         composable(Screen.VendorDashboard.route) {
             com.sjay.cartfinder.shop.VendorDashboardScreen(navController = navController)

@@ -12,7 +12,7 @@ class ReviewRepository {
     suspend fun addReview(review: Review): Result<String> {
         return try {
             val docRef = if (review.id.isEmpty()) {
-                reviewsCollection.document()
+                reviewsCollection.document("${review.stallId}_${review.customerId}")
             } else {
                 reviewsCollection.document(review.id)
             }
@@ -109,6 +109,66 @@ class ReviewRepository {
                     )
                 )
                 .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun toggleLike(reviewId: String, userId: String): Result<Unit> {
+        return try {
+            val docRef = reviewsCollection.document(reviewId)
+            val doc = docRef.get().await()
+            val review = doc.toObject(Review::class.java)
+            if (review != null) {
+                val likedBy = review.likedBy.toMutableList()
+                val dislikedBy = review.dislikedBy.toMutableList()
+
+                if (likedBy.contains(userId)) {
+                    likedBy.remove(userId)
+                } else {
+                    likedBy.add(userId)
+                    dislikedBy.remove(userId) // Remove from dislike if liking
+                }
+
+                docRef.update(
+                    mapOf(
+                        "likedBy" to likedBy,
+                        "dislikedBy" to dislikedBy,
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                ).await()
+            }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun toggleDislike(reviewId: String, userId: String): Result<Unit> {
+        return try {
+            val docRef = reviewsCollection.document(reviewId)
+            val doc = docRef.get().await()
+            val review = doc.toObject(Review::class.java)
+            if (review != null) {
+                val likedBy = review.likedBy.toMutableList()
+                val dislikedBy = review.dislikedBy.toMutableList()
+
+                if (dislikedBy.contains(userId)) {
+                    dislikedBy.remove(userId)
+                } else {
+                    dislikedBy.add(userId)
+                    likedBy.remove(userId) // Remove from like if disliking
+                }
+
+                docRef.update(
+                    mapOf(
+                        "likedBy" to likedBy,
+                        "dislikedBy" to dislikedBy,
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                ).await()
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

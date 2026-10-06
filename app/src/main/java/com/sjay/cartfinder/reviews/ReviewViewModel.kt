@@ -46,7 +46,7 @@ class ReviewViewModel(
         }
     }
 
-    fun submitReview(orderId: String, customerId: String, stallId: String, rating: Int, comment: String) {
+    fun submitReview(orderId: String, customerId: String, stallId: String, rating: Int, comment: String, imageUrls: List<String> = emptyList()) {
         if (rating < 1 || rating > 5) {
             _submitState.value = SubmitReviewState.Error("Rating must be between 1 and 5")
             return
@@ -63,7 +63,8 @@ class ReviewViewModel(
                 customerId = customerId,
                 stallId = stallId,
                 rating = rating,
-                comment = comment
+                comment = comment,
+                imageUrls = imageUrls
             )
             
             val result = repository.addReview(review)
@@ -110,6 +111,20 @@ class ReviewViewModel(
         if (reply.isBlank()) return
         viewModelScope.launch {
             repository.replyToReview(reviewId, reply)
+            getReviewsForStall(stallId)
+        }
+    }
+
+    fun toggleLike(reviewId: String, userId: String, stallId: String) {
+        viewModelScope.launch {
+            repository.toggleLike(reviewId, userId)
+            getReviewsForStall(stallId)
+        }
+    }
+
+    fun toggleDislike(reviewId: String, userId: String, stallId: String) {
+        viewModelScope.launch {
+            repository.toggleDislike(reviewId, userId)
             getReviewsForStall(stallId)
         }
     }
