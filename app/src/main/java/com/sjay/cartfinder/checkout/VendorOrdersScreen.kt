@@ -36,6 +36,13 @@ fun VendorOrdersScreen(
     val orderState by orderViewModel.orderState.collectAsState()
     
     val stallId = (shopState as? ShopState.Success)?.stall?.id
+    val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+    LaunchedEffect(currentUserId) {
+        if (shopState !is ShopState.Success && currentUserId.isNotEmpty()) {
+            shopViewModel.loadVendorShop(currentUserId)
+        }
+    }
 
     val pullRefreshState = rememberPullRefreshState(
         refreshing = orderState is OrderListState.Loading,
