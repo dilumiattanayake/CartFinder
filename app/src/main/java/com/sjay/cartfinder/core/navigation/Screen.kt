@@ -27,8 +27,10 @@ sealed class Screen(val route: String) {
 
     // Member 3 - Cart & Checkout & Browsing Stalls
     object CustomerDashboard : Screen("customer_dashboard")
-    object StallMenu : Screen("stall_menu/{stallId}/{stallName}") {
-        fun createRoute(stallId: String, stallName: String) = "stall_menu/$stallId/$stallName"
+    object StallMenu : Screen("stall_menu/{stallId}/{stallName}?distance={distance}") {
+        fun createRoute(stallId: String, stallName: String, distance: Double? = null): String {
+            return if (distance != null) "stall_menu/$stallId/$stallName?distance=$distance" else "stall_menu/$stallId/$stallName"
+        }
     }
     object Cart : Screen("cart")
     object CustomerOrders : Screen("customer_orders")

@@ -58,4 +58,9 @@ class CustomerDashboardViewModel : ViewModel() {
             }
         }
     }
+
+    suspend fun getStallById(stallId: String): Stall? {
+        val result = shopRepo.getStallById(stallId)
+        return result.getOrNull()
+    }
 }

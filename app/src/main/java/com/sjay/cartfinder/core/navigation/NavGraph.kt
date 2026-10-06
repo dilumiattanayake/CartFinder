@@ -87,14 +87,21 @@ fun CartFinderNavGraph(
             route = Screen.StallMenu.route,
             arguments = listOf(
                 androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType },
-                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType }
+                androidx.navigation.navArgument("stallName") { type = androidx.navigation.NavType.StringType },
+                androidx.navigation.navArgument("distance") { 
+                    type = androidx.navigation.NavType.FloatType
+                    defaultValue = -1f 
+                }
             )
         ) { backStackEntry ->
             val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
             val stallName = backStackEntry.arguments?.getString("stallName") ?: ""
+            val distanceFloat = backStackEntry.arguments?.getFloat("distance") ?: -1f
+            val distance = if (distanceFloat >= 0f) distanceFloat.toDouble() else null
             com.sjay.cartfinder.checkout.StallMenuScreen(
                 stallId = stallId,
                 stallName = stallName,
+                distance = distance,
                 navController = navController
             )
         }

@@ -1,119 +1,286 @@
 package com.sjay.cartfinder.checkout
 
+import android.location.Location as AndroidLocation
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.Stall
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.ExperimentalMaterialApi
+import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerDashboardScreen(
     navController: NavController,
     viewModel: CustomerDashboardViewModel = viewModel()
 ) {
     val stallsState by viewModel.stallsState.collectAsState()
+    val context = LocalContext.current
 
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = stallsState is StallListState.Loading,
-        onRefresh = { viewModel.loadAllStalls() }
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted -> hasLocationPermission = isGranted }
     )
 
     LaunchedEffect(Unit) {
+        if (!hasLocationPermission) {
+            permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
         viewModel.loadAllStalls()
+        Configuration.getInstance().userAgentValue = context.packageName
+        Configuration.getInstance().osmdroidBasePath = File(context.cacheDir, "osmdroid")
+        Configuration.getInstance().osmdroidTileCache = File(context.cacheDir, "osmdroid/tiles")
     }
 
+    var searchRadius by remember { mutableStateOf(5) } // km
+    var myLocation by remember { mutableStateOf(GeoPoint(6.9271, 79.8612)) } // Default to Colombo, will update via GPS
+
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Food Stalls", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Screen.CustomerOrders.route) }) {
-                        Icon(Icons.Filled.List, contentDescription = "My Orders")
-                    }
-                    IconButton(onClick = { navController.navigate(Screen.Cart.route) }) {
-                        Icon(Icons.Filled.ShoppingCart, contentDescription = "My Cart")
-                    }
-                }
-            )
-        },
         bottomBar = {
             com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "customer")
         }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .pullRefresh(pullRefreshState)
-        ) {
-            when (val state = stallsState) {
-                is StallListState.Loading -> {
-                    // Handled by PullRefreshIndicator
-                }
-                is StallListState.Error -> {
-                    Text(state.message, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
-                }
-                is StallListState.Success -> {
-                    if (state.stalls.isEmpty()) {
-                        Text("No active stalls found nearby.", modifier = Modifier.align(Alignment.Center))
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(16.dp)
-                        ) {
-                            items(state.stalls) { stall ->
-                                StallCard(stall = stall) {
-                                    navController.navigate("stall_menu/${stall.id}/${stall.name}")
+        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+            // Map Background
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { ctx ->
+                    MapView(ctx).apply {
+                        setMultiTouchControls(true)
+                        controller.setZoom(13.0)
+                        controller.setCenter(myLocation)
+                        
+                        // Current location overlay using GPS
+                        val myLocationOverlay = org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay(
+                            org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider(ctx), this
+                        )
+                        myLocationOverlay.enableMyLocation()
+                        myLocationOverlay.runOnFirstFix {
+                            val loc = myLocationOverlay.myLocation
+                            if (loc != null) {
+                                (ctx as? android.app.Activity)?.runOnUiThread {
+                                    myLocation = GeoPoint(loc.latitude, loc.longitude)
+                                    controller.animateTo(myLocation)
                                 }
-                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+                        }
+                        overlays.add(myLocationOverlay)
+                    }
+                },
+                update = { mapView ->
+                    val myLocOverlay = mapView.overlays.filterIsInstance<org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay>().firstOrNull()
+                    if (hasLocationPermission && myLocOverlay != null && !myLocOverlay.isMyLocationEnabled) {
+                        myLocOverlay.enableMyLocation()
+                    }
+                    
+                    mapView.overlays.removeAll { it is Marker }
+                    
+                    // Always show the current location marker explicitly
+                    val myMarker = Marker(mapView).apply {
+                        position = myLocation
+                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        title = "My Location"
+                        icon = context.getDrawable(android.R.drawable.ic_menu_mylocation)
+                    }
+                    mapView.overlays.add(myMarker)
+
+                    if (stallsState is StallListState.Success) {
+                        val allStalls = (stallsState as StallListState.Success).stalls
+                        val filteredStalls = allStalls.filter {
+                            val stallLoc = GeoPoint(it.location.latitude, it.location.longitude)
+                            val dist = myLocation.distanceToAsDouble(stallLoc) / 1000.0 // in km
+                            dist <= searchRadius && it.isOpen
+                        }
+                        
+                        filteredStalls.forEach { stall ->
+                            val marker = Marker(mapView).apply {
+                                position = GeoPoint(stall.location.latitude, stall.location.longitude)
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                                title = stall.name
+                                setOnMarkerClickListener { _, _ ->
+                                    val dist = myLocation.distanceToAsDouble(position) / 1000.0
+                                    navController.navigate("stall_menu/${stall.id}/${stall.name}?distance=${dist}")
+                                    true
+                                }
+                            }
+                            mapView.overlays.add(marker)
+                        }
+                    }
+                    mapView.invalidate()
+                }
+            )
+            
+            // Top Overlay (Search & Radius)
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp).align(Alignment.TopCenter)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Radius Selector
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        Row(
+                            modifier = Modifier
+                                .background(Color.White, RoundedCornerShape(24.dp))
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .clickable { expanded = true },
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Filled.MyLocation, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Within $searchRadius km", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
+                        }
+                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                            listOf(1, 3, 5, 10, 20).forEach { radius ->
+                                DropdownMenuItem(
+                                    text = { Text("$radius km") },
+                                    onClick = { searchRadius = radius; expanded = false }
+                                )
                             }
                         }
                     }
+                    
+                    // Quick Action Buttons
+                    Row {
+                        IconButton(
+                            onClick = { navController.navigate(Screen.CustomerOrders.route) },
+                            modifier = Modifier.background(Color.White, CircleShape).size(40.dp)
+                        ) {
+                            Icon(Icons.Filled.List, contentDescription = "My Orders", tint = Color.DarkGray)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = { navController.navigate(Screen.Cart.route) },
+                            modifier = Modifier.background(Color.White, CircleShape).size(40.dp)
+                        ) {
+                            Icon(Icons.Filled.ShoppingCart, contentDescription = "My Cart", tint = Color.DarkGray)
+                        }
+                    }
                 }
-                else -> {}
             }
 
-            PullRefreshIndicator(
-                refreshing = stallsState is StallListState.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+            // Bottom Overlay (Filtered Stalls)
+            if (stallsState is StallListState.Success) {
+                val allStalls = (stallsState as StallListState.Success).stalls
+                val filteredStalls = allStalls.filter {
+                    val stallLoc = GeoPoint(it.location.latitude, it.location.longitude)
+                    val dist = myLocation.distanceToAsDouble(stallLoc) / 1000.0
+                    dist <= searchRadius && it.isOpen
+                }
+                
+                if (filteredStalls.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(filteredStalls) { stall ->
+                            val stallLoc = GeoPoint(stall.location.latitude, stall.location.longitude)
+                            val dist = myLocation.distanceToAsDouble(stallLoc) / 1000.0
+                            CompactStallCard(stall = stall, distance = dist) {
+                                navController.navigate("stall_menu/${stall.id}/${stall.name}?distance=${dist}")
+                            }
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 32.dp)
+                            .background(Color.White.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
+                            .padding(16.dp)
+                    ) {
+                        Text("No vendors found within $searchRadius km", fontWeight = FontWeight.Bold)
+                    }
+                }
+            } else if (stallsState is StallListState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = PrimaryOrange)
+            }
         }
     }
 }
 
 @Composable
-fun StallCard(stall: Stall, onClick: () -> Unit) {
+fun CompactStallCard(stall: Stall, distance: Double, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(280.dp)
+            .height(110.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(stall.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Row(modifier = Modifier.fillMaxSize().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFFFF3E0)),
+                contentAlignment = Alignment.Center
+            ) {
+                if (stall.imageUrl != null) {
+                    androidx.compose.foundation.Image(
+                        painter = coil.compose.rememberAsyncImagePainter(stall.imageUrl),
+                        contentDescription = stall.name,
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(Icons.Filled.Store, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(32.dp))
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stall.name, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(stall.category, color = Color.Gray, fontSize = 12.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Filled.LocationOn, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(12.dp))
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(String.format(java.util.Locale.US, "%.1f km", distance), color = Color.Gray, fontSize = 12.sp)
+                }
+                Spacer(modifier = Modifier.weight(1f))
                 
-                // Fetch Certificate specifically for this card
                 val phiViewModel: com.sjay.cartfinder.phi.PhiViewModel = viewModel(key = stall.id)
                 val phiState by phiViewModel.phiState.collectAsState()
                 
@@ -125,20 +292,21 @@ fun StallCard(stall: Stall, onClick: () -> Unit) {
                 if (phiState is com.sjay.cartfinder.phi.PhiState.CertificateData) {
                     val cert = (phiState as com.sjay.cartfinder.phi.PhiState.CertificateData).certificate
                     if (cert != null && cert.status == "ACTIVE") {
-                        certScore = "Grade ${cert.grade} (${cert.score})"
+                        certScore = "Grade ${cert.grade}"
                     }
                 }
                 
-                if (certScore != null) {
-                    Badge(containerColor = androidx.compose.ui.graphics.Color(0xFF27AE60)) {
-                        Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = androidx.compose.ui.graphics.Color.White, modifier = Modifier.size(12.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(certScore!!, color = androidx.compose.ui.graphics.Color.White)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(14.dp))
+                    Text(" 4.5 ", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    
+                    if (certScore != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = Color(0xFF27AE60), modifier = Modifier.size(14.dp))
+                        Text(certScore!!, color = Color(0xFF27AE60), fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(stall.description, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

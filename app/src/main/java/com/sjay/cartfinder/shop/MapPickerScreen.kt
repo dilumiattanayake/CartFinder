@@ -24,7 +24,24 @@ fun MapPickerScreen(navController: NavController) {
     val context = LocalContext.current
     
     // Configure osmdroid
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted -> hasLocationPermission = isGranted }
+    )
+
     LaunchedEffect(Unit) {
+        if (!hasLocationPermission) {
+            permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
         Configuration.getInstance().userAgentValue = context.packageName
         Configuration.getInstance().osmdroidBasePath = File(context.cacheDir, "osmdroid")
         Configuration.getInstance().osmdroidTileCache = File(context.cacheDir, "osmdroid/tiles")
@@ -92,7 +109,11 @@ fun MapPickerScreen(navController: NavController) {
                 }
             },
             update = { mapView ->
-                // no-op for now
+                val myLocOverlay = mapView.overlays.filterIsInstance<org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay>().firstOrNull()
+                if (hasLocationPermission && myLocOverlay != null && !myLocOverlay.isMyLocationEnabled) {
+                    myLocOverlay.enableMyLocation()
+                    myLocOverlay.enableFollowLocation()
+                }
             }
         )
     }
