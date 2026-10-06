@@ -162,13 +162,13 @@ fun CertificateDetails(cert: Certificate, stallName: String, stallAddress: Strin
     Spacer(modifier = Modifier.height(16.dp))
     
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+        Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("MOH REGISTRATION", fontSize = 10.sp, color = Color.Gray)
                 Text(cert.registrationNumber.ifEmpty { "MOH-MLB-2026-${cert.stallId.take(4)}" }, fontWeight = FontWeight.Bold)
             }
         }
-        Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+        Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("INSPECTING OFFICER", fontSize = 10.sp, color = Color.Gray)
                 Text("PHI Officer", fontWeight = FontWeight.Bold)
@@ -221,7 +221,7 @@ fun CertificateDetails(cert: Certificate, stallName: String, stallAddress: Strin
         colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7))
     ) {
         Column(modifier = Modifier.padding(24.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(modifier = Modifier.size(100.dp).background(Color.White), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.size(100.dp).background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White), contentAlignment = Alignment.Center) {
                 Icon(Icons.Filled.QrCode, contentDescription = "QR Code", modifier = Modifier.size(80.dp))
             }
             Spacer(modifier = Modifier.height(16.dp))

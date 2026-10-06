@@ -99,7 +99,7 @@ fun ProductManagementScreen(
                         Icon(Icons.Filled.Close, contentDescription = "Close", tint = Color.Gray)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.Black else Color.White)
             )
         },
         floatingActionButton = {
@@ -115,7 +115,7 @@ fun ProductManagementScreen(
         bottomBar = {
             com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = "vendor")
         },
-        containerColor = Color.White
+        containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.Black else Color.White
     ) { padding ->
         androidx.compose.material3.pulltorefresh.PullToRefreshBox(
             isRefreshing = productsState is ProductsState.Loading,
@@ -341,7 +341,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
 
     Card(
         modifier = Modifier.fillMaxWidth().clickable { isExpanded = !isExpanded },
-        colors = CardDefaults.cardColors(containerColor = if (isExpanded) Color.White else Color(0xFFF9FAFB)),
+        colors = CardDefaults.cardColors(containerColor = if (isExpanded) { if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White } else { if (androidx.compose.foundation.isSystemInDarkTheme()) Color(0xFF1E1E1E) else Color(0xFFF9FAFB) }),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isExpanded) 4.dp else 1.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -401,7 +401,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 8.dp)
-                        .background(Color.White, RoundedCornerShape(12.dp))
+                        .background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White, RoundedCornerShape(12.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -526,7 +526,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                         modifier = Modifier
                             .padding(end = 4.dp)
                             .size(24.dp)
-                            .background(Color.White, CircleShape)
+                            .background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White, CircleShape)
                             .clickable { spiceLevel = i },
                         contentAlignment = Alignment.Center
                     ) {

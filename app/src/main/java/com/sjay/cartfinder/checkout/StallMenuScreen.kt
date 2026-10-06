@@ -286,7 +286,7 @@ fun StallMenuScreen(
 fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
     Card(
         modifier = Modifier.width(200.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {

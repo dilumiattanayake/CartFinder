@@ -122,7 +122,7 @@ fun ChooseRoleScreen(navController: NavController) {
 fun RoleCard(title: String, buttonText: String, icon: ImageVector, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(

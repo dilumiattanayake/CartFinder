@@ -118,7 +118,7 @@ fun PhiSpotAuditScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -190,7 +190,7 @@ fun PhiSpotAuditScreen(
                 placeholder = { Text("Enter remarks...") },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color(0xFFF3F4F6),
-                    focusedContainerColor = Color.White
+                    focusedContainerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White
                 )
             )
 
@@ -286,7 +286,7 @@ fun CriteriaCard(title: String, desc: String, selected: String, hasAdvisory: Boo
                 Button(
                     onClick = { onSelect("PASS") },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = if (selected == "PASS") Color(0xFF27AE60) else Color.White),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (selected == "PASS") Color(0xFF27AE60) else if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text("PASS", color = if (selected == "PASS") Color.White else Color.Black)
@@ -295,7 +295,7 @@ fun CriteriaCard(title: String, desc: String, selected: String, hasAdvisory: Boo
                     Button(
                         onClick = { onSelect("ADVISORY") },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = if (selected == "ADVISORY") Color(0xFFF59E0B) else Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (selected == "ADVISORY") Color(0xFFF59E0B) else if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text("ADVISORY", color = if (selected == "ADVISORY") Color.White else Color.Black, fontSize = 10.sp)
@@ -304,7 +304,7 @@ fun CriteriaCard(title: String, desc: String, selected: String, hasAdvisory: Boo
                 Button(
                     onClick = { onSelect("FAIL") },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = if (selected == "FAIL") Color(0xFFE74C3C) else Color.White),
+                    colors = ButtonDefaults.buttonColors(containerColor = if (selected == "FAIL") Color(0xFFE74C3C) else if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text("FAIL", color = if (selected == "FAIL") Color.White else Color.Black)

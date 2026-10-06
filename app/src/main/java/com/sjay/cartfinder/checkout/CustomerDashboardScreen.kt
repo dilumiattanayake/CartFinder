@@ -143,7 +143,7 @@ fun CustomerDashboardScreen(
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Card(
                         modifier = Modifier.fillMaxWidth().height(42.dp).clickable { navController.navigate(Screen.CustomerOrders.route) },
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -154,7 +154,7 @@ fun CustomerDashboardScreen(
                     }
                     Card(
                         modifier = Modifier.fillMaxWidth().height(42.dp).clickable { navController.navigate(Screen.Cart.route) },
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -203,7 +203,7 @@ fun CustomerDashboardScreen(
                                     .fillMaxWidth()
                                     .height(110.dp)
                                     .clickable { navController.navigate("stall_menu/${stall.id}/${stall.name}?distance=${dist}") },
-                                colors = CardDefaults.cardColors(containerColor = Color.White),
+                                colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                                 shape = RoundedCornerShape(16.dp)
                             ) {

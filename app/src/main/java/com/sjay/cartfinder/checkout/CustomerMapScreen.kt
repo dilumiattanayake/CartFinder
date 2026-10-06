@@ -159,7 +159,7 @@ fun CustomerMapScreen(
                     Box {
                         Row(
                             modifier = Modifier
-                                .background(Color.White, RoundedCornerShape(24.dp))
+                                .background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White, RoundedCornerShape(24.dp))
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .clickable { expanded = true },
                             verticalAlignment = Alignment.CenterVertically
@@ -259,7 +259,7 @@ fun CustomerMapScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 32.dp)
-                            .background(Color.White.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
+                            .background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
                             .padding(16.dp)
                     ) {
                         Text("No vendors found within $searchRadius km", fontWeight = FontWeight.Bold)
@@ -279,7 +279,7 @@ fun CompactStallCard(stall: Stall, distance: Double, onClick: () -> Unit) {
             .width(280.dp)
             .height(110.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
