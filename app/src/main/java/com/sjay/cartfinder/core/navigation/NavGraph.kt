@@ -83,6 +83,9 @@ fun CartFinderNavGraph(
         composable(Screen.CustomerDashboard.route) {
             com.sjay.cartfinder.checkout.CustomerDashboardScreen(navController = navController)
         }
+        composable(Screen.CustomerMap.route) {
+            com.sjay.cartfinder.checkout.CustomerMapScreen(navController = navController)
+        }
         composable(
             route = Screen.StallMenu.route,
             arguments = listOf(

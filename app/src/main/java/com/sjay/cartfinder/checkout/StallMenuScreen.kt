@@ -211,21 +211,41 @@ fun StallMenuScreen(
                                 Text("This stall has no products available yet.", modifier = Modifier.padding(16.dp), color = Color.Gray)
                             }
                         } else {
-                            items(state.items) { menuItem ->
-                                MenuItemCard(menuItem = menuItem) {
-                                    if (currentUserId.isNotEmpty()) {
-                                        val cartItem = CartItem(
-                                            productId = menuItem.id,
-                                            productName = menuItem.name,
-                                            price = menuItem.price,
-                                            quantity = 1,
-                                            stallId = stallId
-                                        )
-                                        cartViewModel.addItemToCart(currentUserId, cartItem)
-                                        Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
-                                    }
+                            val groupedItems = state.items.groupBy { it.categoryId.ifEmpty { "Other" } }
+                            groupedItems.forEach { (category, items) ->
+                                item {
+                                    Text(
+                                        text = category.uppercase(),
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 18.sp,
+                                        color = PrimaryOrange,
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                                    )
                                 }
-                                Spacer(modifier = Modifier.height(12.dp))
+                                item {
+                                    androidx.compose.foundation.lazy.LazyRow(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        items(items) { menuItem ->
+                                            MenuItemCard(menuItem = menuItem) {
+                                                if (currentUserId.isNotEmpty()) {
+                                                    val cartItem = CartItem(
+                                                        productId = menuItem.id,
+                                                        productName = menuItem.name,
+                                                        price = menuItem.price,
+                                                        quantity = 1,
+                                                        stallId = stallId
+                                                    )
+                                                    cartViewModel.addItemToCart(currentUserId, cartItem)
+                                                    Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
                             }
                         }
                     }
@@ -239,17 +259,17 @@ fun StallMenuScreen(
 @Composable
 fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier.width(200.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Box(
-                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFFFFF3E0)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(Color(0xFFFFF3E0)),
                 contentAlignment = Alignment.Center
             ) {
                 if (menuItem.imageUrl != null) {
@@ -260,28 +280,29 @@ fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Icon(Icons.Filled.RestaurantMenu, contentDescription = null, tint = PrimaryOrange)
+                    Icon(Icons.Filled.RestaurantMenu, contentDescription = null, tint = PrimaryOrange, modifier = Modifier.size(48.dp))
                 }
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(menuItem.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(menuItem.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 Text(menuItem.description, color = Color.Gray, fontSize = 12.sp, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Rs. ${menuItem.price}", color = PrimaryOrange, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("• ${menuItem.preparationTime} mins", color = Color.Gray, fontSize = 12.sp)
-                }
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Button(
-                    onClick = onAddToCart,
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text("Add", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Column {
+                        Text("Rs. ${menuItem.price}", color = PrimaryOrange, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("• ${menuItem.preparationTime} mins", color = Color.Gray, fontSize = 12.sp)
+                    }
+                    Button(
+                        onClick = onAddToCart,
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text("Add", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 sealed class BottomNavItem(var title: String, var icon: ImageVector, var route: String) {
     // Customer
     object CustomerHome : BottomNavItem("Home", Icons.Filled.Home, Screen.CustomerDashboard.route)
+    object CustomerMap : BottomNavItem("Map", Icons.Filled.Map, Screen.CustomerMap.route)
     object CustomerCart : BottomNavItem("Cart", Icons.Filled.ShoppingCart, Screen.Cart.route)
     object CustomerOrders : BottomNavItem("Orders", Icons.Filled.List, Screen.CustomerOrders.route)
 
@@ -41,6 +43,7 @@ fun BottomNavigationBar(navController: NavController, role: String) {
     val items = when (role.lowercase()) {
         "customer" -> listOf(
             BottomNavItem.CustomerHome,
+            BottomNavItem.CustomerMap,
             BottomNavItem.CustomerCart,
             BottomNavItem.CustomerOrders,
             BottomNavItem.Settings("customer")
