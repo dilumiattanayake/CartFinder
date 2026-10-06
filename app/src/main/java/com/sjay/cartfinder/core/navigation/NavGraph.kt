@@ -94,7 +94,14 @@ fun CartFinderNavGraph(
             com.sjay.cartfinder.shop.VendorReviewsScreen(navController = navController)
         }
         composable(Screen.Cart.route) {
-            com.sjay.cartfinder.checkout.CartScreen(navController = navController)
+            com.sjay.cartfinder.checkout.CartsListScreen(navController = navController)
+        }
+        composable(
+            route = Screen.CartDetail.route,
+            arguments = listOf(androidx.navigation.navArgument("stallId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val stallId = backStackEntry.arguments?.getString("stallId") ?: ""
+            com.sjay.cartfinder.checkout.CartDetailScreen(navController = navController, stallId = stallId)
         }
         composable(Screen.CustomerOrders.route) {
             com.sjay.cartfinder.checkout.CustomerOrdersScreen(navController = navController)

@@ -7,7 +7,8 @@ data class CartItem(
     val price: Double = 0.0,
     var quantity: Int = 1,
     val stallId: String = "",
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val preparationTime: Int = 8
 )
 
 data class Order(
@@ -23,5 +24,6 @@ data class Order(
 
 data class Cart(
     val stallId: String = "",
+    val stallName: String = "",
     val items: List<CartItem> = emptyList()
 )

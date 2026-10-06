@@ -63,6 +63,9 @@ fun StallMenuScreen(
         if (dashboardViewModel.stallsState.value !is StallListState.Success) {
             dashboardViewModel.loadAllStalls()
         }
+        if (currentUserId.isNotEmpty()) {
+            cartViewModel.loadCart(currentUserId, stallId)
+        }
     }
     
     val reviewsState by reviewViewModel.reviewsState.collectAsState()
@@ -126,7 +129,7 @@ fun StallMenuScreen(
                 
                 // Cart Button
                 IconButton(
-                    onClick = { navController.navigate(Screen.Cart.route) },
+                    onClick = { navController.navigate(Screen.CartDetail.createRoute(stallId)) },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(16.dp)
@@ -181,6 +184,27 @@ fun StallMenuScreen(
                             }
                         }
                         Text(stall?.category ?: "Food Stall", color = Color.DarkGray, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                        
+                        val context = androidx.compose.ui.platform.LocalContext.current
+                        if (stall != null && stall.location.latitude != 0.0 && stall.location.longitude != 0.0) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = {
+                                    val intent = android.content.Intent(
+                                        android.content.Intent.ACTION_VIEW, 
+                                        android.net.Uri.parse("google.navigation:q=${stall.location.latitude},${stall.location.longitude}")
+                                    )
+                                    intent.setPackage("com.google.android.apps.maps")
+                                    context.startActivity(intent)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryOrange)
+                            ) {
+                                Icon(androidx.compose.material.icons.Icons.Filled.Navigation, contentDescription = null)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Navigate to Shop (Live Sync)")
+                            }
+                        }
                         
                         Spacer(modifier = Modifier.height(12.dp))
                         
@@ -262,9 +286,10 @@ fun StallMenuScreen(
                                                         productName = menuItem.name,
                                                         price = menuItem.price,
                                                         quantity = 1,
-                                                        stallId = stallId
+                                                        stallId = stallId,
+                                                        preparationTime = menuItem.preparationTime
                                                     )
-                                                    cartViewModel.addItemToCart(currentUserId, cartItem)
+                                                    cartViewModel.addItemToCart(currentUserId, cartItem, stall?.name ?: stallName)
                                                     Toast.makeText(context, "Added to cart", Toast.LENGTH_SHORT).show()
                                                 }
                                             }

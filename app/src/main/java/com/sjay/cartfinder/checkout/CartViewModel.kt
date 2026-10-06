@@ -21,6 +21,13 @@ sealed class CartState {
     data class CheckoutSuccess(val orderId: String, val totalAmount: Double) : CartState()
 }
 
+sealed class CartListState {
+    object Idle : CartListState()
+    object Loading : CartListState()
+    data class Success(val carts: List<Cart>) : CartListState()
+    data class Error(val message: String) : CartListState()
+}
+
 class CartViewModel : ViewModel() {
     private val cartRepo = CartRepository()
     private val orderRepo = OrderRepository()
@@ -28,10 +35,25 @@ class CartViewModel : ViewModel() {
     private val _cartState = MutableStateFlow<CartState>(CartState.Idle)
     val cartState: StateFlow<CartState> = _cartState.asStateFlow()
 
-    fun loadCart(userId: String) {
+    private val _cartListState = MutableStateFlow<CartListState>(CartListState.Idle)
+    val cartListState: StateFlow<CartListState> = _cartListState.asStateFlow()
+
+    fun loadAllCarts(userId: String) {
+        viewModelScope.launch {
+            _cartListState.value = CartListState.Loading
+            val result = cartRepo.getAllCarts(userId)
+            if (result.isSuccess) {
+                _cartListState.value = CartListState.Success(result.getOrNull() ?: emptyList())
+            } else {
+                _cartListState.value = CartListState.Error(result.exceptionOrNull()?.message ?: "Failed to load carts")
+            }
+        }
+    }
+
+    fun loadCart(userId: String, stallId: String) {
         viewModelScope.launch {
             _cartState.value = CartState.Loading
-            val result = cartRepo.getCart(userId)
+            val result = cartRepo.getCart(userId, stallId)
             if (result.isSuccess) {
                 _cartState.value = CartState.Success(result.getOrNull()!!)
             } else {
@@ -40,21 +62,11 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun addItemToCart(userId: String, newItem: CartItem) {
+    fun addItemToCart(userId: String, newItem: CartItem, stallName: String) {
         viewModelScope.launch {
-            val currentState = _cartState.value
-            if (currentState is CartState.Success) {
-                var currentCart = currentState.cart
-
-                // Validate same stall rule
-                if (currentCart.stallId.isNotEmpty() && currentCart.stallId != newItem.stallId) {
-                    _cartState.value = CartState.Error("You can only order from one stall at a time. Please clear your cart first.")
-                    // Reset back to success after showing error
-                    kotlinx.coroutines.delay(3000)
-                    _cartState.value = currentState
-                    return@launch
-                }
-
+            val result = cartRepo.getCart(userId, newItem.stallId)
+            if (result.isSuccess) {
+                val currentCart = result.getOrNull()!!
                 val updatedItems = currentCart.items.toMutableList()
                 val existingItemIndex = updatedItems.indexOfFirst { it.productId == newItem.productId }
                 
@@ -68,21 +80,24 @@ class CartViewModel : ViewModel() {
 
                 val newCart = currentCart.copy(
                     stallId = newItem.stallId,
+                    stallName = stallName,
                     items = updatedItems
                 )
 
                 _cartState.value = CartState.Loading
-                val result = cartRepo.updateCart(userId, newCart)
-                if (result.isSuccess) {
+                val updateResult = cartRepo.updateCart(userId, newCart)
+                if (updateResult.isSuccess) {
                     _cartState.value = CartState.Success(newCart)
                 } else {
                     _cartState.value = CartState.Error("Failed to update cart")
                 }
+            } else {
+                _cartState.value = CartState.Error("Failed to access cart")
             }
         }
     }
 
-    fun updateQuantity(userId: String, itemId: String, newQuantity: Int) {
+    fun updateQuantity(userId: String, stallId: String, itemId: String, newQuantity: Int) {
         viewModelScope.launch {
             val currentState = _cartState.value
             if (currentState is CartState.Success) {
@@ -91,27 +106,41 @@ class CartViewModel : ViewModel() {
                 }.filter { it.quantity > 0 }
 
                 val newCart = currentState.cart.copy(
-                    stallId = if (updatedItems.isEmpty()) "" else currentState.cart.stallId,
+                    stallId = stallId,
                     items = updatedItems
                 )
 
                 _cartState.value = CartState.Loading
-                val result = cartRepo.updateCart(userId, newCart)
-                if (result.isSuccess) {
-                    _cartState.value = CartState.Success(newCart)
+                
+                if (updatedItems.isEmpty()) {
+                    // Delete the cart if empty
+                    val result = cartRepo.clearCart(userId, stallId)
+                    if (result.isSuccess) {
+                        _cartState.value = CartState.Success(Cart(stallId = stallId))
+                        loadAllCarts(userId)
+                    } else {
+                        _cartState.value = CartState.Error("Failed to clear empty cart")
+                    }
                 } else {
-                    _cartState.value = CartState.Error("Failed to update cart")
+                    val result = cartRepo.updateCart(userId, newCart)
+                    if (result.isSuccess) {
+                        _cartState.value = CartState.Success(newCart)
+                        loadAllCarts(userId)
+                    } else {
+                        _cartState.value = CartState.Error("Failed to update cart")
+                    }
                 }
             }
         }
     }
 
-    fun clearCart(userId: String) {
+    fun clearCart(userId: String, stallId: String) {
         viewModelScope.launch {
             _cartState.value = CartState.Loading
-            val result = cartRepo.clearCart(userId)
+            val result = cartRepo.clearCart(userId, stallId)
             if (result.isSuccess) {
-                _cartState.value = CartState.Success(Cart())
+                _cartState.value = CartState.Success(Cart(stallId = stallId))
+                loadAllCarts(userId)
             } else {
                 _cartState.value = CartState.Error("Failed to clear cart")
             }
@@ -139,7 +168,7 @@ class CartViewModel : ViewModel() {
                 val orderResult = orderRepo.placeOrder(newOrder)
                 if (orderResult.isSuccess) {
                     val orderId = orderResult.getOrNull() ?: ""
-                    cartRepo.clearCart(userId) // Empty cart on success
+                    cartRepo.clearCart(userId, cart.stallId) // Empty cart on success
                     _cartState.value = CartState.CheckoutSuccess(orderId, totalAmount)
                 } else {
                     _cartState.value = CartState.Error("Failed to place order")

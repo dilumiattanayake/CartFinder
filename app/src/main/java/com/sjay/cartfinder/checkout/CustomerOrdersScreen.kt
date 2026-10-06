@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +25,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.asImageBitmap
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -141,6 +143,43 @@ fun CustomerOrderCard(order: Order) {
                         contentDescription = "Pickup QR Code",
                         modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally)
                     )
+                }
+            }
+
+            var stallLat by remember { mutableStateOf<Double?>(null) }
+            var stallLng by remember { mutableStateOf<Double?>(null) }
+
+            LaunchedEffect(order.stallId) {
+                try {
+                    val doc = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("stalls").document(order.stallId).get()
+                        .await()
+                    val loc = doc.get("location") as? Map<String, Any>
+                    stallLat = (loc?.get("latitude") as? Number)?.toDouble()
+                    stallLng = (loc?.get("longitude") as? Number)?.toDouble()
+                } catch (e: Exception) {
+                    // Ignore
+                }
+            }
+
+            if (stallLat != null && stallLng != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                val context = androidx.compose.ui.platform.LocalContext.current
+                OutlinedButton(
+                    onClick = {
+                        val intent = android.content.Intent(
+                            android.content.Intent.ACTION_VIEW, 
+                            android.net.Uri.parse("google.navigation:q=$stallLat,$stallLng")
+                        )
+                        intent.setPackage("com.google.android.apps.maps")
+                        context.startActivity(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryOrange)
+                ) {
+                    Icon(Icons.Filled.Navigation, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Navigate to Shop (Live Sync)")
                 }
             }
         }

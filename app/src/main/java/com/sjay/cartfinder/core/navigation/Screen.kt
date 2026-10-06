@@ -40,6 +40,9 @@ sealed class Screen(val route: String) {
         }
     }
     object Cart : Screen("cart")
+    object CartDetail : Screen("cart_detail/{stallId}") {
+        fun createRoute(stallId: String) = "cart_detail/$stallId"
+    }
     object CustomerOrders : Screen("customer_orders")
     object VendorOrders : Screen("vendor_orders")
     object PayHereSandbox : Screen("payhere_sandbox/{orderId}/{amount}") {
