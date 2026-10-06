@@ -15,11 +15,23 @@ class PhiRepository {
     // --- Certificates ---
     suspend fun requestCertificate(stallId: String): Result<Unit> {
         return try {
-            val docRef = certificatesCollection.document(stallId) // Using stallId as docId for 1:1 mapping in simple cases
+            // Fetch stall info to enrich the certificate record
+            var stallName = ""
+            var vendorId = ""
+            try {
+                val stallDoc = firestore.collection("stalls").document(stallId).get().await()
+                stallName = stallDoc.getString("name") ?: ""
+                vendorId = stallDoc.getString("vendorId") ?: ""
+            } catch (e: Exception) {}
+
+            val docRef = certificatesCollection.document(stallId)
             val cert = Certificate(
                 id = stallId,
                 stallId = stallId,
-                status = "PENDING_REQUEST"
+                stallName = stallName,
+                vendorId = vendorId,
+                status = "PENDING_REQUEST",
+                requestedAt = System.currentTimeMillis()
             )
             docRef.set(cert).await()
 
@@ -31,7 +43,7 @@ class PhiRepository {
                         com.sjay.cartfinder.data.model.Notification(
                             userId = doc.id,
                             title = "New Certificate Request",
-                            message = "A vendor has requested a new PHI certificate.",
+                            message = "${if (stallName.isNotEmpty()) stallName else "A vendor"} has requested a new PHI certificate.",
                             type = "CERTIFICATE_REQUEST",
                             referenceId = stallId
                         )
@@ -44,6 +56,7 @@ class PhiRepository {
             Result.failure(e)
         }
     }
+
 
     suspend fun issueCertificate(certificate: Certificate): Result<Unit> {
         return try {
@@ -156,8 +169,16 @@ class PhiRepository {
     // --- Alerts ---
     suspend fun addAlert(alert: PhiAlert): Result<Unit> {
         return try {
+            // Enrich with stall name for display
+            var enrichedAlert = alert
+            try {
+                val stallDoc = firestore.collection("stalls").document(alert.stallId).get().await()
+                val name = stallDoc.getString("name") ?: ""
+                enrichedAlert = alert.copy(stallName = name)
+            } catch (e: Exception) {}
+
             val docRef = alertsCollection.document()
-            docRef.set(alert.copy(id = docRef.id)).await()
+            docRef.set(enrichedAlert.copy(id = docRef.id)).await()
 
             // Notify Vendor
             try {
@@ -181,6 +202,7 @@ class PhiRepository {
             Result.failure(e)
         }
     }
+
 
     suspend fun getActiveAlerts(stallId: String): Result<List<PhiAlert>> {
         return try {
@@ -210,4 +232,29 @@ class PhiRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun getPendingCertificateRequests(): Result<List<Certificate>> {
+        return try {
+            val snapshot = certificatesCollection
+                .whereEqualTo("status", "PENDING_REQUEST")
+                .get()
+                .await()
+            val list = snapshot.documents.mapNotNull { it.toObject(Certificate::class.java) }
+                .sortedByDescending { it.requestedAt }
+            Result.success(list)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getAllCertificates(): Result<List<Certificate>> {
+        return try {
+            val snapshot = certificatesCollection.get().await()
+            val list = snapshot.documents.mapNotNull { it.toObject(Certificate::class.java) }
+            Result.success(list)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
+

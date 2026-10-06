@@ -14,17 +14,21 @@ data class Inspection(
 data class Certificate(
     val id: String = "",
     val stallId: String = "",
+    val vendorId: String = "",
+    val stallName: String = "",
     val registrationNumber: String = "",
     val issueDate: Long = System.currentTimeMillis(),
     val expiryDate: Long = System.currentTimeMillis() + 31536000000, // +1 year
     val grade: String = "A", // A, B, C, D
     val score: Int = 100,
-    val status: String = "ACTIVE" // ACTIVE, REVOKED, PENDING_REQUEST
+    val status: String = "ACTIVE", // ACTIVE, REVOKED, PENDING_REQUEST
+    val requestedAt: Long = System.currentTimeMillis()
 )
 
 data class PhiAlert(
     val id: String = "",
     val stallId: String = "",
+    val stallName: String = "",
     val inspectorId: String = "",
     val title: String = "",
     val description: String = "",

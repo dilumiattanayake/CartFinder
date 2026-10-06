@@ -17,6 +17,7 @@ sealed class PhiState {
     data class CertificateData(val certificate: Certificate?) : PhiState()
     data class InspectionData(val inspections: List<Inspection>) : PhiState()
     data class AlertData(val alerts: List<PhiAlert>) : PhiState()
+    data class PendingRequestsData(val requests: List<Certificate>) : PhiState()
     data class Error(val message: String) : PhiState()
     object Success : PhiState()
 }
@@ -27,6 +28,12 @@ class PhiViewModel : ViewModel() {
 
     private val _phiState = MutableStateFlow<PhiState>(PhiState.Idle)
     val phiState: StateFlow<PhiState> = _phiState.asStateFlow()
+
+    private val _pendingRequests = MutableStateFlow<List<Certificate>>(emptyList())
+    val pendingRequests: StateFlow<List<Certificate>> = _pendingRequests.asStateFlow()
+
+    private val _allAlerts = MutableStateFlow<List<PhiAlert>>(emptyList())
+    val allAlerts: StateFlow<List<PhiAlert>> = _allAlerts.asStateFlow()
 
     private val _stallState = MutableStateFlow<com.sjay.cartfinder.data.model.Stall?>(null)
     val stallState: StateFlow<com.sjay.cartfinder.data.model.Stall?> = _stallState.asStateFlow()
@@ -182,12 +189,21 @@ class PhiViewModel : ViewModel() {
 
     fun loadAllAlerts() {
         viewModelScope.launch {
-            _phiState.value = PhiState.Loading
             val result = repository.getAllActiveAlerts()
             if (result.isSuccess) {
+                _allAlerts.value = result.getOrDefault(emptyList())
                 _phiState.value = PhiState.AlertData(result.getOrDefault(emptyList()))
             } else {
                 _phiState.value = PhiState.Error(result.exceptionOrNull()?.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun loadPendingRequests() {
+        viewModelScope.launch {
+            val result = repository.getPendingCertificateRequests()
+            if (result.isSuccess) {
+                _pendingRequests.value = result.getOrDefault(emptyList())
             }
         }
     }
