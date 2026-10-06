@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -142,21 +143,58 @@ fun ProductManagementScreen(
                             Text("${state.products.size} ITEMS", color = PrimaryOrange, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         }
 
-                        if (state.products.isEmpty()) {
+                        val categories = listOf("All") + state.products.map { it.categoryId.ifEmpty { "Other" } }.distinct().sorted()
+                        var selectedFilter by remember { mutableStateOf("All") }
+                        
+                        androidx.compose.foundation.lazy.LazyRow(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            itemsIndexed(categories) { _, cat ->
+                                FilterChip(
+                                    selected = selectedFilter == cat,
+                                    onClick = { selectedFilter = cat },
+                                    label = { Text(cat) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = PrimaryOrange.copy(alpha = 0.2f),
+                                        selectedLabelColor = PrimaryOrange
+                                    )
+                                )
+                            }
+                        }
+
+                        val filteredProducts = if (selectedFilter == "All") state.products else state.products.filter { it.categoryId.ifEmpty { "Other" } == selectedFilter }
+
+                        if (filteredProducts.isEmpty()) {
                             Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
                                 Text("No products added yet. Click the + button to add.", color = Color.Gray)
                             }
                         } else {
                             LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp)) {
-                                itemsIndexed(state.products) { index, item ->
-                                    EditableProductCard(
-                                        item = item, 
-                                        index = index + 1,
-                                        onSave = { updatedItem ->
-                                            if (stallId != null) viewModel.updateProduct(stallId, updatedItem)
-                                        }
-                                    )
-                                    Spacer(modifier = Modifier.height(24.dp))
+                                val groupedItems = filteredProducts.groupBy { it.categoryId.ifEmpty { "Other" } }
+                                groupedItems.forEach { (category, items) ->
+                                    item {
+                                        Text(
+                                            text = category.uppercase(),
+                                            fontWeight = FontWeight.ExtraBold,
+                                            fontSize = 18.sp,
+                                            color = PrimaryOrange,
+                                            modifier = Modifier.padding(vertical = 12.dp)
+                                        )
+                                    }
+                                    itemsIndexed(items) { index, item ->
+                                        EditableProductCard(
+                                            item = item, 
+                                            index = index + 1,
+                                            onSave = { updatedItem ->
+                                                if (stallId != null) viewModel.updateProduct(stallId, updatedItem)
+                                            },
+                                            onDelete = { itemToDelete ->
+                                                if (stallId != null) viewModel.deleteProduct(stallId, itemToDelete.id)
+                                            }
+                                        )
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                    }
                                 }
                             }
                         }
@@ -171,6 +209,7 @@ fun ProductManagementScreen(
             var newDesc by remember { mutableStateOf("") }
             var newPrice by remember { mutableStateOf("") }
             var newStock by remember { mutableStateOf("10") }
+            var newPrepTime by remember { mutableStateOf("8") }
             var imageUri by remember { mutableStateOf<Uri?>(null) }
             var selectedCategory by remember { mutableStateOf("Main Course") }
             
@@ -217,7 +256,10 @@ fun ProductManagementScreen(
                         OutlinedTextField(value = newName, onValueChange = { newName = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(value = newDesc, onValueChange = { newDesc = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth())
                         OutlinedTextField(value = newPrice, onValueChange = { newPrice = it }, label = { Text("Price") }, modifier = Modifier.fillMaxWidth())
-                        OutlinedTextField(value = newStock, onValueChange = { newStock = it }, label = { Text("Stock Quantity") }, modifier = Modifier.fillMaxWidth())
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            OutlinedTextField(value = newStock, onValueChange = { newStock = it }, label = { Text("Stock Quantity") }, modifier = Modifier.weight(1f))
+                            OutlinedTextField(value = newPrepTime, onValueChange = { newPrepTime = it }, label = { Text("Prep Time (min)") }, modifier = Modifier.weight(1f))
+                        }
                         
                         Spacer(modifier = Modifier.height(8.dp))
                         val categories = listOf("Main Course", "Fast Food", "Drinks", "Desserts", "Bakery", "Healthy", "Other")
@@ -256,9 +298,10 @@ fun ProductManagementScreen(
                     TextButton(onClick = {
                         val priceDouble = newPrice.toDoubleOrNull() ?: 0.0
                         val stockInt = newStock.toIntOrNull() ?: 0
+                        val prepTimeInt = newPrepTime.toIntOrNull() ?: 8
                         // Use a dummy image URL for now if an image is selected, or handle actual upload in ViewModel
                         val finalImageUrl = if (imageUri != null) imageUri.toString() else null
-                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl)
+                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl, prepTimeInt)
                         showAddDialog = false
                     }) {
                         Text("Add")
@@ -274,10 +317,12 @@ fun ProductManagementScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) {
+fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, onDelete: (MenuItem) -> Unit) {
+    var isExpanded by remember { mutableStateOf(false) }
+    
     var name by remember { mutableStateOf(item.name) }
     var category by remember { mutableStateOf(item.categoryId.ifEmpty { "Main Course" }) }
-    var prepTime by remember { mutableStateOf("8 mins") }
+    var prepTime by remember { mutableStateOf(item.preparationTime.toString()) }
     var price by remember { mutableStateOf(item.price.toInt().toString()) }
     var description by remember { mutableStateOf(item.description) }
     var available by remember { mutableStateOf(item.stockQuantity > 0 || item.available) }
@@ -294,7 +339,42 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
         }
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { isExpanded = !isExpanded },
+        colors = CardDefaults.cardColors(containerColor = if (isExpanded) Color.White else Color(0xFFF9FAFB)),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isExpanded) 4.dp else 1.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        if (!isExpanded) {
+            Row(
+                modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (item.imageUrl != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(item.imageUrl),
+                            contentDescription = item.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Icon(Icons.Filled.CameraAlt, contentDescription = null, tint = Color.Gray)
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Rs. ${item.price}", color = PrimaryOrange, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+                Icon(Icons.Filled.Edit, contentDescription = "Edit", tint = Color.Gray)
+            }
+        } else {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             // Image Box
             Box(
@@ -463,7 +543,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
             }
         }
         
-        Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 12.dp))
+        HorizontalDivider(color = Color.LightGray, modifier = Modifier.padding(vertical = 12.dp))
         
         TextField(
             value = description,
@@ -480,7 +560,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
             textStyle = LocalTextStyle.current.copy(color = Color.DarkGray, fontSize = 14.sp)
         )
         
-        Divider(color = Color.LightGray, modifier = Modifier.padding(vertical = 12.dp))
+        HorizontalDivider(color = Color.LightGray, modifier = Modifier.padding(vertical = 12.dp))
         
         // Availability and Save
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -492,27 +572,33 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit) 
                     Text(if (available) "Available" else "Unavailable", color = if (available) Color(0xFF27AE60) else Color.Red, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
-            
-            Button(
-                onClick = {
-                    val updatedItem = item.copy(
-                        name = name,
-                        description = description,
-                        price = price.toDoubleOrNull() ?: item.price,
-                        categoryId = category,
-                        imageUrl = imageUrl,
-                        stockQuantity = if (available) 10 else 0,
-                        available = available
-                    )
-                    onSave(updatedItem)
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("Save item", color = Color.White, fontWeight = FontWeight.Bold)
+            Row {
+                IconButton(onClick = { onDelete(item) }, modifier = Modifier.background(Color(0xFFFEE2E2), RoundedCornerShape(8.dp)).padding(horizontal = 4.dp)) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Red)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        val updatedItem = item.copy(
+                            name = name,
+                            description = description,
+                            price = price.toDoubleOrNull() ?: item.price,
+                            categoryId = category,
+                            imageUrl = imageUrl,
+                            stockQuantity = if (available) 10 else 0,
+                            available = available,
+                            preparationTime = prepTime.toIntOrNull() ?: item.preparationTime
+                        )
+                        onSave(updatedItem)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Save", color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         }
-        
-        Spacer(modifier = Modifier.height(16.dp))
+        }
     }
+}
 }

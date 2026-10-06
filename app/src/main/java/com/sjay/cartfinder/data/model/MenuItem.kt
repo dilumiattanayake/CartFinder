@@ -10,6 +10,7 @@ data class MenuItem(
     val categoryId: String = "",
     val available: Boolean = true,
     val stockQuantity: Int = 0,
+    val preparationTime: Int = 8, // in minutes
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

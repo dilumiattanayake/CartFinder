@@ -270,6 +270,8 @@ fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Rs. ${menuItem.price}", color = PrimaryOrange, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("• ${menuItem.preparationTime} mins", color = Color.Gray, fontSize = 12.sp)
                 }
             }
             Column(horizontalAlignment = Alignment.End) {

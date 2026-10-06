@@ -136,4 +136,15 @@ class ShopRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun deleteMenuItem(stallId: String, menuItemId: String): Result<Unit> {
+        return try {
+            stallsCollection.document(stallId).collection("menuItems").document(menuItemId)
+                .delete()
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

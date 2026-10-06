@@ -133,7 +133,7 @@ class ShopViewModel(
         }
     }
 
-    fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null) {
+    fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8) {
         viewModelScope.launch {
             val item = MenuItem(
                 stallId = stallId,
@@ -142,7 +142,8 @@ class ShopViewModel(
                 price = price,
                 categoryId = categoryId,
                 stockQuantity = stockQuantity,
-                imageUrl = imageUrl
+                imageUrl = imageUrl,
+                preparationTime = preparationTime
             )
             val result = repository.addMenuItem(stallId, item)
             if (result.isSuccess) {
@@ -163,6 +164,15 @@ class ShopViewModel(
     fun archiveProduct(stallId: String, menuItemId: String) {
         viewModelScope.launch {
             val result = repository.archiveMenuItem(stallId, menuItemId)
+            if (result.isSuccess) {
+                loadProducts(stallId)
+            }
+        }
+    }
+
+    fun deleteProduct(stallId: String, productId: String) {
+        viewModelScope.launch {
+            val result = repository.deleteMenuItem(stallId, productId)
             if (result.isSuccess) {
                 loadProducts(stallId)
             }
