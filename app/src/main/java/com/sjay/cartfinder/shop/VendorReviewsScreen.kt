@@ -44,7 +44,8 @@ fun VendorReviewsScreen(
                 ReviewListScreen(
                     stallId = stall.id,
                     stallName = stall.name,
-                    navController = navController
+                    navController = navController,
+                    role = "Vendor"
                 )
             } else {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

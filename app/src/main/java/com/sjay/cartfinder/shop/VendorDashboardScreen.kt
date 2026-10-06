@@ -204,7 +204,7 @@ fun VendorProfileContent(
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { navController.navigate(Screen.ReviewList.createRoute(stall.id, stall.name)) }
+                    modifier = Modifier.clickable { navController.navigate(Screen.VendorReviews.route) }
                 ) {
                     Text(if (stall.ratingCount > 0) String.format(java.util.Locale.US, "%.1f", stall.ratingAverage) else "New", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     if (stall.ratingCount > 0) {

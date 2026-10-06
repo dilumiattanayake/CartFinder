@@ -46,22 +46,11 @@ fun ReviewListScreen(
     navController: NavController,
     stallId: String,
     stallName: String,
-    viewModel: ReviewViewModel = viewModel()
+    viewModel: ReviewViewModel = viewModel(),
+    role: String = "Customer"
 ) {
     val reviewsState by viewModel.reviewsState.collectAsState()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-    var role by remember { mutableStateOf("Customer") }
-
-    LaunchedEffect(currentUserId) {
-        if (currentUserId.isNotEmpty()) {
-            try {
-                val doc = FirebaseFirestore.getInstance()
-                    .collection("users").document(currentUserId).get()
-                    .await()
-                role = doc.getString("role") ?: "Customer"
-            } catch (e: Exception) {}
-        }
-    }
 
     var selectedReviewForEdit by remember { mutableStateOf<Review?>(null) }
     var selectedReviewForReply by remember { mutableStateOf<Review?>(null) }
