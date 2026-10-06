@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
         fun createRoute(role: String) = "settings/$role"
     }
     object Profile : Screen("profile")
+    object Notifications : Screen("notifications")
     
     // Member 1 - Reviews
     object ReviewList : Screen("review_list/{stallId}/{stallName}") {

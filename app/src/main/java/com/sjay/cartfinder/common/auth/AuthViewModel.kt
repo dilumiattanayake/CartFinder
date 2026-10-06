@@ -3,6 +3,7 @@ package com.sjay.cartfinder.common.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -66,6 +67,42 @@ class AuthViewModel : ViewModel() {
                 _authState.value = AuthState.Success("Login successful")
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Login failed")
+            }
+        }
+    }
+
+    fun signInWithGoogle(idToken: String, role: String) {
+        _authState.value = AuthState.Loading
+        viewModelScope.launch {
+            try {
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                val authResult = auth.signInWithCredential(credential).await()
+                val user = authResult.user
+                if (user != null) {
+                    // Check if user exists in Firestore
+                    val docRef = firestore.collection("users").document(user.uid)
+                    val doc = docRef.get().await()
+                    if (!doc.exists()) {
+                        // First time login with Google, create profile
+                        val userMap = hashMapOf(
+                            "uid" to user.uid,
+                            "email" to (user.email ?: ""),
+                            "fullName" to (user.displayName ?: "Google User"),
+                            "phone" to "",
+                            "role" to role,
+                            "createdAt" to System.currentTimeMillis()
+                        )
+                        docRef.set(userMap).await()
+                    } else {
+                        // If user exists but role is different?
+                        // For simplicity, we just proceed.
+                    }
+                    _authState.value = AuthState.Success("Google Login successful")
+                } else {
+                    _authState.value = AuthState.Error("Google Login failed: No user returned")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Google Sign In failed")
             }
         }
     }

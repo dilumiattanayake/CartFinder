@@ -62,4 +62,5 @@ dependencies {
     implementation(libs.osmdroid.android)
     implementation(libs.zxing.core)
     implementation(libs.coil.compose)
+    implementation(libs.play.services.auth)
 }

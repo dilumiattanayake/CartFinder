@@ -3,9 +3,10 @@ package com.sjay.cartfinder.common.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.Shield
@@ -28,7 +29,7 @@ fun ChooseRoleScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(PrimaryOrange)
+            .background(if (isSystemInDarkTheme()) Color.Black else PrimaryOrange)
     ) {
         // Back Button
         IconButton(
@@ -37,20 +38,19 @@ fun ChooseRoleScreen(navController: NavController) {
                 .padding(16.dp)
                 .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50))
         ) {
-            Icon(Icons.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 80.dp),
+                .padding(top = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "CartFinder",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(id = com.sjay.cartfinder.R.drawable.logotext),
+                contentDescription = "CartFinder",
+                modifier = Modifier.height(48.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -110,14 +110,8 @@ fun ChooseRoleScreen(navController: NavController) {
                         onClick = { navController.navigate(Screen.Login.createRoute("PHI")) }
                     )
                     
-                    Spacer(modifier = Modifier.weight(1f))
                     
-                    Text(
-                        text = "Continue as Guest",
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { /* Handle Guest */ }
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -148,7 +142,7 @@ fun RoleCard(title: String, buttonText: String, icon: ImageVector, onClick: () -
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = title, fontWeight = FontWeight.Medium)
+                Text(text = title, fontWeight = FontWeight.Medium, color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = onClick,

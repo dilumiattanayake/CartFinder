@@ -89,7 +89,7 @@ fun CustomerDashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF9FAFB))
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding)
         ) {
             // Header
@@ -104,14 +104,26 @@ fun CustomerDashboardScreen(
                     Text("Hello, $userName 👋", fontWeight = FontWeight.ExtraBold, fontSize = 24.sp)
                     Text("What are you craving today?", color = Color.Gray, fontSize = 14.sp)
                 }
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(PrimaryOrange.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Filled.Person, contentDescription = "Profile", tint = PrimaryOrange)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFF0F0F0))
+                            .clickable { navController.navigate(Screen.Notifications.route) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(androidx.compose.material.icons.Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.Gray)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(PrimaryOrange.copy(alpha = 0.2f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = PrimaryOrange)
+                    }
                 }
             }
 

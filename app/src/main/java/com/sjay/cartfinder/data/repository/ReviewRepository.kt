@@ -3,6 +3,7 @@ package com.sjay.cartfinder.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.sjay.cartfinder.data.model.Review
+import com.sjay.cartfinder.data.model.Notification
 import kotlinx.coroutines.tasks.await
 
 class ReviewRepository {
@@ -20,6 +21,26 @@ class ReviewRepository {
             val reviewWithId = review.copy(id = docRef.id)
             docRef.set(reviewWithId).await()
             updateStallRating(review.stallId)
+            
+            // Notify Vendor
+            try {
+                val stallDoc = firestore.collection("stalls").document(review.stallId).get().await()
+                val vendorId = stallDoc.getString("vendorId")
+                if (vendorId != null) {
+                    NotificationRepository().sendNotification(
+                        Notification(
+                            userId = vendorId,
+                            title = "New Review",
+                            message = "A customer left a ${review.rating}-star review for your stall.",
+                            type = "NEW_REVIEW",
+                            referenceId = docRef.id
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                // Ignore notification failure
+            }
+            
             Result.success(docRef.id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -48,6 +69,24 @@ class ReviewRepository {
                 .set(review.copy(updatedAt = System.currentTimeMillis()))
                 .await()
             updateStallRating(review.stallId)
+
+            // Notify Customer if Vendor replied
+            if (!review.vendorReply.isNullOrEmpty()) {
+                try {
+                    val stallDoc = firestore.collection("stalls").document(review.stallId).get().await()
+                    val stallName = stallDoc.getString("name") ?: "Vendor"
+                    NotificationRepository().sendNotification(
+                        Notification(
+                            userId = review.customerId,
+                            title = "Vendor Replied",
+                            message = "$stallName replied to your review.",
+                            type = "REVIEW_REPLY",
+                            referenceId = review.id
+                        )
+                    )
+                } catch (e: Exception) {}
+            }
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

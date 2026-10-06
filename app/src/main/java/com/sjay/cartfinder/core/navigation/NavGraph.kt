@@ -196,5 +196,8 @@ fun CartFinderNavGraph(
                 stallName = stallName
             )
         }
+        composable(Screen.Notifications.route) {
+            com.sjay.cartfinder.notifications.NotificationsScreen(navController = navController)
+        }
     }
 }

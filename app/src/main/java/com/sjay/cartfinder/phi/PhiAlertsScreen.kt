@@ -45,7 +45,7 @@ fun PhiAlertsScreen(navController: NavController, phiViewModel: PhiViewModel = a
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF8F9FA))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             when (val state = phiState) {
                 is PhiState.Loading -> {

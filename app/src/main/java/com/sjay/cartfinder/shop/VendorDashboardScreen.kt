@@ -61,7 +61,7 @@ fun VendorDashboardScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             Box(
-                modifier = Modifier.fillMaxSize().background(Color(0xFFF9FAFB)),
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.TopCenter
             ) {
                 when (val state = shopState) {
@@ -131,15 +131,25 @@ fun VendorProfileContent(
                 }
             }
             
-            // Top Right Settings
-            IconButton(
-                onClick = { /* TODO settings */ },
+            // Top Right Settings & Notifications
+            Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(16.dp)
-                    .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.Black)
+                IconButton(
+                    onClick = { navController.navigate(Screen.Notifications.route) },
+                    modifier = Modifier.background(Color.White.copy(alpha = 0.8f), CircleShape)
+                ) {
+                    Icon(androidx.compose.material.icons.Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.Black)
+                }
+                IconButton(
+                    onClick = { /* TODO settings */ },
+                    modifier = Modifier.background(Color.White.copy(alpha = 0.8f), CircleShape)
+                ) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Settings", tint = Color.Black)
+                }
             }
 
             // Bottom Labels
