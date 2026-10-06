@@ -90,6 +90,9 @@ fun CartFinderNavGraph(
         composable(Screen.ProductManagement.route) {
             com.sjay.cartfinder.shop.ProductManagementScreen(navController = navController)
         }
+        composable(Screen.VendorReviews.route) {
+            com.sjay.cartfinder.shop.VendorReviewsScreen(navController = navController)
+        }
         composable(Screen.Cart.route) {
             com.sjay.cartfinder.checkout.CartScreen(navController = navController)
         }

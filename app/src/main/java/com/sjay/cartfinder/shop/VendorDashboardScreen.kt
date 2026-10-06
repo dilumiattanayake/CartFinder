@@ -202,11 +202,16 @@ fun VendorProfileContent(
             
             Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("4.2", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { navController.navigate(Screen.ReviewList.createRoute(stall.id, stall.name)) }
+                ) {
+                    Text(if (stall.ratingCount > 0) String.format(java.util.Locale.US, "%.1f", stall.ratingAverage) else "New", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    if (stall.ratingCount > 0) {
+                        Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
+                    }
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("120+ ratings", color = Color.Gray, fontSize = 14.sp)
+                    Text(if (stall.ratingCount > 0) "(${stall.ratingCount} reviews)" else "", color = Color.Gray, fontSize = 14.sp)
                 }
                 
                 Row(

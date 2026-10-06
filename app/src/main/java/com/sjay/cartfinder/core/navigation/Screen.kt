@@ -28,6 +28,7 @@ sealed class Screen(val route: String) {
     object EditShop : Screen("edit_shop")
     object MapPicker : Screen("map_picker")
     object ProductManagement : Screen("product_management")
+    object VendorReviews : Screen("vendor_reviews")
 
     // Member 3 - Cart & Checkout & Browsing Stalls
     object CustomerDashboard : Screen("customer_dashboard")

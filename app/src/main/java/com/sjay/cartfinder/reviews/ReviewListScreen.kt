@@ -77,6 +77,9 @@ fun ReviewListScreen(
             TopAppBar(
                 title = { Text("$stallName Reviews", fontWeight = FontWeight.Bold) }
             )
+        },
+        bottomBar = {
+            com.sjay.cartfinder.core.navigation.BottomNavigationBar(navController = navController, role = role)
         }
     ) { padding ->
         LazyColumn(
@@ -86,7 +89,8 @@ fun ReviewListScreen(
                 .padding(padding)
         ) {
             item {
-                if (role == "Customer" || role == "customer") {
+                val hasReviewed = (reviewsState as? ReviewState.Success)?.reviews?.any { it.customerId == currentUserId } == true
+                if ((role == "Customer" || role == "customer") && !hasReviewed) {
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         shape = RoundedCornerShape(16.dp),

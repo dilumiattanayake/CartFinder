@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -27,6 +28,7 @@ sealed class BottomNavItem(var title: String, var icon: ImageVector, var route: 
     // Vendor
     object VendorHome : BottomNavItem("Dashboard", Icons.Filled.Home, Screen.VendorDashboard.route)
     object VendorProducts : BottomNavItem("Products", Icons.Filled.Store, Screen.ProductManagement.route)
+    object VendorReviews : BottomNavItem("Reviews", Icons.Filled.Star, Screen.VendorReviews.route)
     object VendorOrders : BottomNavItem("Orders", Icons.Filled.List, Screen.VendorOrders.route)
 
     // PHI
@@ -51,6 +53,7 @@ fun BottomNavigationBar(navController: NavController, role: String) {
         "vendor" -> listOf(
             BottomNavItem.VendorHome,
             BottomNavItem.VendorProducts,
+            BottomNavItem.VendorReviews,
             BottomNavItem.VendorOrders,
             BottomNavItem.Settings("vendor")
         )

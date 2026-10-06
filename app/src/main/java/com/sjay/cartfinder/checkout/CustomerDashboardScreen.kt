@@ -243,7 +243,7 @@ fun CustomerDashboardScreen(
                                         
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(14.dp))
-                                            Text(" 4.5 ", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                            Text(if (stall.ratingCount > 0) String.format(java.util.Locale.US, " %.1f ", stall.ratingAverage) else " New ", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                             
                                             if (certScore != null) {
                                                 Spacer(modifier = Modifier.width(8.dp))

@@ -19,6 +19,7 @@ class ReviewRepository {
             
             val reviewWithId = review.copy(id = docRef.id)
             docRef.set(reviewWithId).await()
+            updateStallRating(review.stallId)
             Result.success(docRef.id)
         } catch (e: Exception) {
             Result.failure(e)
@@ -46,6 +47,7 @@ class ReviewRepository {
             reviewsCollection.document(review.id)
                 .set(review.copy(updatedAt = System.currentTimeMillis()))
                 .await()
+            updateStallRating(review.stallId)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -93,6 +95,11 @@ class ReviewRepository {
                     )
                 )
                 .await()
+            // We need to fetch the review to get the stallId to update the stall rating
+            val reviewSnapshot = reviewsCollection.document(reviewId).get().await()
+            reviewSnapshot.getString("stallId")?.let { stallId ->
+                updateStallRating(stallId)
+            }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -172,6 +179,30 @@ class ReviewRepository {
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private suspend fun updateStallRating(stallId: String) {
+        try {
+            val snapshot = reviewsCollection
+                .whereEqualTo("stallId", stallId)
+                .whereEqualTo("status", "ACTIVE")
+                .get()
+                .await()
+            
+            val reviews = snapshot.toObjects(Review::class.java)
+            val count = reviews.size
+            val average = if (count > 0) reviews.map { it.rating }.average() else 0.0
+            
+            firestore.collection("stalls").document(stallId)
+                .update(
+                    mapOf(
+                        "ratingCount" to count,
+                        "ratingAverage" to average
+                    )
+                ).await()
+        } catch (e: Exception) {
+            // Ignore error
         }
     }
 }

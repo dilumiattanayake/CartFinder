@@ -41,7 +41,8 @@ fun StallMenuScreen(
     distance: Double? = null,
     navController: NavController,
     dashboardViewModel: CustomerDashboardViewModel = viewModel(),
-    cartViewModel: CartViewModel = viewModel()
+    cartViewModel: CartViewModel = viewModel(),
+    reviewViewModel: com.sjay.cartfinder.reviews.ReviewViewModel = viewModel()
 ) {
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val menuState by dashboardViewModel.menuState.collectAsState()
@@ -58,8 +59,25 @@ fun StallMenuScreen(
     LaunchedEffect(stallId) {
         dashboardViewModel.loadStallMenu(stallId)
         currentStall = dashboardViewModel.getStallById(stallId)
+        reviewViewModel.getReviewsForStall(stallId)
         if (dashboardViewModel.stallsState.value !is StallListState.Success) {
             dashboardViewModel.loadAllStalls()
+        }
+    }
+    
+    val reviewsState by reviewViewModel.reviewsState.collectAsState()
+    var averageRating by remember { mutableDoubleStateOf(0.0) }
+    var reviewCount by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(reviewsState) {
+        if (reviewsState is com.sjay.cartfinder.reviews.ReviewState.Success) {
+            val reviews = (reviewsState as com.sjay.cartfinder.reviews.ReviewState.Success).reviews
+            reviewCount = reviews.size
+            if (reviewCount > 0) {
+                averageRating = reviews.map { it.rating }.average()
+            } else {
+                averageRating = 0.0
+            }
         }
     }
 
@@ -175,10 +193,12 @@ fun StallMenuScreen(
                                     .clickable { navController.navigate(Screen.ReviewList.createRoute(stallId, stall?.name ?: stallName)) }
                                     .padding(4.dp)
                             ) {
-                                Text("4.5", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
+                                Text(if (reviewCount > 0) String.format("%.1f", averageRating) else "New", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                if (reviewCount > 0) {
+                                    Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFFF1C40F), modifier = Modifier.size(16.dp))
+                                }
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("See Reviews", color = PrimaryOrange, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                                Text("($reviewCount reviews) See Reviews", color = PrimaryOrange, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             }
                             
                             val isOpen = stall?.isOpen ?: true
