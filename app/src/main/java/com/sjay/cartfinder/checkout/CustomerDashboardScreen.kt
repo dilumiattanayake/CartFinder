@@ -215,7 +215,7 @@ fun CustomerDashboardScreen(
                                             .background(Color(0xFFFFF3E0)),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        if (stall.imageUrl != null) {
+                                        if (!stall.imageUrl.isNullOrEmpty()) {
                                             androidx.compose.foundation.Image(
                                                 painter = coil.compose.rememberAsyncImagePainter(stall.imageUrl),
                                                 contentDescription = stall.name,

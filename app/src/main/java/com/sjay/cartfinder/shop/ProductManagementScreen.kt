@@ -354,7 +354,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                     modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color.LightGray),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (item.imageUrl != null) {
+                    if (!item.imageUrl.isNullOrEmpty()) {
                         Image(
                             painter = rememberAsyncImagePainter(item.imageUrl),
                             contentDescription = item.name,
@@ -385,7 +385,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                     .clickable { imagePickerLauncher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
-                if (imageUrl != null) {
+                if (!imageUrl.isNullOrEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(imageUrl),
                         contentDescription = "Product Image",

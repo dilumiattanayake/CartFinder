@@ -103,7 +103,7 @@ fun StallMenuScreen(
                     .height(260.dp)
                     .background(Color.DarkGray)
             ) {
-                if (stall?.imageUrl != null) {
+                if (!stall?.imageUrl.isNullOrEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(stall.imageUrl),
                         contentDescription = "Cover Image",
@@ -323,7 +323,7 @@ fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
                     .background(Color(0xFFFFF3E0)),
                 contentAlignment = Alignment.Center
             ) {
-                if (menuItem.imageUrl != null) {
+                if (!menuItem.imageUrl.isNullOrEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(menuItem.imageUrl),
                         contentDescription = menuItem.name,

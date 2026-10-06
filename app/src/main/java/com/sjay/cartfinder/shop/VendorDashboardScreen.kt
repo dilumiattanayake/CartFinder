@@ -118,7 +118,7 @@ fun VendorProfileContent(
                 .height(260.dp)
                 .background(Color.DarkGray)
         ) {
-            if (stall.imageUrl != null) {
+            if (!stall.imageUrl.isNullOrEmpty()) {
                 Image(
                     painter = rememberAsyncImagePainter(stall.imageUrl),
                     contentDescription = "Cover Image",
@@ -384,7 +384,7 @@ fun VendorProductSummaryCard(product: MenuItem, navController: NavController) {
                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFFFFF3E0)),
                 contentAlignment = Alignment.Center
             ) {
-                if (product.imageUrl != null) {
+                if (!product.imageUrl.isNullOrEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(product.imageUrl),
                         contentDescription = product.name,

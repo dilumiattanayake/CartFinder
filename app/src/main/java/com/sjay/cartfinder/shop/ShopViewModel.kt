@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 sealed class ShopState {
     object Idle : ShopState()
@@ -77,6 +78,8 @@ class ShopViewModel(
     fun createOrUpdateShop(ownerId: String, name: String, description: String, category: String, phone: String, location: Location, imageUrl: String? = null, openingHours: String = "") {
         _shopState.value = ShopState.Loading
         viewModelScope.launch {
+            val uploadedUrl = if (imageUrl != null) uploadImage(imageUrl) else null
+            
             // First check if shop exists
             val existingResult = repository.getStallByOwner(ownerId)
             if (existingResult.isSuccess) {
@@ -88,7 +91,7 @@ class ShopViewModel(
                         category = category,
                         phone = phone,
                         location = location,
-                        imageUrl = imageUrl ?: existing.imageUrl,
+                        imageUrl = uploadedUrl ?: existing.imageUrl,
                         openingHours = openingHours.ifEmpty { existing.openingHours }
                     )
                     val result = repository.updateStall(updated)
@@ -109,7 +112,7 @@ class ShopViewModel(
                 category = category,
                 phone = phone,
                 location = location,
-                imageUrl = imageUrl,
+                imageUrl = uploadedUrl,
                 openingHours = openingHours
             )
             val createResult = repository.createStall(newStall)
@@ -135,6 +138,7 @@ class ShopViewModel(
 
     fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8) {
         viewModelScope.launch {
+            val uploadedUrl = if (imageUrl != null) uploadImage(imageUrl) else null
             val item = MenuItem(
                 stallId = stallId,
                 name = name,
@@ -142,7 +146,7 @@ class ShopViewModel(
                 price = price,
                 categoryId = categoryId,
                 stockQuantity = stockQuantity,
-                imageUrl = imageUrl,
+                imageUrl = uploadedUrl,
                 preparationTime = preparationTime
             )
             val result = repository.addMenuItem(stallId, item)
@@ -154,7 +158,9 @@ class ShopViewModel(
 
     fun updateProduct(stallId: String, menuItem: MenuItem) {
         viewModelScope.launch {
-            val result = repository.updateMenuItem(stallId, menuItem)
+            val uploadedUrl = if (menuItem.imageUrl != null) uploadImage(menuItem.imageUrl) else null
+            val updatedItem = menuItem.copy(imageUrl = uploadedUrl)
+            val result = repository.updateMenuItem(stallId, updatedItem)
             if (result.isSuccess) {
                 loadProducts(stallId)
             }
@@ -176,6 +182,22 @@ class ShopViewModel(
             if (result.isSuccess) {
                 loadProducts(stallId)
             }
+        }
+    }
+
+    suspend fun uploadImage(uriStr: String): String? {
+        if (!uriStr.startsWith("content://") && !uriStr.startsWith("file://")) {
+            return uriStr // Already a web URL or valid path
+        }
+        return try {
+            val uri = android.net.Uri.parse(uriStr)
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference
+            val imageRef = storageRef.child("images/${java.util.UUID.randomUUID()}")
+            imageRef.putFile(uri).await()
+            imageRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

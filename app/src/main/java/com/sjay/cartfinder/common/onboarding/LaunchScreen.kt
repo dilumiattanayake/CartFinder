@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -74,13 +75,23 @@ fun LaunchScreen(navController: NavController) {
             .background(if (isSystemInDarkTheme()) Color.Black else PrimaryOrange),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.logotext),
-            contentDescription = "CartFinder Logo",
+        Box(
             modifier = Modifier
                 .size(250.dp)
                 .scale(scale.value)
                 .alpha(alpha.value)
-        )
+                .background(
+                    if (isSystemInDarkTheme()) Color.White else Color.Transparent, 
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                )
+                .padding(if (isSystemInDarkTheme()) 16.dp else 0.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logotext),
+                contentDescription = "CartFinder Logo",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }

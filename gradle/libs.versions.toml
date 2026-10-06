@@ -33,6 +33,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "32.7.4" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version = "1.7.3" }
 osmdroid-android = { group = "org.osmdroid", name = "osmdroid-android", version = "6.1.18" }
 zxing-core = { group = "com.google.zxing", name = "core", version = "3.5.3" }

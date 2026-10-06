@@ -134,7 +134,7 @@ fun EditShopScreen(
                     .clickable { imagePickerLauncher.launch("image/*") },
                 contentAlignment = Alignment.Center
             ) {
-                if (imageUrl != null) {
+                if (!imageUrl.isNullOrEmpty()) {
                     Image(
                         painter = rememberAsyncImagePainter(imageUrl),
                         contentDescription = "Shop Image",
