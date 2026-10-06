@@ -145,26 +145,24 @@ fun VendorOrderCard(order: Order, onUpdateStatus: (String) -> Unit) {
                         Button(onClick = { onUpdateStatus("READY") }) { Text("Mark as Ready") }
                     }
                     "READY" -> {
-                        var showScanSimulation by remember { mutableStateOf(false) }
+                        val context = androidx.compose.ui.platform.LocalContext.current
+                        val scanner = remember { com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(context) }
                         
-                        Button(onClick = { showScanSimulation = true }) { Text("Scan QR & Verify") }
-                        
-                        if (showScanSimulation) {
-                            AlertDialog(
-                                onDismissRequest = { showScanSimulation = false },
-                                title = { Text("Simulating QR Scan") },
-                                text = { Text("In a real environment, the camera would scan the customer's QR code. Verify pickup?") },
-                                confirmButton = {
-                                    Button(onClick = {
-                                        showScanSimulation = false
+                        Button(onClick = {
+                            scanner.startScan()
+                                .addOnSuccessListener { barcode ->
+                                    val scannedOrderId = barcode.rawValue
+                                    if (scannedOrderId == order.id) {
                                         onUpdateStatus("COMPLETED")
-                                    }) { Text("Verify & Collect") }
-                                },
-                                dismissButton = {
-                                    TextButton(onClick = { showScanSimulation = false }) { Text("Cancel") }
+                                        android.widget.Toast.makeText(context, "Order verified and completed!", android.widget.Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        android.widget.Toast.makeText(context, "Invalid QR Code for this order", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
                                 }
-                            )
-                        }
+                                .addOnFailureListener {
+                                    android.widget.Toast.makeText(context, "Scan failed: ${it.message}", android.widget.Toast.LENGTH_SHORT).show()
+                                }
+                        }) { Text("Scan QR & Verify") }
                     }
                 }
             }

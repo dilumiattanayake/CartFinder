@@ -63,4 +63,5 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.coil.compose)
     implementation(libs.play.services.auth)
+    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
 }
