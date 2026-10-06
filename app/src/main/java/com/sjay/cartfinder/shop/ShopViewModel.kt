@@ -75,51 +75,56 @@ class ShopViewModel(
         }
     }
 
-    fun createOrUpdateShop(ownerId: String, name: String, description: String, category: String, phone: String, location: Location, imageUrl: String? = null, openingHours: String = "") {
+    fun createOrUpdateShop(context: android.content.Context, ownerId: String, name: String, description: String, category: String, phone: String, location: Location, imageUrl: String? = null, openingHours: String = "") {
         _shopState.value = ShopState.Loading
         viewModelScope.launch {
-            val uploadedUrl = if (imageUrl != null) uploadImage(imageUrl) else null
-            
-            // First check if shop exists
-            val existingResult = repository.getStallByOwner(ownerId)
-            if (existingResult.isSuccess) {
-                val existing = existingResult.getOrNull()
-                if (existing != null) {
-                    val updated = existing.copy(
-                        name = name,
-                        description = description,
-                        category = category,
-                        phone = phone,
-                        location = location,
-                        imageUrl = uploadedUrl ?: existing.imageUrl,
-                        openingHours = openingHours.ifEmpty { existing.openingHours }
-                    )
-                    val result = repository.updateStall(updated)
-                    if (result.isSuccess) {
-                        _shopState.value = ShopState.Success(updated)
-                    } else {
-                        _shopState.value = ShopState.Error("Failed to update shop")
+            try {
+                val uploadedUrl = if (imageUrl != null) uploadImage(context, imageUrl) else null
+                
+                // First check if shop exists
+                val existingResult = repository.getStallByOwner(ownerId)
+                if (existingResult.isSuccess) {
+                    val existing = existingResult.getOrNull()
+                    if (existing != null) {
+                        val updated = existing.copy(
+                            name = name,
+                            description = description,
+                            category = category,
+                            phone = phone,
+                            location = location,
+                            imageUrl = uploadedUrl ?: existing.imageUrl,
+                            openingHours = openingHours.ifEmpty { existing.openingHours }
+                        )
+                        val result = repository.updateStall(updated)
+                        if (result.isSuccess) {
+                            _shopState.value = ShopState.Success(updated)
+                        } else {
+                            _shopState.value = ShopState.Error("Failed to update shop")
+                        }
+                        return@launch
                     }
-                    return@launch
                 }
-            }
-            
-            // Create new
-            val newStall = Stall(
-                ownerId = ownerId,
-                name = name,
-                description = description,
-                category = category,
-                phone = phone,
-                location = location,
-                imageUrl = uploadedUrl,
-                openingHours = openingHours
-            )
-            val createResult = repository.createStall(newStall)
-            if (createResult.isSuccess) {
-                loadVendorShop(ownerId)
-            } else {
-                _shopState.value = ShopState.Error("Failed to create shop")
+                
+                // Create new
+                val newStall = Stall(
+                    ownerId = ownerId,
+                    name = name,
+                    description = description,
+                    category = category,
+                    phone = phone,
+                    location = location,
+                    imageUrl = uploadedUrl,
+                    openingHours = openingHours
+                )
+                val createResult = repository.createStall(newStall)
+                if (createResult.isSuccess) {
+                    loadVendorShop(ownerId)
+                } else {
+                    _shopState.value = ShopState.Error("Failed to create shop")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _shopState.value = ShopState.Error("Failed to upload image. Please check your Firebase Storage Rules.")
             }
         }
     }
@@ -136,33 +141,43 @@ class ShopViewModel(
         }
     }
 
-    fun addProduct(stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8) {
+    fun addProduct(context: android.content.Context, stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8) {
         viewModelScope.launch {
-            val uploadedUrl = if (imageUrl != null) uploadImage(imageUrl) else null
-            val item = MenuItem(
-                stallId = stallId,
-                name = name,
-                description = description,
-                price = price,
-                categoryId = categoryId,
-                stockQuantity = stockQuantity,
-                imageUrl = uploadedUrl,
-                preparationTime = preparationTime
-            )
-            val result = repository.addMenuItem(stallId, item)
-            if (result.isSuccess) {
-                loadProducts(stallId)
+            try {
+                val uploadedUrl = if (imageUrl != null) uploadImage(context, imageUrl) else null
+                val item = MenuItem(
+                    stallId = stallId,
+                    name = name,
+                    description = description,
+                    price = price,
+                    categoryId = categoryId,
+                    stockQuantity = stockQuantity,
+                    imageUrl = uploadedUrl,
+                    preparationTime = preparationTime
+                )
+                val result = repository.addMenuItem(stallId, item)
+                if (result.isSuccess) {
+                    loadProducts(stallId)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _productsState.value = ProductsState.Error("Failed to upload image. Please check your Firebase Storage Rules.")
             }
         }
     }
 
-    fun updateProduct(stallId: String, menuItem: MenuItem) {
+    fun updateProduct(context: android.content.Context, stallId: String, menuItem: MenuItem) {
         viewModelScope.launch {
-            val uploadedUrl = if (menuItem.imageUrl != null) uploadImage(menuItem.imageUrl) else null
-            val updatedItem = menuItem.copy(imageUrl = uploadedUrl)
-            val result = repository.updateMenuItem(stallId, updatedItem)
-            if (result.isSuccess) {
-                loadProducts(stallId)
+            try {
+                val uploadedUrl = if (menuItem.imageUrl != null) uploadImage(context, menuItem.imageUrl) else null
+                val updatedItem = menuItem.copy(imageUrl = uploadedUrl ?: menuItem.imageUrl)
+                val result = repository.updateMenuItem(stallId, updatedItem)
+                if (result.isSuccess) {
+                    loadProducts(stallId)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _productsState.value = ProductsState.Error("Failed to upload image. Please check your Firebase Storage Rules.")
             }
         }
     }
@@ -185,19 +200,36 @@ class ShopViewModel(
         }
     }
 
-    suspend fun uploadImage(uriStr: String): String? {
+    suspend fun uploadImage(context: android.content.Context, uriStr: String): String {
+        if (uriStr.startsWith("data:image")) return uriStr
         if (!uriStr.startsWith("content://") && !uriStr.startsWith("file://")) {
             return uriStr // Already a web URL or valid path
         }
-        return try {
+        
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             val uri = android.net.Uri.parse(uriStr)
-            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference
-            val imageRef = storageRef.child("images/${java.util.UUID.randomUUID()}")
-            imageRef.putFile(uri).await()
-            imageRef.downloadUrl.await().toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+
+            if (bitmap == null) throw Exception("Failed to decode image")
+
+            val maxDimension = 500
+            val scale = Math.min(maxDimension.toFloat() / bitmap.width, maxDimension.toFloat() / bitmap.height)
+            val scaledBitmap = if (scale < 1) {
+                val matrix = android.graphics.Matrix()
+                matrix.postScale(scale, scale)
+                android.graphics.Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            } else {
+                bitmap
+            }
+
+            val outputStream = java.io.ByteArrayOutputStream()
+            scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 60, outputStream)
+            val byteArray = outputStream.toByteArray()
+
+            val base64String = android.util.Base64.encodeToString(byteArray, android.util.Base64.NO_WRAP)
+            "data:image/jpeg;base64,$base64String"
         }
     }
 }

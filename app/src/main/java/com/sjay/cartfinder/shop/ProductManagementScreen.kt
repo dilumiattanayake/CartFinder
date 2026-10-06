@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+// import coil.compose.rememberAsyncImagePainter
 import com.sjay.cartfinder.data.model.MenuItem
 import com.sjay.cartfinder.ui.theme.PrimaryOrange
 
@@ -46,6 +46,7 @@ fun ProductManagementScreen(
     val shopState by viewModel.shopState.collectAsState()
     val productsState by viewModel.productsState.collectAsState()
     val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val context = androidx.compose.ui.platform.LocalContext.current
     
     var showAddDialog by remember { mutableStateOf(false) }
 
@@ -61,6 +62,14 @@ fun ProductManagementScreen(
             if (stall != null) {
                 viewModel.loadProducts(stall.id)
             }
+        } else if (shopState is ShopState.Error) {
+            android.widget.Toast.makeText(context, (shopState as ShopState.Error).message, android.widget.Toast.LENGTH_LONG).show()
+        }
+    }
+
+    LaunchedEffect(productsState) {
+        if (productsState is ProductsState.Error) {
+            android.widget.Toast.makeText(context, (productsState as ProductsState.Error).message, android.widget.Toast.LENGTH_LONG).show()
         }
     }
 
@@ -187,7 +196,7 @@ fun ProductManagementScreen(
                                             item = item, 
                                             index = index + 1,
                                             onSave = { updatedItem ->
-                                                if (stallId != null) viewModel.updateProduct(stallId, updatedItem)
+                                                if (stallId != null) viewModel.updateProduct(context, stallId, updatedItem)
                                             },
                                             onDelete = { itemToDelete ->
                                                 if (stallId != null) viewModel.deleteProduct(stallId, itemToDelete.id)
@@ -239,7 +248,7 @@ fun ProductManagementScreen(
                         ) {
                             if (imageUri != null) {
                                 Image(
-                                    painter = rememberAsyncImagePainter(model = imageUri),
+                                    painter = com.sjay.cartfinder.common.rememberSafeImagePainter(imageUrl = imageUri?.toString()),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
@@ -301,7 +310,7 @@ fun ProductManagementScreen(
                         val prepTimeInt = newPrepTime.toIntOrNull() ?: 8
                         // Use a dummy image URL for now if an image is selected, or handle actual upload in ViewModel
                         val finalImageUrl = if (imageUri != null) imageUri.toString() else null
-                        viewModel.addProduct(stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl, prepTimeInt)
+                        viewModel.addProduct(context, stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl, prepTimeInt)
                         showAddDialog = false
                     }) {
                         Text("Add")
@@ -356,7 +365,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                 ) {
                     if (!item.imageUrl.isNullOrEmpty()) {
                         Image(
-                            painter = rememberAsyncImagePainter(item.imageUrl),
+                            painter = com.sjay.cartfinder.common.rememberSafeImagePainter(item.imageUrl),
                             contentDescription = item.name,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -387,7 +396,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
             ) {
                 if (!imageUrl.isNullOrEmpty()) {
                     Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
+                        painter = com.sjay.cartfinder.common.rememberSafeImagePainter(imageUrl),
                         contentDescription = "Product Image",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop

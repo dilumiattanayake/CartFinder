@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+
 import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.Location
@@ -90,6 +90,8 @@ fun EditShopScreen(
                     locationLon = stall.location.longitude
                 }
             }
+        } else if (shopState is ShopState.Error) {
+            android.widget.Toast.makeText(context, (shopState as ShopState.Error).message, android.widget.Toast.LENGTH_LONG).show()
         }
     }
 
@@ -136,7 +138,7 @@ fun EditShopScreen(
             ) {
                 if (!imageUrl.isNullOrEmpty()) {
                     Image(
-                        painter = rememberAsyncImagePainter(imageUrl),
+                        painter = com.sjay.cartfinder.common.rememberSafeImagePainter(imageUrl),
                         contentDescription = "Shop Image",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -304,7 +306,7 @@ fun EditShopScreen(
                     }.joinToString("\n")
                     
                     val newLocation = Location(address = address, latitude = locationLat, longitude = locationLon)
-                    viewModel.createOrUpdateShop(currentUserId, name, description, category, phone, newLocation, imageUrl, formattedHours)
+                    viewModel.createOrUpdateShop(context, currentUserId, name, description, category, phone, newLocation, imageUrl, formattedHours)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),

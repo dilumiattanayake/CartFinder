@@ -47,11 +47,21 @@ fun ChooseRoleScreen(navController: NavController) {
                 .padding(top = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            androidx.compose.foundation.Image(
-                painter = androidx.compose.ui.res.painterResource(id = com.sjay.cartfinder.R.drawable.logotext),
-                contentDescription = "CartFinder",
-                modifier = Modifier.height(48.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .background(
+                        if (isSystemInDarkTheme()) Color.White else Color.Transparent, 
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(if (isSystemInDarkTheme()) 8.dp else 0.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = com.sjay.cartfinder.R.drawable.logotext),
+                    contentDescription = "CartFinder",
+                    modifier = Modifier.height(48.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -62,7 +72,9 @@ fun ChooseRoleScreen(navController: NavController) {
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 32.dp),
                 shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFDE6C8))
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isSystemInDarkTheme()) Color(0xFF1E1E1E) else Color(0xFFFDE6C8)
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -74,13 +86,13 @@ fun ChooseRoleScreen(navController: NavController) {
                         text = "CHOOSE YOUR ROLE",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Black
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "ARE YOU HERE FOR FOOD OR PROFESSIONAL TOOLS?",
                         fontSize = 10.sp,
-                        color = Color.DarkGray
+                        color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -142,7 +154,7 @@ fun RoleCard(title: String, buttonText: String, icon: ImageVector, onClick: () -
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = title, fontWeight = FontWeight.Medium, color = Color.Black)
+                Text(text = title, fontWeight = FontWeight.Medium, color = if (androidx.compose.foundation.isSystemInDarkTheme()) Color.White else Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = onClick,

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+// import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.CartItem
@@ -105,7 +105,7 @@ fun StallMenuScreen(
             ) {
                 if (!stall?.imageUrl.isNullOrEmpty()) {
                     Image(
-                        painter = rememberAsyncImagePainter(stall.imageUrl),
+                        painter = com.sjay.cartfinder.common.rememberSafeImagePainter(stall.imageUrl),
                         contentDescription = "Cover Image",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
@@ -325,7 +325,7 @@ fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
             ) {
                 if (!menuItem.imageUrl.isNullOrEmpty()) {
                     Image(
-                        painter = rememberAsyncImagePainter(menuItem.imageUrl),
+                        painter = com.sjay.cartfinder.common.rememberSafeImagePainter(menuItem.imageUrl),
                         contentDescription = menuItem.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()

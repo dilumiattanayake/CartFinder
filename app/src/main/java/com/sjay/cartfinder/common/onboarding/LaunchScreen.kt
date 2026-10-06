@@ -72,26 +72,16 @@ fun LaunchScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(if (isSystemInDarkTheme()) Color.Black else PrimaryOrange),
+            .background(PrimaryOrange),
         contentAlignment = Alignment.Center
     ) {
-        Box(
+        Image(
+            painter = painterResource(id = R.drawable.logotext),
+            contentDescription = "CartFinder Logo",
             modifier = Modifier
                 .size(250.dp)
                 .scale(scale.value)
                 .alpha(alpha.value)
-                .background(
-                    if (isSystemInDarkTheme()) Color.White else Color.Transparent, 
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
-                )
-                .padding(if (isSystemInDarkTheme()) 16.dp else 0.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logotext),
-                contentDescription = "CartFinder Logo",
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        )
     }
 }

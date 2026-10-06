@@ -217,7 +217,7 @@ fun CustomerDashboardScreen(
                                     ) {
                                         if (!stall.imageUrl.isNullOrEmpty()) {
                                             androidx.compose.foundation.Image(
-                                                painter = coil.compose.rememberAsyncImagePainter(stall.imageUrl),
+                                                painter = com.sjay.cartfinder.common.rememberSafeImagePainter(stall.imageUrl),
                                                 contentDescription = stall.name,
                                                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                                                 modifier = Modifier.fillMaxSize()

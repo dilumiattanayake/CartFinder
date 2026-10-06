@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+// import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.sjay.cartfinder.core.navigation.Screen
 import com.sjay.cartfinder.data.model.MenuItem
@@ -120,7 +120,7 @@ fun VendorProfileContent(
         ) {
             if (!stall.imageUrl.isNullOrEmpty()) {
                 Image(
-                    painter = rememberAsyncImagePainter(stall.imageUrl),
+                    painter = com.sjay.cartfinder.common.rememberSafeImagePainter(stall.imageUrl),
                     contentDescription = "Cover Image",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -386,7 +386,7 @@ fun VendorProductSummaryCard(product: MenuItem, navController: NavController) {
             ) {
                 if (!product.imageUrl.isNullOrEmpty()) {
                     Image(
-                        painter = rememberAsyncImagePainter(product.imageUrl),
+                        painter = com.sjay.cartfinder.common.rememberSafeImagePainter(product.imageUrl),
                         contentDescription = product.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
