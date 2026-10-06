@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,7 +61,7 @@ fun VendorOrdersScreen(
                 title = { Text("Incoming Orders") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -129,7 +129,7 @@ fun VendorOrderCard(order: Order, onUpdateStatus: (String) -> Unit) {
             order.items.forEach { item ->
                 Text("${item.quantity}x ${item.productName}")
             }
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            androidx.compose.material3.HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             Text("Total: Rs. ${order.totalAmount}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
             Spacer(modifier = Modifier.height(8.dp))

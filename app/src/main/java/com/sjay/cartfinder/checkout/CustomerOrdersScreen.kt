@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -53,7 +53,7 @@ fun CustomerOrdersScreen(
                 title = { Text("My Orders") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -124,7 +124,7 @@ fun CustomerOrderCard(order: Order) {
                     Text("Rs. ${item.price * item.quantity}")
                 }
             }
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            androidx.compose.material3.HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Text("Total", fontWeight = FontWeight.Bold)
                 Text("Rs. ${order.totalAmount}", fontWeight = FontWeight.Bold, color = PrimaryOrange, fontSize = 16.sp)
