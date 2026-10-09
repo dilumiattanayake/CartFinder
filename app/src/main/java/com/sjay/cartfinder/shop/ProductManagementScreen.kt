@@ -607,10 +607,10 @@ fun SpiceLevelSelector(
     onSpiceLevelChange: (Int) -> Unit
 ) {
     val levels = listOf(
-        Triple(0, "None", Color(0xFF9E9E9E)),
-        Triple(1, "Mild", Color(0xFF4CAF50)),
-        Triple(2, "Medium", Color(0xFFFF9800)),
-        Triple(3, "Hot", Color(0xFFE53935))
+        Triple(0, 0, Color(0xFF9E9E9E)),
+        Triple(1, 1, Color(0xFF4CAF50)),
+        Triple(2, 2, Color(0xFFFF9800)),
+        Triple(3, 3, Color(0xFFE53935))
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -629,42 +629,35 @@ fun SpiceLevelSelector(
                 Spacer(Modifier.width(6.dp))
                 Text("Spice Level", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             }
-            Text(
-                levels.find { it.first == spiceLevel }?.second ?: "None",
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-                color = levels.find { it.first == spiceLevel }?.third ?: Color.Gray
-            )
         }
         Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            levels.forEach { (level, label, color) ->
+            levels.forEach { (level, fireCount, color) ->
                 val isSelected = spiceLevel == level
                 FilterChip(
                     selected = isSelected,
                     onClick = { onSpiceLevelChange(level) },
                     label = {
-                        Text(
-                            label,
-                            fontSize = 11.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                        )
+                        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                            if (fireCount == 0) {
+                                Text("🛑", fontSize = 12.sp)
+                            } else {
+                                repeat(fireCount) {
+                                    Icon(
+                                        Icons.Filled.LocalFireDepartment,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = if (isSelected) Color.White else color
+                                    )
+                                }
+                            }
+                        }
                     },
-                    leadingIcon = if (level > 0) ({
-                        Icon(
-                            Icons.Filled.LocalFireDepartment,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = if (isSelected) Color.White else color
-                        )
-                    }) else null,
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = color,
-                        selectedLabelColor = Color.White,
-                        selectedLeadingIconColor = Color.White
                     ),
                     modifier = Modifier.weight(1f)
                 )

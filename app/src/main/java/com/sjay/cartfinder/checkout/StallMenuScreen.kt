@@ -336,7 +336,19 @@ fun MenuItemCard(menuItem: MenuItem, onAddToCart: () -> Unit) {
             }
             
             Column(modifier = Modifier.padding(12.dp)) {
-                Text(menuItem.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text(menuItem.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    if (menuItem.spiceLevel == 0) {
+                        Text("🛑", fontSize = 12.sp)
+                    } else {
+                        Row {
+                            repeat(menuItem.spiceLevel) {
+                                Icon(Icons.Filled.LocalFireDepartment, contentDescription = "Spicy", modifier = Modifier.size(16.dp), tint = Color(0xFFE53935))
+                            }
+                        }
+                    }
+                }
                 Text(menuItem.description, color = Color.Gray, fontSize = 12.sp, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 
                 Spacer(modifier = Modifier.height(8.dp))
