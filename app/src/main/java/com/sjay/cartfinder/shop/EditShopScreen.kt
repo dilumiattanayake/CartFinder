@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 
@@ -217,6 +218,7 @@ fun EditShopScreen(
             Spacer(modifier = Modifier.height(12.dp))
             
             val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+            // openingHoursMap: day -> "HH:MM - HH:MM" or "Closed"
             var openingHoursMap by rememberSaveable { mutableStateOf(mapOf<String, String>()) }
 
             LaunchedEffect(openingHours) {
@@ -232,47 +234,118 @@ fun EditShopScreen(
                 }
             }
 
-            val timeOptions = listOf(
-                "Closed", "Open 24 Hours",
-                "06:00 AM - 02:00 PM", "08:00 AM - 05:00 PM",
-                "09:00 AM - 06:00 PM", "10:00 AM - 08:00 PM",
-                "11:00 AM - 09:00 PM", "12:00 PM - 10:00 PM",
-                "05:00 PM - 12:00 AM", "06:00 PM - 02:00 AM"
-            )
+            // Which day is currently showing the time-edit sheet
+            var editingDay by remember { mutableStateOf<String?>(null) }
 
             Text("Opening Hours", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(8.dp))
+
             days.forEach { day ->
-                var expandedTime by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = expandedTime,
-                    onExpandedChange = { expandedTime = !expandedTime }
+                val currentValue = openingHoursMap[day] ?: "Closed"
+                val isClosed = currentValue == "Closed"
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isClosed) MaterialTheme.colorScheme.surfaceVariant
+                        else MaterialTheme.colorScheme.surface
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = CardDefaults.cardElevation(1.dp)
                 ) {
-                    OutlinedTextField(
-                        value = openingHoursMap[day] ?: "Closed",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(day) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTime) },
-                        modifier = Modifier.menuAnchor(androidx.compose.material3.ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth().padding(vertical = 4.dp)
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expandedTime,
-                        onDismissRequest = { expandedTime = false }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        timeOptions.forEach { option ->
-                            DropdownMenuItem(
-                                text = { Text(option) },
-                                onClick = {
-                                    val newMap = openingHoursMap.toMutableMap()
-                                    newMap[day] = option
-                                    openingHoursMap = newMap
-                                    expandedTime = false
-                                }
-                            )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(day, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                            if (!isClosed) {
+                                Text(
+                                    currentValue,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = PrimaryOrange,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            } else {
+                                Text("Closed", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            }
                         }
+                        // Edit time button (only visible when open)
+                        if (!isClosed) {
+                            TextButton(
+                                onClick = { editingDay = day },
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text("Edit Time", color = PrimaryOrange, style = MaterialTheme.typography.labelMedium)
+                            }
+                        }
+                        // Open / Closed toggle
+                        Switch(
+                            checked = !isClosed,
+                            onCheckedChange = { isOpen ->
+                                val newMap = openingHoursMap.toMutableMap()
+                                if (isOpen) {
+                                    newMap[day] = "08:00 AM - 06:00 PM"
+                                } else {
+                                    newMap[day] = "Closed"
+                                }
+                                openingHoursMap = newMap
+                            },
+                            colors = SwitchDefaults.colors(checkedTrackColor = PrimaryOrange),
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
                     }
                 }
+            }
+
+            // Time-range picker dialog
+            if (editingDay != null) {
+                val day = editingDay!!
+                val currentValue = openingHoursMap[day] ?: "08:00 AM - 06:00 PM"
+
+                // Parse existing value
+                val parts = currentValue.split(" - ")
+                var openTime by remember(day) { mutableStateOf(if (parts.size == 2) parts[0] else "08:00 AM") }
+                var closeTime by remember(day) { mutableStateOf(if (parts.size == 2) parts[1] else "06:00 PM") }
+
+                AlertDialog(
+                    onDismissRequest = { editingDay = null },
+                    title = {
+                        Text("$day Hours", fontWeight = FontWeight.Bold)
+                    },
+                    text = {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text("Set custom opening and closing times", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Spacer(Modifier.height(16.dp))
+                            TimeRangePicker(
+                                openTime = openTime,
+                                closeTime = closeTime,
+                                onOpenTimeChange = { openTime = it },
+                                onCloseTimeChange = { closeTime = it }
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                val newMap = openingHoursMap.toMutableMap()
+                                newMap[day] = "$openTime - $closeTime"
+                                openingHoursMap = newMap
+                                editingDay = null
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryOrange)
+                        ) {
+                            Text("Save", color = Color.White)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { editingDay = null }) { Text("Cancel") }
+                    }
+                )
             }
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -316,5 +389,90 @@ fun EditShopScreen(
                 Text("Save Stall", color = androidx.compose.ui.graphics.Color.Black, fontWeight = FontWeight.Bold)
             }
         }
+    }
+}
+
+/**
+ * Custom time-range picker: two rows (Open / Close) each with Hour, Minute, AM/PM selectors.
+ * Times are formatted as "HH:MM AM" strings.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimeRangePicker(
+    openTime: String,
+    closeTime: String,
+    onOpenTimeChange: (String) -> Unit,
+    onCloseTimeChange: (String) -> Unit
+) {
+    @Composable
+    fun TimeSelector(label: String, time: String, onTimeChange: (String) -> Unit) {
+        // Parse "08:00 AM"
+        val parts = time.split(":", " ")
+        var hour by remember(time) { mutableStateOf(parts.getOrNull(0)?.toIntOrNull() ?: 8) }
+        var minute by remember(time) { mutableStateOf(parts.getOrNull(1)?.toIntOrNull() ?: 0) }
+        var isPm by remember(time) { mutableStateOf(parts.getOrNull(2) == "PM") }
+
+        fun formatTime() = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${if (isPm) "PM" else "AM"}"
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(label, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.Gray)
+            Spacer(Modifier.height(6.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Hour picker
+                OutlinedTextField(
+                    value = hour.toString().padStart(2, '0'),
+                    onValueChange = { v ->
+                        val h = v.toIntOrNull()?.coerceIn(1, 12) ?: hour
+                        hour = h
+                        onTimeChange(formatTime())
+                    },
+                    label = { Text("HH", fontSize = 10.sp) },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(":", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                // Minute picker
+                OutlinedTextField(
+                    value = minute.toString().padStart(2, '0'),
+                    onValueChange = { v ->
+                        val m = v.toIntOrNull()?.coerceIn(0, 59) ?: minute
+                        minute = m
+                        onTimeChange(formatTime())
+                    },
+                    label = { Text("MM", fontSize = 10.sp) },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                // AM / PM toggle
+                Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    FilterChip(
+                        selected = !isPm,
+                        onClick = { isPm = false; onTimeChange(formatTime()) },
+                        label = { Text("AM", fontSize = 11.sp) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    FilterChip(
+                        selected = isPm,
+                        onClick = { isPm = true; onTimeChange(formatTime()) },
+                        label = { Text("PM", fontSize = 11.sp) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = PrimaryOrange,
+                            selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        TimeSelector(label = "Opens at", time = openTime, onTimeChange = onOpenTimeChange)
+        HorizontalDivider()
+        TimeSelector(label = "Closes at", time = closeTime, onTimeChange = onCloseTimeChange)
     }
 }

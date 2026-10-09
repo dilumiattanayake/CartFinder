@@ -11,6 +11,7 @@ data class MenuItem(
     val available: Boolean = true,
     val stockQuantity: Int = 0,
     val preparationTime: Int = 8, // in minutes
+    val spiceLevel: Int = 0, // 0=None, 1=Mild, 2=Medium, 3=Hot
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis()
 )

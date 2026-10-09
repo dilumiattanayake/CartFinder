@@ -219,6 +219,7 @@ fun ProductManagementScreen(
             var newPrice by remember { mutableStateOf("") }
             var newStock by remember { mutableStateOf("10") }
             var newPrepTime by remember { mutableStateOf("8") }
+            var newSpiceLevel by remember { mutableIntStateOf(0) }
             var imageUri by remember { mutableStateOf<Uri?>(null) }
             var selectedCategory by remember { mutableStateOf("Main Course") }
             
@@ -301,6 +302,13 @@ fun ProductManagementScreen(
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        // Spice Level Selector
+                        SpiceLevelSelector(
+                            spiceLevel = newSpiceLevel,
+                            onSpiceLevelChange = { newSpiceLevel = it }
+                        )
                     }
                 },
                 confirmButton = {
@@ -310,7 +318,7 @@ fun ProductManagementScreen(
                         val prepTimeInt = newPrepTime.toIntOrNull() ?: 8
                         // Use a dummy image URL for now if an image is selected, or handle actual upload in ViewModel
                         val finalImageUrl = if (imageUri != null) imageUri.toString() else null
-                        viewModel.addProduct(context, stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl, prepTimeInt)
+                    viewModel.addProduct(context, stallId, newName, newDesc, priceDouble, selectedCategory, stockInt, finalImageUrl, prepTimeInt, newSpiceLevel)
                         showAddDialog = false
                     }) {
                         Text("Add")
@@ -336,7 +344,7 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
     var description by remember { mutableStateOf(item.description) }
     var available by remember { mutableStateOf(item.stockQuantity > 0 || item.available) }
     var imageUrl by remember { mutableStateOf(item.imageUrl) }
-    var spiceLevel by remember { mutableStateOf(1) } // 1 to 3
+    var spiceLevel by remember { mutableIntStateOf(item.spiceLevel) }
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -526,31 +534,11 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Spice level
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Spice level", color = Color.Gray, fontSize = 12.sp)
-            Row {
-                for (i in 1..3) {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .size(24.dp)
-                            .background(if (androidx.compose.foundation.isSystemInDarkTheme()) Color.DarkGray else Color.White, CircleShape)
-                            .clickable { spiceLevel = i },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Drawing border
-                        Box(modifier = Modifier.fillMaxSize().padding(1.dp).background(Color.Transparent, CircleShape))
-                        Icon(
-                            Icons.Filled.LocalFireDepartment, 
-                            contentDescription = null, 
-                            tint = if (i <= spiceLevel) PrimaryOrange else Color.LightGray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-        }
+        // Spice Level Selector
+        SpiceLevelSelector(
+            spiceLevel = spiceLevel,
+            onSpiceLevelChange = { spiceLevel = it }
+        )
         
         HorizontalDivider(color = Color.LightGray, modifier = Modifier.padding(vertical = 12.dp))
         
@@ -596,7 +584,8 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
                             imageUrl = imageUrl,
                             stockQuantity = if (available) 10 else 0,
                             available = available,
-                            preparationTime = prepTime.toIntOrNull() ?: item.preparationTime
+                            preparationTime = prepTime.toIntOrNull() ?: item.preparationTime,
+                            spiceLevel = spiceLevel
                         )
                         onSave(updatedItem)
                     },
@@ -610,4 +599,76 @@ fun EditableProductCard(item: MenuItem, index: Int, onSave: (MenuItem) -> Unit, 
         }
     }
 }
+}
+
+@Composable
+fun SpiceLevelSelector(
+    spiceLevel: Int,
+    onSpiceLevelChange: (Int) -> Unit
+) {
+    val levels = listOf(
+        Triple(0, "None", Color(0xFF9E9E9E)),
+        Triple(1, "Mild", Color(0xFF4CAF50)),
+        Triple(2, "Medium", Color(0xFFFF9800)),
+        Triple(3, "Hot", Color(0xFFE53935))
+    )
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Filled.LocalFireDepartment,
+                    contentDescription = null,
+                    tint = if (spiceLevel > 0) Color(0xFFE53935) else Color.LightGray,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(6.dp))
+                Text("Spice Level", fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+            }
+            Text(
+                levels.find { it.first == spiceLevel }?.second ?: "None",
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = levels.find { it.first == spiceLevel }?.third ?: Color.Gray
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            levels.forEach { (level, label, color) ->
+                val isSelected = spiceLevel == level
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onSpiceLevelChange(level) },
+                    label = {
+                        Text(
+                            label,
+                            fontSize = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                        )
+                    },
+                    leadingIcon = if (level > 0) ({
+                        Icon(
+                            Icons.Filled.LocalFireDepartment,
+                            contentDescription = null,
+                            modifier = Modifier.size(14.dp),
+                            tint = if (isSelected) Color.White else color
+                        )
+                    }) else null,
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = color,
+                        selectedLabelColor = Color.White,
+                        selectedLeadingIconColor = Color.White
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
 }

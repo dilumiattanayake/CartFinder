@@ -141,7 +141,7 @@ class ShopViewModel(
         }
     }
 
-    fun addProduct(context: android.content.Context, stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8) {
+    fun addProduct(context: android.content.Context, stallId: String, name: String, description: String, price: Double, categoryId: String, stockQuantity: Int, imageUrl: String? = null, preparationTime: Int = 8, spiceLevel: Int = 0) {
         viewModelScope.launch {
             try {
                 val uploadedUrl = if (imageUrl != null) uploadImage(context, imageUrl) else null
@@ -153,7 +153,8 @@ class ShopViewModel(
                     categoryId = categoryId,
                     stockQuantity = stockQuantity,
                     imageUrl = uploadedUrl,
-                    preparationTime = preparationTime
+                    preparationTime = preparationTime,
+                    spiceLevel = spiceLevel
                 )
                 val result = repository.addMenuItem(stallId, item)
                 if (result.isSuccess) {
@@ -165,6 +166,7 @@ class ShopViewModel(
             }
         }
     }
+
 
     fun updateProduct(context: android.content.Context, stallId: String, menuItem: MenuItem) {
         viewModelScope.launch {
